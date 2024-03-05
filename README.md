@@ -6,9 +6,9 @@ In C programming, tputs() is a function that's commonly used in terminal manipul
 
 Here's the prototype of the tputs() function:
 
-c
-
+c```
 int tputs(const char *str, int affcnt, int (*putc)(int));
+```
 
     str: The string containing the terminal capabilities sequence to be sent to the terminal.
     affcnt: An integer representing the number of lines affected by the operation (not often used, can usually be set to 1).
