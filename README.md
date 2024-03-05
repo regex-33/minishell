@@ -16,7 +16,7 @@ int tputs(const char *str, int affcnt, int (*putc)(int));
 
 Here's a simple example demonstrating the usage of tputs() to clear the screen:
 
-c
+```c
 
 #include <stdio.h>
 #include <term.h>
@@ -27,6 +27,7 @@ int main() {
     tputs("clear", 1, putchar); // Send the "clear" capability to clear the screen
     return 0;
 }
+```
 
 In this example:
 
