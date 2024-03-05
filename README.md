@@ -120,6 +120,14 @@ In this example:
     The retrieved control string is then printed using printf().
 
 The output will be the actual control sequence associated with the cm capability, such as \033[%i%p1%d;%p2%dH, which is then used with tgoto() to position the cursor on the terminal screen.
+
+For example, the cm capability string might look like \033[%i%p1%d;%p2%dH, where:
+
+    \033 is the escape character.
+    %i specifies the initialization string, which is often empty in modern terminals.
+    %p1%d is a placeholder for the row position.
+    %p2%d is a placeholder for the column position.
+    H is the final character indicating the end of the control sequence.
 ###
 ###
 ###
