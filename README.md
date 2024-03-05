@@ -168,6 +168,43 @@ In this example:
 The cols capability represents the number of columns (characters per line) supported by the terminal. The tgetnum() function retrieves this value and returns it as an integer, which can then be used in your program.
 
 #### tgetflag:
+
+The tgetflag() function is part of the ncurses library and is used to retrieve boolean terminal capabilities from the terminfo database. It takes the name of a boolean capability as an argument and returns a non-zero value if the capability is present, and 0 otherwise.
+
+Here's the prototype of the tgetflag() function:
+
+```c
+
+int tgetflag(const char *capname);
+```
+    capname: The name of the boolean terminal capability you want to retrieve.
+
+Here's a simple example demonstrating the usage of tgetflag() to check if the terminal supports color:
+
+```c
+
+#include <stdio.h>
+#include <term.h>
+#include <curses.h> // On some systems, term.h may be included via curses.h
+
+int main() {
+    setupterm(NULL, fileno(stdout), (int *)0); // Initialize terminal
+    int has_color = tgetflag("colors"); // Check if terminal supports color
+    if (has_color)
+        printf("Terminal supports color.\n");
+    else
+        printf("Terminal does not support color.\n");
+    return 0;
+}
+```
+In this example:
+
+    setupterm() initializes the terminal, similar to previous examples.
+    tgetflag("colors") checks if the terminal supports color by querying the colors capability from the terminfo database.
+    If the terminal supports color, tgetflag() returns a non-zero value, and the program prints "Terminal supports color.". Otherwise, it prints "Terminal does not support color.".
+
+The colors capability represents whether the terminal supports colors. The tgetflag() function queries this capability and returns a non-zero value if it's present, indicating support for colors.
+
 #### tgetent:
 #### tcgetattr:
 #### tcsetattr:
