@@ -83,7 +83,47 @@ In this example:
 
 This example moves the cursor to the specified row (5) and column (10) on the terminal.
 ###
+###
+###
 #### tgetstr:
+###
+The tgetstr() function is part of the ncurses library and is used to retrieve terminal capabilities from the terminfo database. It takes the name of a terminal capability as an argument and returns the corresponding string representation of that capability.
+
+Here's the prototype of the tgetstr() function:
+
+```c
+
+char *tgetstr(const char *capname, char **area);
+```
+    capname: The name of the terminal capability you want to retrieve.
+    area: A pointer to an area in memory where tgetstr() can store data. This is typically set to NULL, in which case tgetstr() will allocate memory for the capability string.
+
+Here's a simple example demonstrating the usage of tgetstr() to retrieve the cm (cursor movement) capability:
+
+```c
+
+#include <stdio.h>
+#include <term.h>
+#include <curses.h> // On some systems, term.h may be included via curses.h
+
+int main() {
+    setupterm(NULL, fileno(stdout), (int *)0); // Initialize terminal
+    char *cursor_move_cap = tgetstr("cm", NULL); // Retrieve the cm capability
+    printf("Cursor movement capability: %s\n", cursor_move_cap);
+    return 0;
+}
+```
+In this example:
+
+    setupterm() initializes the terminal, similar to previous examples.
+    tgetstr("cm", NULL) retrieves the control string associated with the cm capability (cursor movement) from the terminfo database.
+    The retrieved control string is then printed using printf().
+
+The output will be the actual control sequence associated with the cm capability, such as \033[%i%p1%d;%p2%dH, which is then used with tgoto() to position the cursor on the terminal screen.
+###
+###
+###
+###
 #### tgetnum:
 #### tgetflag:
 #### tgetent:
