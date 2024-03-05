@@ -6,7 +6,7 @@ In C programming, tputs() is a function that's commonly used in terminal manipul
 
 Here's the prototype of the tputs() function:
 
-c```
+```c
 int tputs(const char *str, int affcnt, int (*putc)(int));
 ```
 
