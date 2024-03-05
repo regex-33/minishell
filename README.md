@@ -133,6 +133,40 @@ For example, the cm capability string might look like \033[%i%p1%d;%p2%dH, where
 ###
 ###
 #### tgetnum:
+
+The tgetnum() function is part of the ncurses library and is used to retrieve numeric terminal capabilities from the terminfo database. It takes the name of a numeric capability as an argument and returns the corresponding value.
+
+Here's the prototype of the tgetnum() function:
+
+```c
+int tgetnum(const char *capname);
+```
+    capname: The name of the numeric terminal capability you want to retrieve.
+
+Here's a simple example demonstrating the usage of tgetnum() to retrieve the number of columns in the terminal:
+
+```c
+
+#include <stdio.h>
+#include <term.h>
+#include <curses.h> // On some systems, term.h may be included via curses.h
+
+int main() {
+    setupterm(NULL, fileno(stdout), (int *)0); // Initialize terminal
+    int num_columns = tgetnum("cols"); // Retrieve the number of columns
+    printf("Number of columns: %d\n", num_columns);
+    return 0;
+}
+```
+
+In this example:
+
+    setupterm() initializes the terminal, similar to previous examples.
+    tgetnum("cols") retrieves the number of columns in the terminal from the terminfo database.
+    The retrieved number of columns is then printed using printf().
+
+The cols capability represents the number of columns (characters per line) supported by the terminal. The tgetnum() function retrieves this value and returns it as an integer, which can then be used in your program.
+
 #### tgetflag:
 #### tgetent:
 #### tcgetattr:
