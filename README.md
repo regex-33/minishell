@@ -236,10 +236,100 @@ The colors capability represents whether the terminal supports colors. The tgetf
 #### waitpid:
 #### wait:
 #### add_history:
+
+*examples:*
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int main() {
+    char *input;
+
+    // Loop to repeatedly prompt the user for input
+    while (1) {
+        // Set a prompt
+        const char *prompt = "Enter something (press Ctrl+D to exit): ";
+
+        // Read a line of input
+        input = readline(prompt);
+
+        // If input is NULL, it means Ctrl+D was pressed (end of input)
+        if (input == NULL) {
+            printf("\nExiting...\n");
+            break;
+        }
+
+        // Display the input
+        printf("You entered: %s\n", input);
+
+        // Add input to history
+        if (*input)
+            add_history(input);
+
+        // Free the memory allocated by readline
+        free(input);
+    }
+
+    return 0;
+}
+```
+
 #### rl_redisplay:
 #### rl_replace_line:
 #### rl_on_new_line:
 #### rl_clear_history:
+
+n C programming, specifically in programs using the GNU Readline library, the rl_clear_history function is used to clear the command history maintained by the Readline library. This function removes all entries from the history list.
+
+Here's the syntax of the rl_clear_history function:
+
+```c
+
+void rl_clear_history(void);
+```
+
+And here's an example demonstrating how to use rl_clear_history:
+
+```c
+
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int main() {
+    // Set a prompt
+    const char *prompt = "Enter something: ";
+
+    // Read a line of input
+    char *input = readline(prompt);
+
+    // Add input to history
+    if (input)
+        add_history(input);
+
+    // Display the input
+    printf("You entered: %s\n", input);
+
+    // Clear the history
+    rl_clear_history();
+
+    // Free the memory allocated by readline
+    free(input);
+
+    return 0;
+}
+```
+
+In this example, after reading input from the user and displaying it, the rl_clear_history() function is called to clear the command history. Note that after calling rl_clear_history(), any commands previously entered by the user will no longer be accessible via the Readline library's history navigation features.
+
+Compile and run this program, and you'll notice that the command history is cleared after executing the program.
+
+The function rl_clear_history() is responsible for removing all entries from the history list used by the Readline library, making the history empty. It does not free the memory associated with the individual history entries themselves. The memory allocated for individual history entries is typically managed by the Readline library and is not directly accessible for deallocation by user code.
+
+So, in short, *rl_clear_history()* does not free memory for individual history entries; it simply clears the history list.
+
 #### readline:
 
 In C programming, the readline function is not a standard library function. However, it is commonly associated with the GNU Readline library, which provides line-editing and history capabilities for command-line interfaces.
