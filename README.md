@@ -241,3 +241,52 @@ The colors capability represents whether the terminal supports colors. The tgetf
 #### rl_on_new_line:
 #### rl_clear_history:
 #### readline:
+
+In C programming, the readline function is not a standard library function. However, it is commonly associated with the GNU Readline library, which provides line-editing and history capabilities for command-line interfaces.
+
+To use readline in your C program, you need to include the <readline/readline.h> header file and link your program with the Readline library during compilation. The basic syntax of readline is as follows:
+
+```c
+char *readline(const char *prompt);
+```
+
+This function displays the specified prompt (if any) and waits for the user to input a line of text. It then reads that line of text from the standard input, allowing the user to edit it using various command-line editing capabilities provided by Readline. Finally, it returns a dynamically allocated string containing the input text.
+
+Here's a simple example demonstrating the usage of readline:
+
+```c
+
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int main() {
+    char *input;
+
+    // Set a prompt
+    const char *prompt = "Enter something: ";
+
+    // Read a line of input
+    input = readline(prompt);
+
+    // Add input to history
+    if (input)
+        add_history(input);
+
+    // Display the input
+    printf("You entered: %s\n", input);
+
+    // Free the memory allocated by readline
+    free(input);
+
+    return 0;
+}
+```
+
+Remember to compile this program with the Readline library linked. For example:
+
+gcc example.c -o example -lreadline
+
+When you run this program, it will prompt you to enter something. After you enter some text and press Enter, it will display what you entered. The entered text will also be added to the command history, so you can use the arrow keys to navigate through your command history in subsequent runs of the program.
+
+see example of add_histroy function.
