@@ -278,7 +278,52 @@ int main() {
 
 #### rl_redisplay:
 #### rl_replace_line:
+
+
 #### rl_on_new_line:
+
+In C programming, specifically when using the GNU Readline library, the rl_on_new_line function is used to notify Readline that the cursor has moved to a new line. This function is typically used when implementing custom completion functions.
+
+Here's the syntax of the rl_on_new_line function:
+
+```c
+void rl_on_new_line(void);
+```
+
+This function informs the Readline library that the cursor has moved to a new line. It's often used in conjunction with custom completion functions to ensure proper behavior when the user types input.
+
+Here's a simple example demonstrating how rl_on_new_line can be used:
+
+```c
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int main() {
+    // Set a prompt
+    const char *prompt = "Enter something: ";
+
+    // Read a line of input
+    char *input = readline(prompt);
+
+    // Add input to history
+    if (input)
+        add_history(input);
+
+    // Inform Readline that the cursor has moved to a new line
+    rl_on_new_line();
+
+    // Free the memory allocated by readline
+    free(input);
+
+    return 0;
+}
+```
+
+In this example, after reading input from the user and adding it to the history, rl_on_new_line() is called to notify Readline that the cursor has moved to a new line. This function can be helpful when writing custom completion functions or manipulating Readline's internal state in other ways.
+
+Compile and run this program, and you'll see that it reads input from the user, adds it to the history, and notifies Readline that the cursor has moved to a new line.
+
 #### rl_clear_history:
 
 n C programming, specifically in programs using the GNU Readline library, the rl_clear_history function is used to clear the command history maintained by the Readline library. This function removes all entries from the history list.
@@ -374,9 +419,9 @@ int main() {
 ```
 
 Remember to compile this program with the Readline library linked. For example:
-
+```bash
 gcc example.c -o example -lreadline
-
+```
 When you run this program, it will prompt you to enter something. After you enter some text and press Enter, it will display what you entered. The entered text will also be added to the command history, so you can use the arrow keys to navigate through your command history in subsequent runs of the program.
 
 see example of add_histroy function.
