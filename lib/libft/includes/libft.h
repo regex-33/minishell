@@ -27,6 +27,9 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
+int					count_strings(const char *str, char delim);
+char				*ft_strncpy(char *dest, const char *src, size_t n); 
+void				ft_free_arr(char **arr);
 void				int_to_str(int num, char *str);
 int					ft_isupper(int c);
 int					ft_islower(int c);

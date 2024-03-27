@@ -1,14 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dpoveda- <me@izenynn.com>                  +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/10/22 09:32:32 by dpoveda-          #+#    #+#              #
-#    Updated: 2024/01/24 04:29:59 by yachtata         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
 # COLORS
 NOCOL=\033[0m
@@ -72,7 +61,8 @@ ifdef DEBUG
 endif
 
 # SOURCES
-SRC_FILES =	main.c build_in_commands.c env_build_in_functions.c
+SRC_FILES =	main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
+#SRC_FILES = main_bonus.c io_utils_bonus.c command_utils_bonus.c	
 
 SRC = $(addprefix $(SRC_PATH)/, $(SRC_FILES))
 
@@ -85,7 +75,6 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(LMLX_NAME) $(OBJ)
 	@echo "\n"
 	@$(CC) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-	@sleep 5; echo "/bin/sh" > minishell; chmod  +x minishell
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
 
 # #is used to redirect both standard output (stdout) and standard error (stderr) to /dev/null
