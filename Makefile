@@ -61,7 +61,7 @@ ifdef DEBUG
 endif
 
 # SOURCES
-SRC_FILES =	main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
+SRC_FILES =	main.c get_username_hostname.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
 #SRC_FILES = main_bonus.c io_utils_bonus.c command_utils_bonus.c	
 
 SRC = $(addprefix $(SRC_PATH)/, $(SRC_FILES))

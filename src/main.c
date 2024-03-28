@@ -3,31 +3,11 @@
 
 int		last_exit_status = 0;
 
-
-char	*ft_path(void)
-{
-	char	*cwd;
-
-	cwd = malloc(1024);
-	if (!cwd)
-	{
-		printf("cwd malloc error\n");
-		return (NULL);
-	}
-	if (!getcwd(cwd, 1024))
-	{
-		perror("getcwd failed");
-		free(cwd);
-		return (NULL);
-	}
-	return (cwd);
-}
-
 void	execute_command(char *command)
 {
 	pid_t	pid;
 	int		status;
-	char *args[] = {"/bin/sh", "-c", command, NULL};
+	char	*args[] = {"/bin/sh", "-c", command, NULL};
 
 	pid = fork();
 	if (pid < 0)
@@ -53,7 +33,7 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
-int select_buildin_commands(char **args, char *line)
+int	select_buildin_commands(char **args, char *line)
 {
 	if (!ft_strcmp(args[0], "cd"))
 		ft_change_dir(args[1]);
@@ -72,9 +52,51 @@ int select_buildin_commands(char **args, char *line)
 	else if (!ft_strcmp(args[0], "unset"))
 		ft_unset(args[1]);
 	else
-		return 0;
-	return 1;
+		return (0);
+	return (1);
 }
+
+
+int	main(void)
+{
+	char	*line;
+	char	**args;
+	char	full_path[200];
+	int		i;
+
+	while (1)
+	{
+		print_prompt_with_user_details();
+
+		line = readline("");
+		if (line == NULL || line[0] == '\0')
+		{
+			printf("\n");
+			free(line);
+			break ;
+		}
+		if (line[0] != '\0')
+		{
+			add_history(line);
+			args = ft_split(line, ' ');
+			snprintf(full_path, sizeof(full_path), "/bin/%s", args[0]);
+			if (!select_buildin_commands(args, line))
+			{
+				execute_command(line);
+			}
+			free(line);
+			i = 0;
+			while (args[i])
+			{
+				free(args[i]);
+				i++;
+			}
+			free(args);
+		}
+	}
+	return (0);
+}
+/*
 int	main(void)
 {
 	char	*line;
@@ -116,3 +138,4 @@ int	main(void)
 	}
 	return (0);
 }
+*/

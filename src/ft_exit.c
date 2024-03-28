@@ -3,13 +3,16 @@
 char	*skip_chars(const char *str)
 {
 	const char	*start = str;
-	const char	*end = str + strlen(str) - 1;
+	const char	*end;
 	int			flag;
 	size_t		new_len;
 	char		*result;
 
 	flag = 0;
-	while (*start == '"' || *start == '\'' || *start == '+' || *start == '-')
+	if (!str)
+		return NULL;
+	end = str + strlen(str) - 1;
+	while (*start && (*start == '"' || *start == '\'' || *start == '+' || *start == '-'))
 	{
 		if (*start == '-')
 			flag = 1;
@@ -52,7 +55,7 @@ void	ft_exit(const char *exit_code)
 	char	*endptr;
 	int		code;
 
-	if (count_strings(exit_code, ' ') > 1)
+	if (exit_code && count_strings(exit_code, ' ') > 1)
 	{
 		ft_putstr_fd(" too many arguments\n", 2);
 		exit(1);

@@ -55,7 +55,7 @@ void	ft_change_dir(const char *path)
 	const char	*dir;
 	extern int	last_exit_status;
 
-	if (count_strings(path, ' ') > 1)
+	if (path && count_strings(path, ' ') > 1)
 	{
 		last_exit_status = 1;
 		ft_putstr_fd(" too many arguments\n", 2);

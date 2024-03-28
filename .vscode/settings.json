@@ -62,7 +62,8 @@
   "files.associations": {
     "stdlib.h": "c",
     "stddef.h": "c",
-    "readline.h": "c"
+    "readline.h": "c",
+    "stat.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }
