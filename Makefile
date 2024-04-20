@@ -77,6 +77,10 @@ $(NAME): $(LFT_NAME) $(LMLX_NAME) $(OBJ)
 	@$(CC) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
 
+PARSING_SOURCES = util_funcs.c lexer.c
+parser:
+	cc -fsanitize=address -g3 $(PARSING_SOURCES) -Iinc -Llib/libft -lft
+
 # #is used to redirect both standard output (stdout) and standard error (stderr) to /dev/null
 $(LFT_NAME):
 	@$(MAKE) all -sC $(LFT_DIR)	> /dev/null 2>&1

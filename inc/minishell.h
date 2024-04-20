@@ -4,6 +4,7 @@
 # include "../lib/libft/includes/ft_printf.h"
 # include "../lib/libft/includes/get_next_line.h"
 # include "../lib/libft/includes/libft.h"
+# include "parser.h"
 # include "pipex_bonus.h"
 # include <math.h>
 # include <readline/history.h>

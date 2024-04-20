@@ -1,0 +1,9 @@
+.*.swp
+.DS_Store
+test
+test.txt
+a.out
+a.out*
+lib/libft/libft.a
+*.a
+lib/*.a

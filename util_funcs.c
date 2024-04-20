@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:36:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 16:38:30 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 17:02:26 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	print_token(t_token *token)
 	};
 	ft_printf("[type: %s; val: ", tokens[token->type]);
 	write(1, token->value, token->len);
-	ft_printf("; len: %d ] ", token->len);
+	ft_printf(" ] ");
 }
 
 void	print_token_list(t_list *token_list)

@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:48:45 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 16:46:16 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 17:17:46 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	get_token_length(char *line, t_token *token)
 	if (token->type == tok_redir)
 	{
 		token->len = match_pattern(line, O_DIGITS, "<>") + 1;
+		ft_printf("match pattern: %d\n", token->len);
 		if (line[token->len - 1] == line[token->len])
 			token->len++;
 	}
@@ -36,7 +37,7 @@ t_token	*gettoken(char *line, int *index)
 
 	i = 0;
 	token = malloc(sizeof(t_token));
-	token->len = 20;
+	token->len = 0;
 	if (!token)
 		return (NULL);
 	if (line[i] == '(')
@@ -45,9 +46,9 @@ t_token	*gettoken(char *line, int *index)
 		token->type = tok_r_par;
 	else if (line[i] == '|')
 		token->type = tok_pipe + (line[i] == line[i + 1]);
-	else if (line[i] == '&' || line[i] == line[i + 1])
+	else if (line[i] == '&' && line[i] == line[i + 1])
 		token->type = tok_op_and;
-	else if (ft_isdigit(line[i]) && ft_strchr("<>", line[i + 1]))
+	else if (ft_isdigit(line[i]) && (line[i + 1] && ft_strchr("<>", line[i + 1])))
 		token->type = tok_redir;
 	else if (line[i] == '>' || line[i] == '<')
 		token->type = tok_redir;
@@ -55,6 +56,7 @@ t_token	*gettoken(char *line, int *index)
 		token->type = tok_literal;
 	token->value = line;
 	token->len = get_token_length(line, token);
+	ft_printf("token len %d type: %d start: %s-- \n", token->len, token->type, token->value);
 	if (token->len < 1)
 		return (free(token), NULL);
 	*index += token->len;
@@ -72,8 +74,11 @@ t_list	*lexer(char *line)
 	i = 0;
 	while (line[i])
 	{
-		while (line[i] == 32 || line[i] == '\t')
+		if (line[i] == 32 || line[i] == '\t')
+		{
 			i++;
+			continue ;
+		}
 		token = gettoken(line + i, &i);
 		if (!token)
 			return (NULL); // handle this
