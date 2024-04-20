@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:21:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 21:21:29 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 21:59:40 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,17 @@ void	print_node(t_btree *node, int depth, t_node_type parent_type)
 		ft_printf("     ");
 		i++;
 	}
-	ft_printf("( %s [%d] {p: %s} )\n", nt_strings[node->type], depth, nt_strings[parent_type]);
+	if (node->type == nt_simplecmd)
+	{
+		t_list	*lst = node->data;
+		t_token *tok = lst->content;
+		ft_printf("( %s [%d] {p: %s} : ", nt_strings[node->type], depth, nt_strings[parent_type]);
+		write(1, tok->value, tok->len);
+		ft_printf(" )\n");
+	}
+	else
+		ft_printf("( %s [%d] {p: %s} )\n", nt_strings[node->type], depth, nt_strings[parent_type]);
+	
 }
 
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type)

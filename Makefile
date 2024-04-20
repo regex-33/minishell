@@ -77,7 +77,7 @@ $(NAME): $(LFT_NAME) $(LMLX_NAME) $(OBJ)
 	@$(CC) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
 
-PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c
+PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 parser:
 	cc -fsanitize=address -g3 $(PARSING_SOURCES) -Iinc -Llib/libft -lft
 

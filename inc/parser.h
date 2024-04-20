@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 21:06:16 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 23:29:51 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ typedef struct s_btree
 }			t_btree;
 
 t_list	*lexer(char *line);
+
+int __exec(t_btree *tree);
 
 void	clear_btree(t_btree *tree, void (*del)(void *));
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type);

@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 21:08:25 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 23:38:50 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,8 @@ t_btree	*parse_simplecmd(t_list *tokens)
 		{
 			if (is_redir)
 				is_redir = 0;
-			literals++;
+			else
+				literals++;
 		}
 		else
 		{
@@ -129,6 +130,8 @@ t_btree	*parse_simplecmd(t_list *tokens)
 	}
 	if (is_redir)
 		panic("Expected literal after redirection.");
+	if (!literals)
+		panic("Expected at least 1 literal");
 	simplecmd_root = new_leaf(nt_simplecmd, args);
 	return (simplecmd_root);
 }
@@ -199,7 +202,13 @@ int main(void)
 		tokens = lexer(line);
 		print_token_list(tokens);
 		parse_tree = parse(tokens);
+		ft_printf("--------- TREE -------\n");
 		print_tree(parse_tree, 0, nt_undefined);
+		ft_printf("--------- COMMAND ----------\n");
+		ft_printf("%s\n", line);
+		ft_printf("----------- EXECUTION ---------\n");
+		__exec(parse_tree);
+		ft_printf("\n");
 		ft_lstclear_libft(&tokens, free);
 		next_token(tokens, RESET_TOK);
 		free(line);
