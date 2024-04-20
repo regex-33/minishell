@@ -6,18 +6,15 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:48:45 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 17:17:46 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/20 21:25:20 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	get_token_length(char *line, t_token *token)
-{
+int	get_token_length(char *line, t_token *token) {
 	if (token->type == tok_redir)
 	{
 		token->len = match_pattern(line, O_DIGITS, "<>") + 1;
-		ft_printf("match pattern: %d\n", token->len);
 		if (line[token->len - 1] == line[token->len])
 			token->len++;
 	}
@@ -56,7 +53,6 @@ t_token	*gettoken(char *line, int *index)
 		token->type = tok_literal;
 	token->value = line;
 	token->len = get_token_length(line, token);
-	ft_printf("token len %d type: %d start: %s-- \n", token->len, token->type, token->value);
 	if (token->len < 1)
 		return (free(token), NULL);
 	*index += token->len;
@@ -88,22 +84,4 @@ t_list	*lexer(char *line)
 		ft_lstadd_back_libft(&tokens, node);
 	}
 	return (tokens);
-}
-
-
-int main(void)
-{
-	t_list	*tokens;
-
-	char *line = get_next_line(0);
-	while (line)
-	{
-		line[ft_strlen(line) - 1] = 0;
-		tokens = lexer(line);
-		print_token_list(tokens);
-		ft_lstclear_libft(&tokens, free);
-		free(line);
-		line = get_next_line(0);
-	}
-	return (0);
 }

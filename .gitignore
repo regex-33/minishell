@@ -7,3 +7,4 @@ a.out*
 lib/libft/libft.a
 *.a
 lib/*.a
+lib/libft/objects
