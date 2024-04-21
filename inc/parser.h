@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 11:49:26 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 12:25:20 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ void	clear_btree(t_btree *tree, void (*del)(void *));
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type);
 t_btree	*new_node(t_node_type type, void *data, t_btree *left, t_btree *right);
 t_btree	*new_leaf(t_node_type type, void *data);
+
+t_token	*next_token(t_list *token_list, int flags);
 
 t_btree	*parse_simplecmd(t_list *tokens);
 t_btree	*parse_pair(t_list *tokens);

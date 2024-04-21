@@ -2,8 +2,7 @@
 
 int		last_exit_status = 0;
 
-void	execute_command(char *command)
-{
+void	execute_command(char *command) {
 	pid_t	pid;
 	int		status;
 	char	*args[] = {"/bin/sh", "-c", command, NULL};
@@ -81,10 +80,7 @@ char	*get_prompt(char *str, char *suffix)
 int	main(void)
 {
 	char	*line;
-	char	**args;
 	char	*pwd;
-	char	full_path[200];
-	int		i;
 	char	*prompt;
 	t_list	*tokens;
 	t_btree	*parse_tree;
@@ -100,28 +96,28 @@ int	main(void)
 		line = readline(prompt);
 		tokens = lexer(line);	
 		if (!tokens)
-			continue ;
-		parse_tree = parse(tokens);
-		if (!parse_tree)
-			continue ;
-		if (line[0] != '\0')
 		{
-			add_history(line);
-			args = ft_split(line, ' ');
-			snprintf(full_path, sizeof(full_path), "/bin/%s", args[0]);
-			if (!select_buildin_commands(args, line))
-			{
-				execute_command(line);
-			}
 			free(line);
-			i = 0;
-			while (args[i])
-			{
-				free(args[i]);
-				i++;
-			}
-			free(args);
+			continue ;
 		}
+		add_history(line);
+		parse_tree = parse(tokens);
+
+		ft_printf("--------- TREE -------\n");
+ 		print_tree(parse_tree, 0, nt_undefined);
+ 		ft_printf("--------- COMMAND ----------\n");
+ 		ft_printf("%s\n", line);
+ 		ft_printf("----------- EXECUTION ---------\n");
+ 		__exec(parse_tree);
+		next_token(tokens, RESET_TOK);
+		if (!parse_tree)
+		{
+			free(line);
+			continue ;
+		}
+		clear_btree(parse_tree, NULL);	
+		ft_lstclear_libft(&tokens, free);
+		free(line);
 	}
 	return (0);
 }
