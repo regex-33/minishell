@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:36:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 17:02:26 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 18:28:19 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ size_t	wordlen(char *str)
 		i++;
 	}
 	if (quote) // invalid quoted literal
-		return (ft_printf("INVALID QUOTE\n"), 0);
+		return (0);
 	return (i);
 }
 

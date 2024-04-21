@@ -6,15 +6,33 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 12:19:23 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 18:31:09 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	panic(char *str)
+int	panic(char *prog_name, int err, char c)
 {
-	ft_putendl_fd(str, 2);
+	if (prog_name)
+	{
+		ft_putstr_fd(prog_name, 2);
+		ft_putstr_fd(": ", 2);
+	}
+	if (err == PERR_UNEXP_TOK)
+		ft_putendl_fd("parse error: unexpected token", 2);
+	else if (err == PERR_EXP_TOK)
+		ft_putendl_fd("parse error: expected token not found", 2);
+	else if (err == PERR_UNC_PAR)
+		ft_putendl_fd("parse error: unclosed parenthesis", 2);
+	else if (err == PERR_UNC_QUOT)
+		ft_putendl_fd("parse error: unclosed quotes", 2);
+	else if (err == PERR_NEAR)
+	{
+		ft_putstr_fd("parse error near ", 2);
+		write(2, &c, 1);
+		ft_putendl_fd("", 2);
+	}
 	return (0);
 }
 
@@ -120,23 +138,23 @@ t_btree	*parse_simplecmd(t_list *tokens)
 		else
 		{
 			if (is_redir)	
-				return (ft_lstclear_libft(&args, free), panic("Expected literal, found redirection."), NULL);
+				return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 			else
 				is_redir = 1;
 		}
 		node = ft_lstnew(token);
 		if (!node)
-			return (ft_lstclear_libft(&args, free), panic("malloc error"), NULL);
+			return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
 		ft_lstadd_back_libft(&args, node);
 		token = next_token(tokens, CONSUME_TOK);
 	}
 	if (is_redir)
-		return (ft_lstclear_libft(&args, free), panic("Expected literal after redirection."), NULL);
+		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 	if (!literals)
-		return (ft_lstclear_libft(&args, free), panic("Expected at least 1 literal"), NULL);
+		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 	simplecmd_root = new_leaf(nt_simplecmd, args);
 	if (!simplecmd_root)
-		return (ft_lstclear_libft(&args, free), panic("malloc error"), NULL);
+		return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
 	return (simplecmd_root);
 }
 
@@ -148,13 +166,13 @@ t_btree	*parse_pair(t_list *tokens)
 	token = next_token(tokens, 0);
 	pair_root = NULL;
 	if (!token)
-		return (panic("Token Expected at parse pair"), NULL);
+		return (panic("minishell", PERR_EXP_TOK, 0), NULL);
 	if (token->type == tok_l_par)
 	{
 		next_token(tokens, CONSUME_TOK);
 		pair_root = parse_cmd(tokens, 0);
 		if (!expect(tok_r_par, tokens))
-			return (clear_btree(pair_root, free), panic("Expected token not found."), NULL);
+			return (clear_btree(pair_root, free), panic("minishell", PERR_EXP_TOK, 0), NULL);
 		return (pair_root);
 	}
 	else if (token->type == tok_redir || token->type == tok_literal)
@@ -163,7 +181,7 @@ t_btree	*parse_pair(t_list *tokens)
 		return (pair_root);
 	}
 	else
-		return (clear_btree(pair_root, free), panic("Parse Pair Error"), NULL);
+		return (clear_btree(pair_root, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 	return (pair_root);
 }
 
@@ -172,14 +190,19 @@ t_btree	*parse_cmd(t_list *tokens, int prec)
 	t_btree	*cmd_root;
 	t_btree	*tmp;
 	t_token	*token;
-
-	cmd_root = parse_pair(tokens);
+	t_btree	*child; cmd_root = parse_pair(tokens); if (!cmd_root)
+		return (NULL);
 	token = next_token(tokens, 0);
 	while (is_operator(token) && get_prec(token) >= prec)
 	{
 		next_token(tokens, CONSUME_TOK);
 		tmp = cmd_root;
-		cmd_root = new_node(get_nt(token), token, tmp, parse_cmd(tokens, get_prec(token) + 1));
+		child = parse_cmd(tokens, get_prec(token) + 1);
+		if (!child)
+			return (clear_btree(cmd_root, free), NULL);
+		cmd_root = new_node(get_nt(token), token, tmp, child);
+		if (!cmd_root)
+			return (clear_btree(child, free), perror("minishell"), NULL);
 		token = next_token(tokens, 0);
 	}
 	return (cmd_root);
@@ -190,10 +213,13 @@ t_btree	*parse(t_list *tokens)
 	t_btree	*parse_tree;
 
 	parse_tree = parse_cmd(tokens, 0);
-	if (next_token(tokens, 0))
-		return (clear_btree(parse_tree, free), panic("Token not expected."), NULL);
-	else
-		ft_printf("PARSING COMPLETE!\n");
+	if (!parse_tree)
+		return (NULL);
+	else if (next_token(tokens, 0))
+	{
+		clear_btree(parse_tree, free);
+		return (panic("minishell", PERR_UNEXP_TOK, 0), NULL);
+	}
 	return (parse_tree);
 }
 

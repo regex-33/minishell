@@ -6,11 +6,12 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:48:45 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 21:25:20 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 18:28:14 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 int	get_token_length(char *line, t_token *token) {
 	if (token->type == tok_redir)
 	{
@@ -19,8 +20,7 @@ int	get_token_length(char *line, t_token *token) {
 			token->len++;
 	}
 	else if (token->type == tok_op_or || token->type == tok_op_and)
-		return (2);
-	else if (token->type == tok_literal)
+		return (2); else if (token->type == tok_literal)
 		token->len = wordlen(line);
 	else
 		return (1);
@@ -43,8 +43,16 @@ t_token	*gettoken(char *line, int *index)
 		token->type = tok_r_par;
 	else if (line[i] == '|')
 		token->type = tok_pipe + (line[i] == line[i + 1]);
-	else if (line[i] == '&' && line[i] == line[i + 1])
-		token->type = tok_op_and;
+	else if (line[i] == '&')
+	{
+		if (line[i] == line[i + 1])
+			token->type = tok_op_and;
+		else
+		{
+			token->type = tok_undefined;
+			return (token);
+		}
+	}
 	else if (ft_isdigit(line[i]) && (line[i + 1] && ft_strchr("<>", line[i + 1])))
 		token->type = tok_redir;
 	else if (line[i] == '>' || line[i] == '<')
@@ -53,8 +61,8 @@ t_token	*gettoken(char *line, int *index)
 		token->type = tok_literal;
 	token->value = line;
 	token->len = get_token_length(line, token);
-	if (token->len < 1)
-		return (free(token), NULL);
+//	if (token->len < 1)
+//		return (free(token), NULL);
 	*index += token->len;
 	return (token);
 }
@@ -77,10 +85,15 @@ t_list	*lexer(char *line)
 		}
 		token = gettoken(line + i, &i);
 		if (!token)
-			return (NULL); // handle this
+			return (perror("minishell"), ft_lstclear_libft(&tokens, free), NULL); // malloc error
+		if (token->type == tok_undefined)
+		{
+			panic("minishell", PERR_NEAR, line[i]);
+			return (free(token), ft_lstclear_libft(&tokens, free), NULL);
+		}
 		node = ft_lstnew(token);
 		if (!node)
-			return (NULL); // malloc error
+			return (perror("minishell"), free(token), ft_lstclear_libft(&tokens, free), NULL); // malloc error
 		ft_lstadd_back_libft(&tokens, node);
 	}
 	return (tokens);

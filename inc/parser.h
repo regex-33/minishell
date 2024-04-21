@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 12:25:20 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 18:29:53 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,15 @@
 # define CONSUME_TOK 1
 # define RESET_TOK 2
 
+# define PERR_UNEXP_TOK 1
+# define PERR_UNC_PAR 2
+# define PERR_UNC_QUOT 3
+# define PERR_NEAR 4
+# define PERR_EXP_TOK 5
+
 typedef enum e_token_type
 {
+		tok_undefined,
 		tok_l_par,
 		tok_r_par,
 		tok_literal,
@@ -67,6 +74,7 @@ typedef struct s_btree
 t_list	*lexer(char *line);
 
 int __exec(t_btree *tree);
+int	panic(char *prog_name, int err, char c);
 
 void	clear_btree(t_btree *tree, void (*del)(void *));
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type);
