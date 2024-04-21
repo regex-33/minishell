@@ -1,4 +1,4 @@
-#include "../inc/minishell.h"
+#include "../../inc/minishell.h"
 
 
 char	*extract_dollar(const char *str, char quote)

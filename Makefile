@@ -1,20 +1,16 @@
 
 # COLORS
 NOCOL=\033[0m
-RED=\033[1;31m
+#RED=\033[1;31m
 YEL=\033[1;33m
-ORG=\033[0;33m
 GRN=\033[1;32m
-DGRAY=\033[1;30m
 BLU=\033[1;34m
 
-ORANGE = \033[38;5;216m
-LBLUE = \033[38;5;153m
+
 LYELLOW = \033[38;5;222m
 BEIGE = \033[38;5;223m
 LGREEN = \033[38;5;155m
 
-DEF = \033[0m
 BOLD = \033[1m
 CUR = \033[3m
 UL = \033[4m
@@ -42,7 +38,7 @@ LFT_DIR = $(LIB_PATH)/libft
 # LIBS
 LFT = $(LFT_DIR)/$(LFT_NAME)
 
-CFLAGS = -g -Wall -Wextra -Werror -lreadline -D BUFFER_SIZE=10 
+CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 
 CFLAGS += -I ./$(LFT_DIR)/inc
 
 LDFLAGS = -L ./
@@ -61,21 +57,37 @@ ifdef DEBUG
 endif
 
 # SOURCES
-SRC_FILES =	main.c get_username_hostname.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
+BUILTIN_SOURCES = main.c get_username_hostname.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
+PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
+PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
+
+ALL_SROUCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(PIPX_SOURCES)
+
 #SRC_FILES = main_bonus.c io_utils_bonus.c command_utils_bonus.c	
 
-SRC = $(addprefix $(SRC_PATH)/, $(SRC_FILES))
+BUILTIN_SRC = $(addprefix $(SRC_PATH)/builtin/, $(BUILTIN_SOURCES))
+PARSING_SRC = $(addprefix $(SRC_PATH)/parsing/, $(PARSING_SOURCES))
+PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
-OBJ_FILES = $(SRC_FILES:%.c=%.o)
+OBJ_FILES = $(ALL_SROUCES:%.c=%.o)
 
-OBJ = $(addprefix $(OBJ_PATH)/, $(OBJ_FILES))
+OBJ_BUILTIN_FILES = $(BUILTIN_SOURCES:%.c=%.o)
+OBJ_BUILDIN_FILES = $(PARSING_SOURCES:%.c=%.o)
+OBJ_PIPX_FILES = $(PIPX_SOURCES:%.c=%.o)
+
+OBJ_BUILDIN = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES))
 
 
 all: $(NAME)
-$(NAME): $(LFT_NAME) $(LMLX_NAME) $(OBJ)
+$(NAME): $(LFT_NAME) $(OBJ_BUILDIN)
 	@echo "\n"
-	@$(CC) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
+# @echo "i am here\n"
+	@$(CC) $^ -o $@ $(CFLAGS) -lreadline $(LDFLAGS)  $(LDLIBS)
+# @echo "i am here\n"
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
+
+parser: $(LFT_NAME)
+	cc -fsanitize=address -g3 $(PARSING_SRC) -Iinc -Llib/libft -lft
 
 # #is used to redirect both standard output (stdout) and standard error (stderr) to /dev/null
 $(LFT_NAME):
@@ -85,7 +97,7 @@ $(LFT_NAME):
 $(OBJ_PATH):
 	@mkdir -p $(OBJ_PATH) > /dev/null 2>&1
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c | $(OBJ_PATH)
+$(OBJ_PATH)/%.o: $(SRC_PATH)/builtin/%.c | $(OBJ_PATH)
 #The eval command allows you to perform dynamic evaluation and assignment within the Makefile.
 	@${eval SRCS_COUNT = ${shell expr ${SRCS_COUNT} + 1}}
 	@$(CC) $(CFLAGS) -c $< -o $@

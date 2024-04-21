@@ -1,4 +1,4 @@
-#include "../inc/minishell.h"
+#include "../../inc/minishell.h"
 
 char	*extract_after_dollar(const char *str, char quots)
 {
@@ -33,8 +33,9 @@ char	*extract_substring(const char *str)
 	char		*substring;
 	char		quote;
 
+	quote = '\0';
 	substring = NULL;
-	if (*str == '\'' || *str == '"')
+	if (*str == '\'' || *str == '\"')
 		quote = *str;
 	while (*str == quote)
 		str++;
