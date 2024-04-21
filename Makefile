@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
+#    Updated: 2024/04/21 12:17:05 by bchanaa          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 
 # COLORS
 NOCOL=\033[0m
@@ -38,8 +50,8 @@ LFT_DIR = $(LIB_PATH)/libft
 # LIBS
 LFT = $(LFT_DIR)/$(LFT_NAME)
 
-CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 
-CFLAGS += -I ./$(LFT_DIR)/inc
+CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10
+CFLAGS += -I ./$(LFT_DIR)/inc -Iinc
 
 LDFLAGS = -L ./
 LDLIBS = -lft  -O3
@@ -59,27 +71,28 @@ endif
 # SOURCES
 BUILTIN_SOURCES = main.c get_username_hostname.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
-PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
+# PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 
-ALL_SROUCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(PIPX_SOURCES)
 
 #SRC_FILES = main_bonus.c io_utils_bonus.c command_utils_bonus.c	
 
-BUILTIN_SRC = $(addprefix $(SRC_PATH)/builtin/, $(BUILTIN_SOURCES))
-PARSING_SRC = $(addprefix $(SRC_PATH)/parsing/, $(PARSING_SOURCES))
-PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
+#BUILTIN_SRC = $(addprefix $(SRC_PATH)/builtin/, $(BUILTIN_SOURCES))
+#PARSING_SRC = $(addprefix $(SRC_PATH)/parsing/, $(PARSING_SOURCES))
+#PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
-OBJ_FILES = $(ALL_SROUCES:%.c=%.o)
+ALL_SOURCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES)
+vpath %.c src/builtin/ src/parsing/ src/pipx
+vpath %.h inc
+# OBJ_FILES = $(ALL_SOURCES:%.c=%.o)
 
 OBJ_BUILTIN_FILES = $(BUILTIN_SOURCES:%.c=%.o)
-OBJ_BUILDIN_FILES = $(PARSING_SOURCES:%.c=%.o)
-OBJ_PIPX_FILES = $(PIPX_SOURCES:%.c=%.o)
+OBJ_PARSING_FILES = $(PARSING_SOURCES:%.c=%.o)
+# OBJ_PIPX_FILES = $(PIPX_SOURCES:%.c=%.o)
 
-OBJ_BUILDIN = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES))
-
+OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES))
 
 all: $(NAME)
-$(NAME): $(LFT_NAME) $(OBJ_BUILDIN)
+$(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
 	@$(CC) $^ -o $@ $(CFLAGS) -lreadline $(LDFLAGS)  $(LDLIBS)
@@ -97,7 +110,7 @@ $(LFT_NAME):
 $(OBJ_PATH):
 	@mkdir -p $(OBJ_PATH) > /dev/null 2>&1
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/builtin/%.c | $(OBJ_PATH)
+$(OBJ_PATH)/%.o: %.c | $(OBJ_PATH)
 #The eval command allows you to perform dynamic evaluation and assignment within the Makefile.
 	@${eval SRCS_COUNT = ${shell expr ${SRCS_COUNT} + 1}}
 	@$(CC) $(CFLAGS) -c $< -o $@

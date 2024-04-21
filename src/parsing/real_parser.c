@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/20 23:38:50 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 12:19:23 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	panic(char *str)
 {
 	ft_putendl_fd(str, 2);
-	exit(1);
+	return (0);
 }
 
 t_token	*next_token(t_list *token_list, int flags)
@@ -52,11 +52,11 @@ int	expect(t_token_type type, t_list *token_list)
 
 	token = next_token(token_list, 0);
 	if (!token)
-		panic("Expected token found NULL");
+		return (0);
 	if (token->type == type)
 		next_token(token_list, CONSUME_TOK);
 	else
-		panic("Expected token, invalid type.");
+		return (0);
 	return (1);
 }
 
@@ -120,19 +120,23 @@ t_btree	*parse_simplecmd(t_list *tokens)
 		else
 		{
 			if (is_redir)	
-				panic("Expected literal, found redirection.");
+				return (ft_lstclear_libft(&args, free), panic("Expected literal, found redirection."), NULL);
 			else
 				is_redir = 1;
 		}
 		node = ft_lstnew(token);
+		if (!node)
+			return (ft_lstclear_libft(&args, free), panic("malloc error"), NULL);
 		ft_lstadd_back_libft(&args, node);
 		token = next_token(tokens, CONSUME_TOK);
 	}
 	if (is_redir)
-		panic("Expected literal after redirection.");
+		return (ft_lstclear_libft(&args, free), panic("Expected literal after redirection."), NULL);
 	if (!literals)
-		panic("Expected at least 1 literal");
+		return (ft_lstclear_libft(&args, free), panic("Expected at least 1 literal"), NULL);
 	simplecmd_root = new_leaf(nt_simplecmd, args);
+	if (!simplecmd_root)
+		return (ft_lstclear_libft(&args, free), panic("malloc error"), NULL);
 	return (simplecmd_root);
 }
 
@@ -142,13 +146,15 @@ t_btree	*parse_pair(t_list *tokens)
 	t_token	*token;
 
 	token = next_token(tokens, 0);
+	pair_root = NULL;
 	if (!token)
-		panic("Token Expected at parse pair");
+		return (panic("Token Expected at parse pair"), NULL);
 	if (token->type == tok_l_par)
 	{
 		next_token(tokens, CONSUME_TOK);
 		pair_root = parse_cmd(tokens, 0);
-		expect(tok_r_par, tokens);
+		if (!expect(tok_r_par, tokens))
+			return (clear_btree(pair_root, free), panic("Expected token not found."), NULL);
 		return (pair_root);
 	}
 	else if (token->type == tok_redir || token->type == tok_literal)
@@ -157,8 +163,8 @@ t_btree	*parse_pair(t_list *tokens)
 		return (pair_root);
 	}
 	else
-		panic("Parse Pair Error");
-	return (NULL);
+		return (clear_btree(pair_root, free), panic("Parse Pair Error"), NULL);
+	return (pair_root);
 }
 
 t_btree	*parse_cmd(t_list *tokens, int prec)
@@ -185,34 +191,34 @@ t_btree	*parse(t_list *tokens)
 
 	parse_tree = parse_cmd(tokens, 0);
 	if (next_token(tokens, 0))
-		panic("Token not expected.");
+		return (clear_btree(parse_tree, free), panic("Token not expected."), NULL);
 	else
 		ft_printf("PARSING COMPLETE!\n");
 	return (parse_tree);
 }
 
-int main(void)
-{
-	t_list	*tokens; 
-	t_btree	*parse_tree;
-	char *line = get_next_line(0);
-	while (line)
-	{
-		line[ft_strlen(line) - 1] = 0;
-		tokens = lexer(line);
-		print_token_list(tokens);
-		parse_tree = parse(tokens);
-		ft_printf("--------- TREE -------\n");
-		print_tree(parse_tree, 0, nt_undefined);
-		ft_printf("--------- COMMAND ----------\n");
-		ft_printf("%s\n", line);
-		ft_printf("----------- EXECUTION ---------\n");
-		__exec(parse_tree);
-		ft_printf("\n");
-		ft_lstclear_libft(&tokens, free);
-		next_token(tokens, RESET_TOK);
-		free(line);
-		line = get_next_line(0);
-	}
-	return (0);
-}
+// int main(void)
+// {
+// 	t_list	*tokens; 
+// 	t_btree	*parse_tree;
+// 	char *line = get_next_line(0);
+// 	while (line)
+// 	{
+// 		line[ft_strlen(line) - 1] = 0;
+// 		tokens = lexer(line);
+// 		print_token_list(tokens);
+// 		parse_tree = parse(tokens);
+// 		ft_printf("--------- TREE -------\n");
+// 		print_tree(parse_tree, 0, nt_undefined);
+// 		ft_printf("--------- COMMAND ----------\n");
+// 		ft_printf("%s\n", line);
+// 		ft_printf("----------- EXECUTION ---------\n");
+// 		__exec(parse_tree);
+// 		ft_printf("\n");
+// 		ft_lstclear_libft(&tokens, free);
+// 		next_token(tokens, RESET_TOK);
+// 		free(line);
+// 		line = get_next_line(0);
+// 	}
+// 	return (0);
+// }

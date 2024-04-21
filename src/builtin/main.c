@@ -12,8 +12,7 @@ void	execute_command(char *command)
 	if (pid < 0)
 	{
 		perror("error fork");
-		exit(EXIT_FAILURE);
-	}
+		exit(EXIT_FAILURE); }
 	else if (pid == 0)
 	{
 		execv("/bin/sh", args);
@@ -55,6 +54,29 @@ int	select_buildin_commands(char **args, char *line)
 	return (1);
 }
 
+char	*get_prompt(char *str, char *suffix)
+{
+	char	*prompt;
+	size_t	size;
+
+	if (!str)
+		return (NULL);
+	size = ft_strlen(str) + 1;
+	size += ft_strlen(COLOR_KHDER_FATH);
+	size += ft_strlen(ANSI_COLOR_RESET);
+	if (suffix)
+		size += ft_strlen(suffix);
+	prompt = ft_calloc(size, sizeof(char));
+	if (!prompt)
+		return (NULL);
+	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
+	ft_strlcat(prompt, str, size);
+	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
+	if (suffix)
+		ft_strlcat(prompt, suffix, size);
+	return (prompt);
+}
+
 
 int	main(void)
 {
@@ -63,21 +85,25 @@ int	main(void)
 	char	*pwd;
 	char	full_path[200];
 	int		i;
+	char	*prompt;
+	t_list	*tokens;
+	t_btree	*parse_tree;
 
 	while (1)
 	{
 		//print_prompt_with_user_details();
 		//line = readline("");
 		pwd = ft_path();
-		printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
-		free(pwd);
-		line = readline("");
-		if (line == NULL || line[0] == '\0')
-		{
-			printf("\n");
-			free(line);
-			break ;
-		}
+		prompt = get_prompt(pwd, "$ ");
+	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
+	//	free(pwd);
+		line = readline(prompt);
+		tokens = lexer(line);	
+		if (!tokens)
+			continue ;
+		parse_tree = parse(tokens);
+		if (!parse_tree)
+			continue ;
 		if (line[0] != '\0')
 		{
 			add_history(line);

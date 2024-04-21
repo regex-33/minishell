@@ -1,4 +1,6 @@
 .*.swp
+minishell
+obj
 .DS_Store
 test
 test.txt
