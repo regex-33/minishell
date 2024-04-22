@@ -75,7 +75,21 @@ char	*get_prompt(char *str, char *suffix)
 		ft_strlcat(prompt, suffix, size);
 	return (prompt);
 }
+/* new things */
 
+char	**grep_paths(void)
+{
+	char	*path_env;
+	char	**path_dirs;
+
+	path_env = get_value("PATH");
+	if (!path_env)
+		path_env = "";
+	path_dirs = ft_split(path_env, ':');
+	if (!path_dirs)
+		return (perror(COMMAND_NOT_FOUND), NULL);
+	return (path_dirs);
+}
 
 int	main(void)
 {
@@ -84,6 +98,7 @@ int	main(void)
 	char	*prompt;
 	t_list	*tokens;
 	t_btree	*parse_tree;
+	char	**path_dirs;
 
 	while (1)
 	{
@@ -108,7 +123,10 @@ int	main(void)
  		ft_printf("--------- COMMAND ----------\n");
  		ft_printf("%s\n", line);
  		ft_printf("----------- EXECUTION ---------\n");
- 		__exec(parse_tree);
+		path_dirs = grep_paths();
+		if (!path_dirs)
+			return 1;
+ 		__exec(parse_tree, path_dirs);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{

@@ -39,6 +39,7 @@
 #define MAX_USERNAME_LENGTH 256
 #define MAX_HOSTNAME_LENGTH 256
 #define HOSTNAME_FILE "/proc/sys/kernel/hostname"
+#define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
 
 /* change directory */
 

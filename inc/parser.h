@@ -24,6 +24,35 @@
 # define PERR_NEAR 4
 # define PERR_EXP_TOK 5
 
+
+// typedef struct	s_parsed_command
+// {
+// 	char		**command;
+// 	char		*redirect_operator;
+// 	char		*redirect_file;
+// }				t_parsed_command;
+
+typedef struct s_info
+{
+	t_list	*processes;
+}	t_info;
+
+typedef enum s_redir_ops
+{
+	REDIR_OUT,
+	REDIR_OUT_APPEND,
+	REDIR_IN,
+	REDIR_HERE_DOC,
+}			t_redir_ops;
+
+struct s_redir
+{
+	t_redir_ops	type; // redirection type
+	char		*filename;
+	char		*delimiter; // for here_doc 
+	int			fd; // file descriptor (this)>
+}
+
 typedef enum e_token_type
 {
 		tok_undefined,
@@ -73,7 +102,7 @@ typedef struct s_btree
 
 t_list	*lexer(char *line);
 
-int __exec(t_btree *tree);
+int __exec(t_btree *tree, char **path_dirs);
 int	panic(char *prog_name, int err, char c);
 
 void	clear_btree(t_btree *tree, void (*del)(void *));
@@ -95,3 +124,10 @@ void	print_token_list(t_list *token_list);
 int		match_pattern(char *str, int flags, char *sentinel);
 void	E(t_list *tokens);
 void	P(t_list *tokens);
+
+/* youssef function */
+
+
+t_parsed_command	*parse_command(char *input);
+char	*trim(char *str);
+void	free_parsed_commands(t_parsed_command *parsed_commands);
