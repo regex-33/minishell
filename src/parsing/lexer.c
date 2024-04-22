@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:48:45 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 18:28:14 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/21 18:46:04 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ t_list	*lexer(char *line)
 		token = gettoken(line + i, &i);
 		if (!token)
 			return (perror("minishell"), ft_lstclear_libft(&tokens, free), NULL); // malloc error
-		if (token->type == tok_undefined)
+		if (token->type == tok_undefined || token->len < 1)
 		{
 			panic("minishell", PERR_NEAR, line[i]);
 			return (free(token), ft_lstclear_libft(&tokens, free), NULL);
