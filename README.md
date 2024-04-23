@@ -215,9 +215,74 @@ The colors capability represents whether the terminal supports colors. The tgetf
 #### isatty:
 #### perror:
 #### strerror:
-#### closedir:
-#### readdir:
-#### opendir:
+#### closedir && readdir && opendir:
+
+In C, DIR *dir and struct dirent *entry are related to directory handling using the <dirent.h> header, commonly used for directory traversal and listing of directory contents.
+
+`DIR *dir:`
+DIR is a type representing a directory stream. It's an opaque structure that holds the state information needed to read the contents of a directory.
+When you use opendir() to open a directory, it returns a pointer to a DIR structure (DIR *), which is then used for subsequent directory-related operations.
+You use this DIR * pointer to perform operations like reading directory entries (readdir()), closing the directory stream (closedir()), etc.
+Example:
+```c
+DIR *dir = opendir("/path/to/directory");
+```
+2 struct dirent *entry:
+struct dirent is a structure representing a directory entry. It contains information about a single directory entry (file or subdirectory) within a directory.
+When you use readdir() to read the next directory entry from a directory stream (DIR *), it returns a pointer to a struct dirent.
+You use this struct dirent * pointer to access information about the directory entry, such as its name (d_name) and other attributes.
+Example:
+```c
+Copy code
+struct dirent *entry = readdir(dir);
+if (entry != NULL) {
+    printf("Directory entry name: %s\n", entry->d_name);
+}
+```
+Here's a brief overview of struct dirent (from <dirent.h>):
+
+```c
+Copy code
+struct dirent {
+    ino_t d_ino;           // inode number
+    off_t d_off;           // offset to the next dirent
+    unsigned short d_reclen; // length of this record
+    unsigned char d_type;  // type of file
+    char d_name[256];      // filename
+};
+```
+d_ino: The inode number of the file.
+d_off: The offset to the next directory entry.
+d_reclen: The length of this directory entry.
+d_type: The type of the file (e.g., DT_REG for a regular file, DT_DIR for a directory).
+d_name: The filename (null-terminated string).
+When iterating over directory entries, you typically use a loop with readdir() to read each entry until readdir() returns NULL, indicating the end of the directory stream.
+
+Here's an example of iterating through directory entries using readdir():
+
+```c
+Copy code
+DIR *dir = opendir("/path/to/directory");
+if (dir == NULL) {
+    perror("opendir");
+    return EXIT_FAILURE;
+}
+
+struct dirent *entry;
+while ((entry = readdir(dir)) != NULL) {
+    printf("Directory entry name: %s\n", entry->d_name);
+}
+
+closedir(dir);
+```
+In this example:
+
+We open the directory /path/to/directory using opendir().
+We use a while loop to repeatedly call readdir() to read each directory entry (struct dirent) from the directory stream (DIR *dir).
+For each directory entry, we print its name (entry->d_name).
+We close the directory stream using closedir() after finishing the directory traversal.
+This pattern of using DIR *dir and struct dirent *entry is fundamental for working with directory contents in C programs using standard POSIX APIs. Adjust and integrate these concepts into your code based on your specific directory handling requirements.
+
 #### pipe:
 #### dup2:
 #### dup:
