@@ -6,14 +6,15 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:21:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 18:28:24 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/23 18:22:39 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // parse -> PARSE_CMD(0)
 // 
 // PARSE_CMD(x) -> PAIR { OPERATOR PARSE_CMD(q) }
-// PARSE_PAIR -> LPAR PARSE_CMD(0) RPAR | SIMPLE_COMMAND
+// PARSE_PAIR -> SUBCMD | SIMPLE_COMMAND
+// PARSE_SUBCMD -> LPAR CMD(0) RPAR {REDIR}
 // SIMPLE_COMMAND -> {REDIR} LITERAL { LITERAL | REDIR }
 // REDIR -> IO_REDIR LITERAL
 

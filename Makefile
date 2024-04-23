@@ -6,7 +6,7 @@
 #    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
-#    Updated: 2024/04/21 12:31:27 by bchanaa          ###   ########.fr        #
+#    Updated: 2024/04/23 16:20:45 by bchanaa          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,9 +69,9 @@ ifdef DEBUG
 endif
 
 # SOURCES
-BUILTIN_SOURCES = main.c get_username_hostname.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c
+BUILTIN_SOURCES = main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c #get_username_hostname.c
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c #exec.c
-EXECUTION_SOURCES = exec.c parse_command.c
+EXECUTION_SOURCES = exec.c #parse_command.c
 # PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 
 
@@ -82,7 +82,7 @@ EXECUTION_SOURCES = exec.c parse_command.c
 #PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
 ALL_SOURCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES)
-vpath %.c src/builtin/ src/parsing/ src/pipx src/excution
+vpath %.c src/builtin/ src/parsing/ src/pipx src/execution
 vpath %.h inc
 # OBJ_FILES = $(ALL_SOURCES:%.c=%.o)
 

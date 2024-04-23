@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 18:31:09 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/23 20:54:54 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,53 @@ t_btree	*parse_simplecmd(t_list *tokens)
 	return (simplecmd_root);
 }
 
+t_list	*parse_redirs(t_list *tokens, t_list *redir_list)
+{
+	t_redir	*redir;
+	t_token	*token;
+	t_token	*file_token;
+
+	token = next_token(tokens, CONSUME_TOK);
+	file_token = next_token(tokens, 0);
+	if (!file_token || file_token->type != tok_literal)
+		return (ft_lstclear_libft(redir_list, free), NULL);
+	redir = malloc(sizeof(t_redir));
+	if (!redir)
+		return (ft_lstclear_libft(redir_list, free), NULL);
+	redir->fd = getredir_fd(token->value, token->len);
+	redir->type = getredir_type(token->value, token->len);
+	if (redir->type == REDIR_HERE)
+	{
+		redir->delimiter = token->value;
+	}
+	token = next_token(tokens, 0);
+}
+
+t_btree	*parse_subcmd(t_list *tokens)
+{
+	t_btree	*subcmd_root;
+	t_token	*token;
+	t_btree	*subcmd_redir;
+	t_list	redir_list;
+
+	redir_list = NULL;
+	next_token(tokens, CONSUME_TOK); // CONSUME LEFT PAREN
+	subcmd_root = new_node(nt_subcmd, );
+	if (!expect(tok_r_par, tokens)) // EXPECT RIGHT PAREN
+		return (clear_btree(subcmd_root, free),
+			panic("minishell", PERR_EXP_TOK, 0), NULL);
+	// get redirs
+	token = next_token(tokens, 0);
+	while (token->type == tok_redir)
+	{
+		redir_list = parse_redirs(tokens, redir_list);
+		if (!redir_list)
+			return (clear_btree(subcmd_root, free), NULL);
+		token = next_token(tokens, 0);
+	}
+	return (subcmd_root);
+}
+
 t_btree	*parse_pair(t_list *tokens)
 {
 	t_btree	*pair_root;
@@ -169,10 +216,7 @@ t_btree	*parse_pair(t_list *tokens)
 		return (panic("minishell", PERR_EXP_TOK, 0), NULL);
 	if (token->type == tok_l_par)
 	{
-		next_token(tokens, CONSUME_TOK);
-		pair_root = parse_cmd(tokens, 0);
-		if (!expect(tok_r_par, tokens))
-			return (clear_btree(pair_root, free), panic("minishell", PERR_EXP_TOK, 0), NULL);
+		pair_root = parse_subcmd(tokens);
 		return (pair_root);
 	}
 	else if (token->type == tok_redir || token->type == tok_literal)
@@ -190,7 +234,9 @@ t_btree	*parse_cmd(t_list *tokens, int prec)
 	t_btree	*cmd_root;
 	t_btree	*tmp;
 	t_token	*token;
-	t_btree	*child; cmd_root = parse_pair(tokens); if (!cmd_root)
+	t_btree	*child;
+	cmd_root = parse_pair(tokens);
+	if (!cmd_root)
 		return (NULL);
 	token = next_token(tokens, 0);
 	while (is_operator(token) && get_prec(token) >= prec)

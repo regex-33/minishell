@@ -104,7 +104,8 @@ int	main(void)
 	{
 		//print_prompt_with_user_details();
 		//line = readline("");
-		pwd = ft_path();
+		//pwd = ft_path();
+		pwd = "minishell >";
 		prompt = get_prompt(pwd, "$ ");
 	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
 	//	free(pwd);
@@ -126,7 +127,7 @@ int	main(void)
 		path_dirs = grep_paths();
 		if (!path_dirs)
 			return 1;
- 		__exec(parse_tree, path_dirs);
+ 		__exec(parse_tree);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{

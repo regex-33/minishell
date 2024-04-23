@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 18:29:53 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/23 20:50:30 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 # define PERR_NEAR 4
 # define PERR_EXP_TOK 5
 
-
 // typedef struct	s_parsed_command
 // {
 // 	char		**command;
@@ -32,26 +31,32 @@
 // 	char		*redirect_file;
 // }				t_parsed_command;
 
+typedef enum e_redir_type
+{
+	REDIR_IN,
+	REDIR_HERE,
+	REDIR_OUT,
+	REDIR_APPEND
+}		t_redir_type;
+
+typedef struct s_redir
+{
+	char			*file;
+	char			*delimiter;
+	t_redir_type	type;
+	int				fd;
+}			t_redir;
+
+typedef s_cmd
+{
+	char	**cmd_args;
+	t_list	*redir_list;
+}
+
 typedef struct s_info
 {
 	t_list	*processes;
 }	t_info;
-
-typedef enum s_redir_ops
-{
-	REDIR_OUT,
-	REDIR_OUT_APPEND,
-	REDIR_IN,
-	REDIR_HERE_DOC,
-}			t_redir_ops;
-
-struct s_redir
-{
-	t_redir_ops	type; // redirection type
-	char		*filename;
-	char		*delimiter; // for here_doc 
-	int			fd; // file descriptor (this)>
-}
 
 typedef enum e_token_type
 {
@@ -75,13 +80,14 @@ typedef struct s_token
 typedef enum e_node_type
 {
 	nt_undefined,
-	nt_cmd,
+	nt_subcmd,
+	nt_subredir,
 	nt_simplecmd,
 	nt_pipe,
 	nt_and_if,
 	nt_or_if,
-	nt_io_redir,
-	nt_cmd_arg
+	//nt_io_redir,
+	//nt_cmd_arg
 } 	t_node_type;
 
 // typedef struct s_tree
@@ -102,7 +108,7 @@ typedef struct s_btree
 
 t_list	*lexer(char *line);
 
-int __exec(t_btree *tree, char **path_dirs);
+int __exec(t_btree *tree);
 int	panic(char *prog_name, int err, char c);
 
 void	clear_btree(t_btree *tree, void (*del)(void *));
@@ -124,10 +130,3 @@ void	print_token_list(t_list *token_list);
 int		match_pattern(char *str, int flags, char *sentinel);
 void	E(t_list *tokens);
 void	P(t_list *tokens);
-
-/* youssef function */
-
-
-t_parsed_command	*parse_command(char *input);
-char	*trim(char *str);
-void	free_parsed_commands(t_parsed_command *parsed_commands);
