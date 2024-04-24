@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/23 20:50:30 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 16:32:34 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,17 @@ typedef enum e_redir_type
 
 typedef struct s_redir
 {
-	char			*file;
+	char			*filename;
 	char			*delimiter;
 	t_redir_type	type;
 	int				fd;
 }			t_redir;
 
-typedef s_cmd
+typedef struct s_cmd
 {
-	char	**cmd_args;
+	t_list	*cmd_args;
 	t_list	*redir_list;
-}
+}	t_cmd;
 
 typedef struct s_info
 {
@@ -86,7 +86,7 @@ typedef enum e_node_type
 	nt_pipe,
 	nt_and_if,
 	nt_or_if,
-	//nt_io_redir,
+	nt_io_redir,
 	//nt_cmd_arg
 } 	t_node_type;
 
@@ -110,6 +110,15 @@ t_list	*lexer(char *line);
 
 int __exec(t_btree *tree);
 int	panic(char *prog_name, int err, char c);
+
+
+void			free_redir(void *redir);
+t_redir			*new_redir(t_token *redir_token, t_token *file_token);
+t_redir_type	getredir_type(char *str, int len);
+int				getredir_fd(char *str, int len);
+
+void	free_cmd(t_cmd *cmd);
+t_cmd	*new_cmd(t_list *cmd_args, t_list *redir_list);
 
 void	clear_btree(t_btree *tree, void (*del)(void *));
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type);

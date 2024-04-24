@@ -118,17 +118,21 @@ int	main(void)
 		}
 		add_history(line);
 		parse_tree = parse(tokens);
-
+		next_token(tokens, RESET_TOK);
+		if (!parse_tree)
+		{
+			ft_printf("TREE IS NULL\n");
+			continue;
+		}
 		ft_printf("--------- TREE v2 -------\n");
  		print_tree(parse_tree, 0, nt_undefined);
  		ft_printf("--------- COMMAND ----------\n");
  		ft_printf("%s\n", line);
- 		ft_printf("----------- EXECUTION ---------\n");
+		//ft_printf("----------- EXECUTION ---------\n");
 		path_dirs = grep_paths();
-		if (!path_dirs)
-			return 1;
- 		__exec(parse_tree);
-		next_token(tokens, RESET_TOK);
+		//if (!path_dirs)
+		//	return 1;
+ 		//__exec(parse_tree);
 		if (!parse_tree)
 		{
 			free(line);

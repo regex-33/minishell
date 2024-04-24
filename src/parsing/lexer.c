@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:48:45 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/23 19:32:59 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 15:35:22 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ t_token	*gettoken(char *line, int *index)
 			return (token);
 		}
 	}
-	else if (ft_isdigit(line[i]) && (line[i + 1] && ft_strchr("<>", line[i + 1])))
+	else if (match_pattern(line, O_DIGITS, "<>") > 0)
 		token->type = tok_redir;
 	else if (line[i] == '>' || line[i] == '<')
 		token->type = tok_redir;

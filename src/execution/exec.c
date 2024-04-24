@@ -6,34 +6,11 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 23:15:04 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/23 16:20:11 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 15:20:54 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-typedef enum e_redir_type
-{
-	REDIR_OUT,
-	REDIR_OUT_APPEND,
-	REDIR_IN,
-	REDIR_HERE_DOC,
-}			t_redir_type;
-
-
-typedef struct	s_redir
-{
-	char			*delimeter;
-	char			*filename;
-	t_redir_type	type;
-	int				fd;
-}				t_redir;
-
-typedef struct s_cmd
-{
-	char	**args;
-	t_list	*redir_list;
-}				t_cmd;
 
 int	exec_simple(t_btree *tree)
 {

@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:36:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/21 18:45:26 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 15:36:57 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,16 +70,14 @@ size_t	wordlen(char *str)
 void	print_token(t_token *token)
 {
 	char	tokens[10][20] = {
+		"undefined",
 		"l_par",
 		"r_par",
 		"literal",
 		"pipe",
 		"op_or",
 		"op_and",
-		"inredir",
-		"inredir_h",
-		"outredir",
-		"outredir_a",
+		"redir"
 	};
 	ft_printf("[type: %s; val: ", tokens[token->type]);
 	write(1, token->value, token->len);

@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:21:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/23 18:22:39 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 16:07:01 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ t_btree	*new_leaf(t_node_type type, void *data)
 {
 	t_btree	*leaf;
 
+	if (!data)
+		return (NULL);
 	leaf = malloc(sizeof(t_btree));
 	if (!leaf)
 		return (NULL);
@@ -66,6 +68,20 @@ void	clear_btree(t_btree *tree, void (*del)(void *))
 		clear_btree(right, del);
 }
 
+
+// typedef enum e_node_type
+// {
+// 	nt_undefined,
+// 	nt_subcmd,
+// 	nt_subredir,
+// 	nt_simplecmd,
+// 	nt_pipe,
+// 	nt_and_if,
+// 	nt_or_if,
+// 	nt_io_redir,
+// 	//nt_cmd_arg
+// } 	t_node_type;
+
 void	print_node(t_btree *node, int depth, t_node_type parent_type)
 {
 	int	i;
@@ -73,12 +89,13 @@ void	print_node(t_btree *node, int depth, t_node_type parent_type)
 	char nt_strings[10][20] = 
 	{
 		"UNDEFINED",
-		"CMD",
+		"SUBCMD",
+		"SUBREDIR",
 		"SIMPLE_CMD",
 		"PIPE",
 		"AND",
 		"OR",
-		"REDIR",
+		"IO_REDIR",
 		"CMD_ARG"
 	};
 	while (i < depth)

@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/23 20:54:54 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 16:32:56 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,28 @@ int	get_prec(t_token *token)
 	return (0);
 }
 
+int	parse_redir(t_list *tokens, t_list **redir_list)
+{
+	t_redir	*redir;
+	t_token	*token;
+	t_token	*file_token;
+	t_list	*node;
+
+	token = next_token(tokens, CONSUME_TOK);
+	file_token = next_token(tokens, 0);
+	if (!file_token || file_token->type != tok_literal)
+		return (ft_lstclear_libft(redir_list, free_redir), panic("minishell", PERR_EXP_TOK, 0), 1);
+	redir = new_redir(token, file_token);
+	if (!redir)
+		return (ft_lstclear_libft(redir_list, free_redir), perror("minishell"), 1);
+	node = ft_lstnew(redir);
+	if(!node)
+		return (ft_lstclear_libft(redir_list, free_redir), perror("minishell"), 1);
+	ft_lstadd_back_libft(redir_list, node);
+	next_token(tokens, CONSUME_TOK); // CONSUME FILE/DELIMITER TOKEN
+	return (0);
+}
+
 t_node_type	get_nt(t_token *token)
 {
 	if (!token)
@@ -113,95 +135,113 @@ t_node_type	get_nt(t_token *token)
 	return (nt_undefined);
 }
 
+// t_btree	*parse_simplecmd(t_list *tokens)
+// {
+// 	t_list	*args;
+// 	t_btree	*simplecmd_root;
+// 	t_token	*token;
+// 	bool	is_redir;
+// 	int		literals;
+// 	t_list	*node;
+// 
+// 	literals = 0;
+// 	is_redir = 0;
+// 	token = next_token(tokens, 0);
+// 	args = NULL;
+// 	while (token && (token->type == tok_literal || token->type == tok_redir))
+// 	{
+// 		if (token->type == tok_literal)
+// 		{
+// 			if (is_redir)
+// 				is_redir = 0;
+// 			else
+// 				literals++;
+// 		}
+// 		else
+// 		{
+// 			if (is_redir)	
+// 				return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
+// 			else
+// 				is_redir = 1;
+// 		}
+// 		node = ft_lstnew(token);
+// 		if (!node)
+// 			return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
+// 		ft_lstadd_back_libft(&args, node);
+// 		token = next_token(tokens, CONSUME_TOK);
+// 	}
+// 	if (is_redir)
+// 		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
+// 	if (!literals)
+// 		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
+// 	simplecmd_root = new_leaf(nt_simplecmd, args);
+// 	if (!simplecmd_root)
+// 		return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
+// 	return (simplecmd_root);
+// }
+
 t_btree	*parse_simplecmd(t_list *tokens)
 {
-	t_list	*args;
 	t_btree	*simplecmd_root;
-	t_token	*token;
-	bool	is_redir;
-	int		literals;
 	t_list	*node;
-
-	literals = 0;
-	is_redir = 0;
-	token = next_token(tokens, 0);
-	args = NULL;
-	while (token && (token->type == tok_literal || token->type == tok_redir))
-	{
-		if (token->type == tok_literal)
-		{
-			if (is_redir)
-				is_redir = 0;
-			else
-				literals++;
-		}
-		else
-		{
-			if (is_redir)	
-				return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-			else
-				is_redir = 1;
-		}
-		node = ft_lstnew(token);
-		if (!node)
-			return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
-		ft_lstadd_back_libft(&args, node);
-		token = next_token(tokens, CONSUME_TOK);
-	}
-	if (is_redir)
-		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-	if (!literals)
-		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-	simplecmd_root = new_leaf(nt_simplecmd, args);
-	if (!simplecmd_root)
-		return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
-	return (simplecmd_root);
-}
-
-t_list	*parse_redirs(t_list *tokens, t_list *redir_list)
-{
-	t_redir	*redir;
+	t_cmd	*cmd;
 	t_token	*token;
-	t_token	*file_token;
 
-	token = next_token(tokens, CONSUME_TOK);
-	file_token = next_token(tokens, 0);
-	if (!file_token || file_token->type != tok_literal)
-		return (ft_lstclear_libft(redir_list, free), NULL);
-	redir = malloc(sizeof(t_redir));
-	if (!redir)
-		return (ft_lstclear_libft(redir_list, free), NULL);
-	redir->fd = getredir_fd(token->value, token->len);
-	redir->type = getredir_type(token->value, token->len);
-	if (redir->type == REDIR_HERE)
+	cmd = new_cmd(NULL, NULL);
+	if (!cmd)
+		return (perror("minishell"), NULL);
+	token = next_token(tokens, 0);	
+	while (token && (token->type == tok_redir || token->type == tok_literal))
 	{
-		redir->delimiter = token->value;
+		if (token->type == tok_redir)
+		{
+			if (parse_redir(tokens, &cmd->redir_list) != 0)
+				return (free_cmd(cmd), NULL);
+		}
+		else if (token->type == tok_literal)
+		{
+			next_token(tokens, CONSUME_TOK);
+			node = ft_lstnew(token);
+			if (!node)
+				return (perror("minishell"), free_cmd(cmd), NULL);
+			ft_lstadd_back_libft(&cmd->cmd_args, node);
+		}
+		token = next_token(tokens, 0);
 	}
-	token = next_token(tokens, 0);
+	if (!cmd->cmd_args)
+		return (free_cmd(cmd), panic("minishell", PERR_EXP_TOK, 0), NULL);
+	simplecmd_root = new_leaf(nt_simplecmd, cmd);
+	if (!simplecmd_root)
+		return(perror("minishell"), free_cmd(cmd), NULL);
+	return (simplecmd_root);
 }
 
 t_btree	*parse_subcmd(t_list *tokens)
 {
 	t_btree	*subcmd_root;
 	t_token	*token;
-	t_btree	*subcmd_redir;
-	t_list	redir_list;
+	t_list	*redir_list;
 
 	redir_list = NULL;
 	next_token(tokens, CONSUME_TOK); // CONSUME LEFT PAREN
-	subcmd_root = new_node(nt_subcmd, );
+	subcmd_root = new_node(nt_subcmd, NULL, NULL, NULL);
+	if (!subcmd_root)
+		return (perror("minishell"), NULL);
+	subcmd_root->left = parse_cmd(tokens, 0);
+	if (!subcmd_root->left)
+		return (clear_btree(subcmd_root, free), NULL);
 	if (!expect(tok_r_par, tokens)) // EXPECT RIGHT PAREN
 		return (clear_btree(subcmd_root, free),
 			panic("minishell", PERR_EXP_TOK, 0), NULL);
 	// get redirs
 	token = next_token(tokens, 0);
-	while (token->type == tok_redir)
+	while (token && token->type == tok_redir)
 	{
-		redir_list = parse_redirs(tokens, redir_list);
-		if (!redir_list)
+		if (parse_redir(tokens, &redir_list) != 0)
 			return (clear_btree(subcmd_root, free), NULL);
 		token = next_token(tokens, 0);
 	}
+	subcmd_root->data = redir_list;
 	return (subcmd_root);
 }
 
