@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 16:32:56 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:27:00 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,13 @@ int	parse_redir(t_list *tokens, t_list **redir_list)
 	t_token	*file_token;
 	t_list	*node;
 
-	token = next_token(tokens, CONSUME_TOK);
+	token = next_token(tokens, 0);
+	next_token(tokens, CONSUME_TOK);
 	file_token = next_token(tokens, 0);
 	if (!file_token || file_token->type != tok_literal)
 		return (ft_lstclear_libft(redir_list, free_redir), panic("minishell", PERR_EXP_TOK, 0), 1);
+	if (token == file_token)
+		ft_printf("SAMEEEE\n");
 	redir = new_redir(token, file_token);
 	if (!redir)
 		return (ft_lstclear_libft(redir_list, free_redir), perror("minishell"), 1);
@@ -114,7 +117,7 @@ int	parse_redir(t_list *tokens, t_list **redir_list)
 	if(!node)
 		return (ft_lstclear_libft(redir_list, free_redir), perror("minishell"), 1);
 	ft_lstadd_back_libft(redir_list, node);
-	next_token(tokens, CONSUME_TOK); // CONSUME FILE/DELIMITER TOKEN
+	next_token(tokens, CONSUME_TOK);
 	return (0);
 }
 

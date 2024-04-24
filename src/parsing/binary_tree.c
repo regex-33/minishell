@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:21:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 16:07:01 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:28:41 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,59 @@ void	clear_btree(t_btree *tree, void (*del)(void *))
 // 	//nt_cmd_arg
 // } 	t_node_type;
 
+void	print_redir(t_redir *redir)
+{
+	char redir_strings[10][20] = 
+	{
+		"in",
+		"here",
+		"out",
+		"append"
+	};
+	if (redir->type != REDIR_HERE)
+		ft_printf("[[ %s %d->%s ]] ", redir_strings[redir->type], redir->fd, redir->filename);
+	else
+		ft_printf("[[ heredoc fd:%d; delim: %s file: %s]] ", redir->fd, redir->delimiter, redir->filename);
+}
+
+void	print_simplecmd(t_btree *node, int depth, t_node_type parentt)
+{
+	char nt_strings[10][20] = 
+	{
+		"UNDEFINED",
+		"SUBCMD",
+		"SUBREDIR",
+		"SIMPLE_CMD",
+		"PIPE",
+		"AND",
+		"OR",
+		"IO_REDIR",
+		"CMD_ARG"
+	};
+	if (!node)
+		ft_printf("[ERROR: NULL NODE]\n");
+	t_cmd *cmd = node->data;
+	ft_printf("( %s [%d] {p: %d} : [", nt_strings[node->type], depth, parentt);
+	t_list	*cmd_args = cmd->cmd_args;
+	while (cmd_args)
+	{
+		t_token	*token = cmd_args->content;
+		write(1, token->value, token->len);
+		if (cmd_args->next)
+			ft_printf(", ");
+		cmd_args = cmd_args->next;
+	}
+	ft_printf("] ");
+	t_list	*redir_list = cmd->redir_list;
+	while (redir_list)
+	{
+		t_redir	*redir = redir_list->content;
+		print_redir(redir);
+		redir_list = redir_list->next;
+	}
+	ft_printf(" )\n");
+}
+
 void	print_node(t_btree *node, int depth, t_node_type parent_type)
 {
 	int	i;
@@ -105,14 +158,23 @@ void	print_node(t_btree *node, int depth, t_node_type parent_type)
 	}
 	if (node->type == nt_simplecmd)
 	{
-		t_list	*lst = node->data;
-		t_token *tok = lst->content;
-		ft_printf("( %s [%d] {p: %s} : ", nt_strings[node->type], depth, nt_strings[parent_type]);
-		write(1, tok->value, tok->len);
+		print_simplecmd(node, depth, parent_type);
+	}
+	else if (node->type == nt_subcmd)
+	{
+		ft_printf("( %s [%d] {p: %s} ", nt_strings[node->type], depth, nt_strings[parent_type]);
+		t_list	*redir_list = node->data;
+		while (redir_list)
+		{
+			t_redir *redir = redir_list->content;
+			print_redir(redir);
+			redir_list = redir_list->next;
+		}
 		ft_printf(" )\n");
 	}
 	else
 		ft_printf("( %s [%d] {p: %s} )\n", nt_strings[node->type], depth, nt_strings[parent_type]);
+
 	
 }
 

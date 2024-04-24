@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 19:38:51 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 16:34:43 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:27:25 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ t_redir_type	getredir_type(char *str, int len)
 	i = 0;
 	while (ft_isdigit(str[i]))
 		i++;
+	if (!str[i])
+		return (REDIR_APPEND);
 	if (str[i] == '>')
 		type = REDIR_OUT;
 	else
