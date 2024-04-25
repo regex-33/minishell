@@ -31,7 +31,7 @@ t_list	*expand_list(t_list *list, char **env)
 			ft_printf("Error: failed to copy token\n");
 			return (0);
 		}
-		if (!ft_echo_process(&expanding_list, value, env))
+		if (!expand_arg_list(&expanding_list, value, env))
 		{
 			ft_printf("Error: failed to expand token\n");
 			return (0);
@@ -45,12 +45,16 @@ t_list	*expand_list(t_list *list, char **env)
 	return (expanding_list);
 }
 
-char **get_expanded_args(t_list *cmd_args, char **env)
+char **get_expanded_args(t_cmd *cmd, char **env)
 {
-	t_cmd *cmd = tree->data;
-    t_list *list_args = cmd->cmd_args;
+    t_list *list_args;
+	t_list *expanding_list;
 
-    t_list *expanding_list = expand_list(list_args, env);
+	if (!cmd)
+		return NULL;
+	
+	list_args = cmd->cmd_args;
+    expanding_list = expand_list(list_args, env);
     if (expanding_list)
     {
         char **args = ft_list_to_array(expanding_list);
@@ -69,41 +73,41 @@ char **get_expanded_args(t_list *cmd_args, char **env)
 
 int exec_simple(t_btree *tree, char **env)
 {
-	//int	pid;
-	//t_list	*list_pids;
+	char **args;
+	pid_t pid;
 
     if (!tree)
         return 0;
 
     t_cmd *cmd = tree->data;
-    t_list *list_args = cmd->cmd_args;
-	//t_list	*redir = cmd->redir_list;
+    //t_list *list_args = cmd->cmd_args;
+	t_list	*redir = cmd->redir_list;
 
     //t_list *redir_list = cmd->redir_list;
 
     ft_printf("EXEC: ");
 
-    t_list *expanding_list = expand_list(list_args, env);
-    if (expanding_list)
-    {
-        char **args = ft_list_to_array(expanding_list);
-        if (!args)
-        {
-            ft_printf("Error: failed to convert list to array\n");
-            freeLinkedList(expanding_list);
-            return 0;
-        }
-        freeLinkedList(expanding_list);
-		printArray(args);
-        free_array(args);
-		return 1;
+	args = get_expanded_args(cmd, env);
+	if (!args)
+	{
+		perror("minishell");
+		return 0;
     }
-	// pid = exec_cmd(redir, args, env);
-	// if (pid < 0)
+	// else
 	// {
-	// 	perror("minishell");
-	// 	return 0;
+	// //	printArray(args);
+	// //	free_array(args);
+	// 	return 1;
 	// }
+	
+	pid = exec_cmd(redir, args, env);
+	if (pid < 0)
+	{
+		perror("minishell");
+		return 0;
+	}
+	else
+		return 1;
 	// else
 	// {
 	// 	return 1;

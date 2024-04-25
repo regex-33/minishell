@@ -54,18 +54,18 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 
 int open_files(t_list *redir_list)
 {
-	t_list	*redir;
+	t_redir	*redir;
 	int				fd;
-	t_token
-
-	redir = redir_list->content;
-	while (redir)
+	//t_token *token;
+	
+	while (redir_list)
 	{
+        redir = redir_list->content;
 		if (redir->type == REDIR_IN)
 			fd = open(redir->filename, O_RDONLY);
 		else if (redir->type == REDIR_OUT)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == REDIR_OUT_APPEND)
+		else if (redir->type == REDIR_APPEND)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd < 0)
 		{
@@ -73,10 +73,10 @@ int open_files(t_list *redir_list)
 			return -1;
 		}
 		else
-			dup2(fd, redir->fd)
-		redir = redir->next;
-		if (redir != NULL)
-			close(fd);
+			dup2(fd, redir->fd);
+		//if (redir != NULL)
+		close(fd);
+        redir_list = redir_list->next;
 	}
 	return (1);
 }
@@ -84,11 +84,13 @@ int open_files(t_list *redir_list)
 
 pid_t exec_cmd(t_list *redir_list, char **args, char **env)
 {
-//  char **cmd_args;
+  char **cmd_args;
+  extern char **environ;
     char **path_dirs;
     pid_t pid;
 	int fd;
 
+    //printf("i am in exec_cmd\n ");
     path_dirs = grep_paths(env);
     pid = fork();
     if (pid < 0)
@@ -101,13 +103,13 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
 		fd = open_files(redir_list);
 		if (fd < 0)
 			return (0);
-		if (!select_buildin_commands(args))
+		if (!select_buildin_commands(args, env))
 		{
-			// cmd_args = get_cmd_args(args, path_dirs);
-			// if (!cmd_args)
-			// 	exit(EXIT_FAILURE);
+			cmd_args = get_cmd_args(args, path_dirs);
+			if (!cmd_args)
+				exit(EXIT_FAILURE);
 			//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
-			execve(args[0], args, NULL);
+			execve(cmd_args[0], cmd_args, environ);
 			perror("Execve failed");
 			exit(EXIT_FAILURE);
 		}
@@ -123,9 +125,11 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
             if (exit_status != 0)
             {
                 ft_printf("Command execution failed with status %d\n", exit_status);
+                exit(exit_status);
 				return 0;
             }
         }
         return pid;
     }
+    return 1;
 }

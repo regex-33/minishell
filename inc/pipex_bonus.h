@@ -46,7 +46,7 @@ typedef struct s_args
 int			init_args(int ac, char **av, char **env, t_args *args);
 char		*ft_getenv(char *str, char **env);
 char		*ft_which(char *cmd, char **path_dirs);
-char		**get_cmd_args(char *cmd, char **path_dirs);
+//char		**get_cmd_args(char *cmd, char **path_dirs);
 int			add_pipe(int pipes[2][2]);
 int			handle_input(t_args *args, int fd[]);
 

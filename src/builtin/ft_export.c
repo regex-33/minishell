@@ -1,4 +1,5 @@
 #include "../../inc/minishell.h"
+
 /*
 int	is_valid_identifier(const char *variable)
 {
@@ -54,13 +55,12 @@ int	ft_export(char *variable)
 */
 
 
-//int last_exit_status = 0;
-
 int	is_valid_identifier(const char *variable)
 {
 	size_t i; 
 
-	i = 1; 
+	i = 1;
+	printf("variable : %s\n", variable);
 	if (!ft_isalpha(variable[0]) && variable[0] != '_')
 	{
 		return (0);
@@ -138,17 +138,8 @@ int	ft_sort_export_cmd(char **environ_exp)
 
 }
 
-/*	HANDLE src/builtin/ft_export.c:172:40: error: too few arguments to function call,
-      expected 3, have 2]
-        str = ft_echo_process(variable[1], env);
-              ~~~~~~~~~~~~~~~                 ^
-inc/expanding.h:18:1: note: 'ft_echo_process' declared here
-t_list  **ft_echo_process(t_list **list, char *temp, char **env);
-^
-1 error generated.
-make: *** [obj/ft_export.o] Error 1 */
 
-int	ft_export(char **variable, char **env)
+int	ft_export(char **variable, char ***envv)
 {
 	int			env_count;
 	char		**new_environ;
@@ -158,14 +149,14 @@ int	ft_export(char **variable, char **env)
 	int			i;
 	int 		name_len;
 	int		 	to_equal;
-	char		*temp;
+	int			j = 1;
+	int			should_countinue = 0;
 
-
+	char **env = *envv;
 	env_count = 0;
-	i = 1;
+	i = 0;
 	/* check if str is null */
 	to_equal = 0;
-	temp = NULL;
 	if (variable[1] == NULL)
 	{
 		if (!ft_sort_export_cmd(env))
@@ -173,59 +164,86 @@ int	ft_export(char **variable, char **env)
 		return (0);
 	}
 
-	while (variable[i])
+	while (variable[j])
 	{
-		temp = ft_strjoin(temp, variable[i]);
-		temp = ft_strjoin(temp, " ");
-		i++;
-	}
-	printf("temp : %s\n", temp);
-	variable[1] = temp;
-	ft_echo_process(NULL, variable[1], env);
-	//str = ft_echo_process(NULL, variable[1], env);
-	printf("str : %s\n", str);
-	if (!is_valid_identifier(str))
-	{
-		last_exit_status = 1;
-		ft_putstr_fd(" not a valid identifier\n", 2);
-		return (1);
-	}
+		env_count = 0;
+		str = variable[j];
+		if (!str)
+		{
+			perror("minishell: malloc error");
+			return 0;
+		}
+		printf("str : %s\n", str);
+		if (!is_valid_identifier(str))
+		{
+			last_exit_status = 1;
+			ft_putstr_fd(" not a valid identifier\n", 2);
+			j++;
+			should_countinue = 1;
+			break;
+	//		return (1);
+		}
 
-	if (ft_strchr(str, '+') != NULL)
-		add_to_value = 1;
-	else
-		add_to_value = 0;
-	name_len = ft_strchr(str, '+') - str;
-	to_equal = ft_strchr(str, '=') - str;
-	while (env[env_count] != NULL)
-	{
-		if (add_to_value == 1 && ft_strncmp(env[env_count], str, name_len) == 0)
+		if (ft_strchr(str, '+') != NULL)
+			add_to_value = 1;
+		else
+			add_to_value = 0;
+		name_len = ft_strchr(str, '+') - str;
+		to_equal = ft_strchr(str, '=') - str;
+		while (env[env_count] != NULL)
 		{
-			env[env_count] = ft_strjoin(env[env_count], &str[name_len + 2]);
-			//printf("environ[env_count] : %s\n", environ[env_count]);
-			return (1);
+			if (add_to_value == 1 && ft_strncmp(env[env_count], str, name_len) == 0)
+			{
+				printf("env[%d] : %s\n", env_count, env[env_count]);
+				env[env_count] = ft_strjoin(env[env_count], &str[name_len + 2]);
+				break;
+				//return (1);
+			}
+			else if (ft_strncmp(env[env_count], str, to_equal) == 0)
+			{
+				//printf("env[%d] : %s\n", env_count, env[env_count]);
+				env[env_count] = ft_strdup(str);
+				should_countinue = 1;
+				break;
+				//return (1);
+			}
+			env_count++;
 		}
-		else if (ft_strncmp(env[env_count], str, to_equal) == 0)
+		if (should_countinue == 1)
 		{
-			env[env_count] = ft_strdup(str);
-			return (1);
+			j++;
+			should_countinue = 0;
+			continue;
 		}
-		
-		env_count++;
+		new_environ = malloc((env_count + 2) * sizeof(char *));
+		if (new_environ == NULL)
+		{
+			perror("minishell");
+			j++;
+			continue;
+	//		return (1);
+		}
+		while (i < env_count)
+		{
+			new_environ[i] = ft_strdup(env[i]);
+			i++;
+		}
+		new_environ[env_count] = ft_strdup(str);
+		printf("new_environ[%d] : %s\n", env_count, new_environ[env_count]);
+		new_environ[env_count + 1] = NULL;
+		// while(env_count-- > 0)
+		// 	free(env[env_count]);
+		//free_array(env);
+		*envv = new_environ;
+		printf("i am here\n");
+		//env_count = 1;
+		// while(env[env_count] != NULL)
+		// {
+		// 	printf("env[%d] : %s\n", env_count, env[env_count]);
+		// 	env_count++;
+		// }
+		//printArray(env);
+		j++;
 	}
-	new_environ = malloc((env_count + 2) * sizeof(char *));
-	if (new_environ == NULL)
-	{
-		perror("malloc");
-		return (1);
-	}
-	while (i < env_count)
-	{
-		new_environ[i] = ft_strdup(env[i]);
-		i++;
-	}
-	new_environ[env_count] = ft_strdup(str);
-	new_environ[env_count + 1] = NULL;
-	env = new_environ;
 	return (1);
 }

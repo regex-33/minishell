@@ -30,7 +30,7 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
-int	select_buildin_commands(char **args, char *line, char **env)
+int	select_buildin_commands(char **args, char **env)
 {
 	if (!ft_strcmp(args[0], "cd"))
 		ft_change_dir(args[1], env);
@@ -39,11 +39,11 @@ int	select_buildin_commands(char **args, char *line, char **env)
 	else if (!ft_strcmp(args[0], "exit"))
 		ft_exit(args[1]);
 	else if (!ft_strcmp(args[0], "echo"))
-		ft_echo(args, line, env);
+		ft_echo(args);
 	else if (!ft_strcmp(args[0], "env"))
 		ft_env(env);
 	else if (!ft_strcmp(args[0], "export"))
-		ft_export(args, env);
+		ft_export(args, &env);
 	else if (!ft_strcmp(args[0], "get"))
 		get_value(args[1], env);
 	else if (!ft_strcmp(args[0], "unset"))
@@ -132,26 +132,32 @@ int	main(void)
 	t_btree	*parse_tree;
 	char	**env = NULL;
 
+	env = ft_creat_env();
+	if (env == NULL)
+	{
+		while(env && *env)
+		{
+			free(*env);
+			env++;
+		}
+		printf("env	is NULL\n");
+		return 1;
+	}
 	while (1)
 	{
 		//print_prompt_with_user_details();
 		//line = readline("");
 		//pwd = ft_path();
+
 		pwd = "minishell >";
 		prompt = get_prompt(pwd, "$ ");
 	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
 	//	free(pwd);
 		line = readline(prompt);
-		env = ft_creat_env();
-		if (env == NULL)
-		{
-			printf("env	is NULL\n");
-			return 1;
-		}
-
 		tokens = lexer(line);	
 		if (!tokens)
 		{
+
 			free(line);
 			continue ;
 		}
