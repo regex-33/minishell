@@ -124,6 +124,7 @@ int	main(void)
 			ft_printf("TREE IS NULL\n");
 			continue;
 		}
+		prompt_heredoc(parse_tree);
 		ft_printf("--------- TREE v2 -------\n");
  		print_tree(parse_tree, 0, nt_undefined);
  		ft_printf("--------- COMMAND ----------\n");

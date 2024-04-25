@@ -6,7 +6,7 @@
 #    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
-#    Updated: 2024/04/24 15:14:22 by bchanaa          ###   ########.fr        #
+#    Updated: 2024/04/25 11:56:42 by bchanaa          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,7 +70,7 @@ endif
 
 # SOURCES
 BUILTIN_SOURCES = main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c #get_username_hostname.c
-PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c #exec.c
+PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c heredoc.c #exec.c
 EXECUTION_SOURCES = exec.c #parse_command.c
 # PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 

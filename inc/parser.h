@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 10:35:53 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 16:32:34 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/25 12:01:22 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ int __exec(t_btree *tree);
 int	panic(char *prog_name, int err, char c);
 
 
+int				prompt_heredoc(t_btree *tree);
 void			free_redir(void *redir);
 t_redir			*new_redir(t_token *redir_token, t_token *file_token);
 t_redir_type	getredir_type(char *str, int len);
