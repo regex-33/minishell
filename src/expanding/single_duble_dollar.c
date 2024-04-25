@@ -166,7 +166,7 @@ t_list **ft_echo_process(t_list **list, char *temp, char **env)
 	}
 	//printf(" i am here : %s | %d\n", join, have_asterisk);
 	
-	expand_asterisk(join, list);
+	expand_asterisk(join, list); YOUSSEF HELLO * HDHFHE
 	// if (!list)
 	// {
 	// 	perror("expand_asterisk failed\n");

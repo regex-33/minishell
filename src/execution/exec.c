@@ -45,13 +45,40 @@ t_list	*expand_list(t_list *list, char **env)
 	return (expanding_list);
 }
 
+char **get_expanded_args(t_list *cmd_args, char **env)
+{
+	t_cmd *cmd = tree->data;
+    t_list *list_args = cmd->cmd_args;
+
+    t_list *expanding_list = expand_list(list_args, env);
+    if (expanding_list)
+    {
+        char **args = ft_list_to_array(expanding_list);
+        if (!args)
+        {
+            freeLinkedList(expanding_list);
+            return NULL;
+        }
+        freeLinkedList(expanding_list);
+		//printArray(args);
+        //free_array(args);
+		return args;
+    }
+	return NULL;
+}
+
 int exec_simple(t_btree *tree, char **env)
 {
+	//int	pid;
+	//t_list	*list_pids;
+
     if (!tree)
         return 0;
 
     t_cmd *cmd = tree->data;
     t_list *list_args = cmd->cmd_args;
+	//t_list	*redir = cmd->redir_list;
+
     //t_list *redir_list = cmd->redir_list;
 
     ft_printf("EXEC: ");
@@ -69,8 +96,18 @@ int exec_simple(t_btree *tree, char **env)
         freeLinkedList(expanding_list);
 		printArray(args);
         free_array(args);
-        return 1;
+		return 1;
     }
+	// pid = exec_cmd(redir, args, env);
+	// if (pid < 0)
+	// {
+	// 	perror("minishell");
+	// 	return 0;
+	// }
+	// else
+	// {
+	// 	return 1;
+	// }
 
     return 0;
 }
