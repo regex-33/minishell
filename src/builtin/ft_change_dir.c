@@ -33,8 +33,8 @@ char	*extract_substring(const char *str)
 	char		*substring;
 	char		quote;
 
-	quote = '\0';
 	substring = NULL;
+	quote = '\0';
 	if (*str == '\'' || *str == '\"')
 		quote = *str;
 	while (*str == quote)
@@ -51,7 +51,7 @@ char	*extract_substring(const char *str)
 	return (extract_after_dollar(substring, quote));
 }
 
-void	ft_change_dir(const char *path)
+void	ft_change_dir(const char *path, char **env)
 {
 	const char	*dir;
 	extern int	last_exit_status;
@@ -68,7 +68,7 @@ void	ft_change_dir(const char *path)
 		if (dir[0] == '$')
 		{
 			dir++;
-			dir = get_value((char *)dir);
+			dir = get_value((char *)dir, env);
 		}
 		if (chdir(dir) == -1)
         {
@@ -77,5 +77,5 @@ void	ft_change_dir(const char *path)
         }
 	}
 	else
-		chdir(get_value("HOME"));
+		chdir(get_value("HOME", env));
 }

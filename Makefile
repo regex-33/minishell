@@ -72,6 +72,7 @@ endif
 BUILTIN_SOURCES = main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_echo.c #get_username_hostname.c
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c #exec.c
 EXECUTION_SOURCES = exec.c #parse_command.c
+EXPANDING_SOURCES =  mereg_sort.c single_duble_dollar.c asterisk.c
 # PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 
 
@@ -81,18 +82,19 @@ EXECUTION_SOURCES = exec.c #parse_command.c
 #PARSING_SRC = $(addprefix $(SRC_PATH)/parsing/, $(PARSING_SOURCES))
 #PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
-ALL_SOURCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES)
-vpath %.c src/builtin/ src/parsing/ src/pipx src/execution
+ALL_SOURCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES) $(EXPANDING_SOURCES)
+vpath %.c src/builtin/ src/parsing/ src/pipx src/execution src/expanding
 vpath %.h inc
 # OBJ_FILES = $(ALL_SOURCES:%.c=%.o)
 
 OBJ_BUILTIN_FILES = $(BUILTIN_SOURCES:%.c=%.o)
 OBJ_PARSING_FILES = $(PARSING_SOURCES:%.c=%.o)
 OBJ_EXECUTION_FILES = $(EXECUTION_SOURCES:%.c=%.o)
+OBJ_EXPANDING_FILES = $(EXPANDING_SOURCES:%.c=%.o)
 
 # OBJ_PIPX_FILES = $(PIPX_SOURCES:%.c=%.o)
 
-OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES) $(OBJ_EXECUTION_FILES))
+OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES) $(OBJ_EXECUTION_FILES) $(OBJ_EXPANDING_FILES))
 
 all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)

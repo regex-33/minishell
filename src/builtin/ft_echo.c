@@ -1,34 +1,8 @@
 #include "../../inc/minishell.h"
 
 
-char	*extract_dollar(const char *str, char quote)
-{
-	const char	*start;
-	const char	*end;
-	size_t		length;
-	char		*substring;
-
-	if (str[0] != '$')
-		return ((char *)str);
-	start = str;
-	end = str + 1;
-	while (*end != '\0' && !isspace(*end) && *end != quote)
-		end++;
-	length = end - start;
-	substring = (char *)malloc(length + 1);
-	if (substring == NULL)
-	{
-		perror("Memory allocation failed");
-		return (NULL);
-	}
-	ft_strncpy(substring, start, length);
-	substring[length] = '\0';
-    //printf("string : %s\n", substring);
-	return (substring);
-}
-
-void	ft_echo_print(char *temp, int start_index)
-{
+void	ft_echo_print(char *temp, int start_index, char **env)
+{	
 	int	in_quotes;
 	int	in_single_quotes;
 	int	i;
@@ -65,7 +39,7 @@ void	ft_echo_print(char *temp, int start_index)
         if (temp[i] == '$' && quote != '\'')
         {
             //printf("i ma here : %s\n", temp + i);
-            if (!strncmp(temp + i, "$?", 2))
+            if (!ft_strncmp(temp + i, "$?", 2))
             {
                 ft_printf("%d", get_last_exit_status());
                 i += 2;
@@ -73,13 +47,13 @@ void	ft_echo_print(char *temp, int start_index)
             }
             else
             {
-                str = extract_dollar(temp + i, quote);
+                str = extract_dollar(temp + i);
                 int len = strlen(str);
                 if (len > 1)
                 {
                     i += len;
                     //printf("string : %s | quote : %c\n", str, quote);
-                    ft_printf("%s", get_value(str + 1));
+                    ft_printf("%s", get_value(str + 1, env));
                     free(str);
                     continue;
                 }
@@ -90,7 +64,7 @@ void	ft_echo_print(char *temp, int start_index)
 	}
 }
 
-void	ft_echo(char **args, char *str)
+void	ft_echo(char **args, char *str, char **env)
 {
 	char	*temp;
 	int		i;
@@ -110,7 +84,7 @@ void	ft_echo(char **args, char *str)
 		i = 5;
 		temp = ft_strnstr(str, "echo", ft_strlen(str));
 	}
-	ft_echo_print(temp, i);
+	ft_echo_print(temp, i, env);
 	if (!ft_strcmp(args[1], "-n"))
 		return ;
 	write(1, "\n", 1);

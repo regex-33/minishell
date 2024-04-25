@@ -1,9 +1,9 @@
-#include "../../inc/minishell.h"
+#include "../inc/minishell.h"
 
 
-int	ft_unset(char *variable)
+int	ft_unset(char *variable, char **env)
 {
-	extern char	**environ;
+	//extern char	**env;
 	int			env_count;
 	char		**new_environ;
 	int			i;
@@ -16,7 +16,7 @@ int	ft_unset(char *variable)
 	i = 0;
 	if (!variable)
 		return (1);
-	while (environ[env_count] != NULL)
+	while (env[env_count] != NULL)
 		env_count++;
 	new_environ = malloc(env_count * sizeof(char *));
 	if (new_environ == NULL)
@@ -27,18 +27,18 @@ int	ft_unset(char *variable)
 	j = 0;
 	while (i < env_count)
 	{
-		equals_pos = ft_strchr(environ[i], '=');
+		equals_pos = ft_strchr(env[i], '=');
 		if (equals_pos == NULL)
 		{
 			i++;
 			continue ;
 		}
-		var_length = equals_pos - environ[i];
-		if (!ft_strncmp(variable, environ[i], var_length))
+		var_length = equals_pos - env[i];
+		if (!ft_strncmp(variable, env[i], var_length))
 			i++;
 		else
 		{
-			new_environ[j] = ft_strdup(environ[i]);
+			new_environ[j] = ft_strdup(env[i]);
 			if (new_environ[j] == NULL)
 			{
 				perror("strdup");
@@ -56,6 +56,6 @@ int	ft_unset(char *variable)
 		}
 	}
 	new_environ[j] = NULL;
-	environ = new_environ;
+	env= new_environ;
 	return (0);
 }
