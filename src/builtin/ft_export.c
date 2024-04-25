@@ -135,13 +135,25 @@ int	ft_sort_export_cmd(char **environ_exp)
 	merge_sort(variable, 0, env_count - 1);	
 	ft_print_free(variable);
 	return 1;
+
 }
+
+/*	HANDLE src/builtin/ft_export.c:172:40: error: too few arguments to function call,
+      expected 3, have 2]
+        str = ft_echo_process(variable[1], env);
+              ~~~~~~~~~~~~~~~                 ^
+inc/expanding.h:18:1: note: 'ft_echo_process' declared here
+t_list  **ft_echo_process(t_list **list, char *temp, char **env);
+^
+1 error generated.
+make: *** [obj/ft_export.o] Error 1 */
+
 int	ft_export(char **variable, char **env)
 {
 	int			env_count;
 	char		**new_environ;
 	extern		int last_exit_status;
-	char		*str;
+	char		*str = NULL;
 	int			add_to_value;
 	int			i;
 	int 		name_len;
@@ -169,7 +181,8 @@ int	ft_export(char **variable, char **env)
 	}
 	printf("temp : %s\n", temp);
 	variable[1] = temp;
-	str = ft_echo_process(variable[1], env);
+	ft_echo_process(NULL, variable[1], env);
+	//str = ft_echo_process(NULL, variable[1], env);
 	printf("str : %s\n", str);
 	if (!is_valid_identifier(str))
 	{

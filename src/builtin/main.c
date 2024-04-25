@@ -92,8 +92,9 @@ char	**grep_paths(char **env)
 	return (path_dirs);
 }
 
-int	ft_creat_env(char **env)
+char	**ft_creat_env(void)
 {
+	char **env;
 	extern char **environ;
 	int	env_count;
 	int i;
@@ -106,15 +107,20 @@ int	ft_creat_env(char **env)
 	if (!env)
 	{
 		printf("env malloc error\n");
-		return 0;
+		return NULL;
 	}
 	while (environ[i])
 	{
 		env[i] = ft_strdup(environ[i]);
+		if (!env[i])
+		{
+			perror("minishell: malloc error\n");	
+			return NULL;
+		}
 		i++;
 	}
 	env[i] = NULL;
-	return 1;
+	return env;
 }
 
 int	main(void)
@@ -124,7 +130,6 @@ int	main(void)
 	char	*prompt;
 	t_list	*tokens;
 	t_btree	*parse_tree;
-	char	**path_dirs;
 	char	**env = NULL;
 
 	while (1)
@@ -137,7 +142,13 @@ int	main(void)
 	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
 	//	free(pwd);
 		line = readline(prompt);
-		ft_creat_env(env);
+		env = ft_creat_env();
+		if (env == NULL)
+		{
+			printf("env	is NULL\n");
+			return 1;
+		}
+
 		tokens = lexer(line);	
 		if (!tokens)
 		{
@@ -152,9 +163,7 @@ int	main(void)
  		ft_printf("--------- COMMAND ----------\n");
  		ft_printf("%s\n", line);
 		//ft_printf("----------- EXECUTION ---------\n");
-		path_dirs = grep_paths(env);
-		if (!path_dirs)
-			return 1;
+
  		__exec(parse_tree, env);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
@@ -162,10 +171,6 @@ int	main(void)
 			free(line);
 			ft_printf("TREE IS NULL\n");
 			continue;
-		}
-		if (!parse_tree)
-		{
-			continue ;
 		}
 		clear_btree(parse_tree, NULL);	
 		ft_lstclear_libft(&tokens, free);

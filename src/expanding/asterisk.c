@@ -5,10 +5,10 @@ void	printLinkedList(t_list *head)
 	t_list	*current;
 
 	current = head;
-	printf("Linked List: ");
+	ft_printf("\nLinked List: \n");
 	while (current != NULL)
 	{
-		printf("%s\n", (char *)(current->content));
+		ft_printf("%s ", (char *)(current->content));
 		current = current->next;
 	}
 }
@@ -26,6 +26,7 @@ void	freeLinkedList(t_list *head)
 		free(current);
 		current = next;
 	}
+	head = NULL;
 }
 
 int	contains_wildcard(const char *str)
@@ -68,54 +69,80 @@ which can then be used to read the contents of the directory using functions
 like	readdir(void). This function is part of the <dirent.h> header and is commonly
  used for directory traversal and file listing operations.*/
 
-t_list	**expand_wildcard(const char *pattern, t_list **matches)
+
+int	move_temp_list_to_list(t_list **list, t_list **temp)
+{
+	t_list	*new;
+
+	merge_sort_linkedlist(temp);
+	while (*temp != NULL)
+	{
+		new = ft_lstnew(ft_strdup((*temp)->content));
+		if (!new)
+		{
+			perror("lstnew failed\n");
+			return (0);
+		}
+		ft_lstadd_back_libft(list, new);
+		free((*temp)->content);
+		free(*temp);
+		*temp = (*temp)->next;
+	}
+	return (1);
+}
+
+
+int	expand_wildcard(const char *pattern, t_list **matches)
 {
 	DIR				*dir;
 	struct dirent	*entry;
+	t_list			*temp = NULL;
 	t_list			*new;
 
 	dir = opendir(".");
 	if (dir == NULL)
 	{
 		perror("Error opening directory");
-		return (NULL);
+		return (0);
 	}
 	while ((entry = readdir(dir)) != NULL)
 	{
 		if (match_wildcard(pattern, entry->d_name))
 		{
-			/*  don't forget to free memory */
+			//  don't forget to free memory 
+			if (entry->d_name[0] == '.')
+				continue;
 			new = ft_lstnew(ft_strdup(entry->d_name));
 			if (!new)
 			{
 				perror("lstnew failed\n");
 				closedir(dir);
-				return (NULL);
+				return (0);
 			}
-			ft_lstadd_back_libft(matches, new);
+			ft_lstadd_back_libft(&temp, new);
 		}
 	}
 	closedir(dir);
-	return (matches);
+	return (move_temp_list_to_list(matches, &temp));
 }
 
-void	*execute_command2(char *command, t_list **list)
+
+
+void	*expand_asterisk(char *command, t_list **list)
 {
 	char	*token;
-	t_list	**expanded;
 	t_list	*new;
+//	t_list	**current;
 
-	// int i = 0;
-	token = strtok(command, " ");
+	token = strtok(command, " \t");
 	while (token != NULL)
 	{
-		// printf("token : %s\n\n", token);
 		if (contains_wildcard(token))
 		{
 			/* don't forget to free memory if is failed */
-			expanded = expand_wildcard(token, list);
-			if (!expanded)
+			if(!expand_wildcard(token, list))
 			{
+				printf("expand_wildcard failed\n");
 				return (NULL);
 			}
 		}
@@ -131,6 +158,5 @@ void	*execute_command2(char *command, t_list **list)
 		}
 		token = strtok(NULL, " ");
 	}
-	return (expanded);
+	return (list);
 }
-

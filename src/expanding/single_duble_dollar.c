@@ -99,16 +99,23 @@ char *ft_strndup(const char *src, size_t n)
     return dest;
 }
 
-char	*ft_echo_process(char *temp, char **env)
+t_list **ft_echo_process(t_list **list, char *temp, char **env)
 {
 	int		in_quotes = 0;
 	int		in_single_quotes = 0;
 	int		i = 0;
 	char	quote = '\0';
 	char	*join = NULL;
+	int	have_asterisk = 0;
 
+	//printf("i am in before while\n");
 	while (temp[i])
-	{
+	{ 
+		//printf("i am in while\n");
+		if (temp[i] == '*' && in_quotes  == 0 && in_single_quotes == 0)
+		{
+			have_asterisk = 1;
+		}
 		if (temp[i] == '"' && !in_single_quotes)
 		{
 			quote = (in_quotes) ? '\0' : '"';
@@ -151,5 +158,19 @@ char	*ft_echo_process(char *temp, char **env)
 		free(char_str);
 		i++;
 	}
-	return join;
+//	printf("join : %s\n", join);
+	if (!have_asterisk)
+	{
+		ft_lstadd_back_libft(list, ft_lstnew(join));
+		return (list);
+	}
+	//printf(" i am here : %s | %d\n", join, have_asterisk);
+	
+	expand_asterisk(join, list);
+	// if (!list)
+	// {
+	// 	perror("expand_asterisk failed\n");
+	// 	return (NULL);
+	// }
+	return (list);
 }

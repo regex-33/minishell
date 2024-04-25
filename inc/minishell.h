@@ -7,6 +7,7 @@
 # include "parser.h"
 # include "pipex_bonus.h"
 # include "expanding.h"
+# include "execution.h"
 # include <math.h>
 # include <readline/history.h>
 # include <readline/readline.h>

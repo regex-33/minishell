@@ -12,59 +12,119 @@
 
 #include "minishell.h"
 
-int	expand_list(t_list *list, char **env)
+
+
+t_list	*expand_list(t_list *list, char **env)
 {
 	t_token	*token;
 	char	*value;
-	t_list	*expanding_list;
+	t_list	*expanding_list = NULL;
 
-	(void)value;
-	(void)expanding_list;
-	(void)env;
 	if (!list)
 		return (0);
-	token = list->content;
-	write(1, token->value, token->len);
+	while (list)
+	{
+		token = list->content;
+		value = ft_substr(token->value, 0, token->len);
+		if (!value)
+		{
+			ft_printf("Error: failed to copy token\n");
+			return (0);
+		}
+		if (!ft_echo_process(&expanding_list, value, env))
+		{
+			ft_printf("Error: failed to expand token\n");
+			return (0);
+		}
+		free(value);
+		list = list->next;
+	}
+	/* don't forget to memory */
+
+	//printLinkedList(expanding_list);
+	return (expanding_list);
+}
+
+int exec_simple(t_btree *tree, char **env)
+{
+    if (!tree)
+        return 0;
+
+    t_cmd *cmd = tree->data;
+    t_list *list_args = cmd->cmd_args;
+    //t_list *redir_list = cmd->redir_list;
+
+    ft_printf("EXEC: ");
+
+    t_list *expanding_list = expand_list(list_args, env);
+    if (expanding_list)
+    {
+        char **args = ft_list_to_array(expanding_list);
+        if (!args)
+        {
+            ft_printf("Error: failed to convert list to array\n");
+            freeLinkedList(expanding_list);
+            return 0;
+        }
+        freeLinkedList(expanding_list);
+		printArray(args);
+        free_array(args);
+        return 1;
+    }
+
+    return 0;
+}
+
+/*
+int	exec_simple(t_btree *tree, char **env)
+{
+	t_token *token = NULL;
+	t_list	*list_args;
+	char	**args = NULL;
+	t_list	*expanding_list = NULL;
+
+	(void) env;
+	(void) token;
+	if (!tree)
+		return (0);
+	t_cmd *cmd = tree->data;
+	list_args = cmd->cmd_args;
+	t_list *redir_list = cmd->redir_list;
+	(void)redir_list;
+
+	ft_printf("EXEC: ");
+	expanding_list = expand_list(list_args, env);
+	if (expanding_list)
+	{
+		ft_list_to_array(list_args, &args);
+		if (!args)
+		{
+			ft_printf("Error: failed to convert list to array\n");
+			return (0);
+		}
+		//printLinkedList(expanding_list);
+		freeLinkedList(expanding_list);
+		if (args)
+		{
+			printf("args: %lu\n", sizeof(args) / sizeof(args[0]));
+			printArray(args);
+		}
+		return (1);
+	}
 	// while (list)
 	// {
-	// 	//printf("i am here\n");
 	// 	token = list->content;
 	// 	write(1, token->value, token->len);
 	// 	ft_printf("\n");
 	// 	list = list->next;
 	// }
-	
-	return (1);
-}
-
-int	exec_simple(t_btree *tree, char **env)
-{
-	t_token *token = NULL;
-	t_list	*list;
-
-	(void) env;
-	if (!tree)
-		return (0);
-	t_cmd *cmd = tree->data;
-	list = cmd->cmd_args;
-	t_list *redir_list = cmd->redir_list;
-	(void)redir_list;
-
-	ft_printf("EXEC: ");
-	//expand_list(list, env);
-	while (list)
-	{
-		token = list->content;
-		write(1, token->value, token->len);
-		ft_printf("\n");
-		list = list->next;
-	}
 	// write(1, token->value, token->len);
 	// ft_printf(" ");
-	if (ft_strnstr(token->value, "true", 4))
-		return (1);
+	// token = list_args->content;
+	// if (ft_strnstr("true", "true", 4))
+		//return (1);
 	return (0);
-}
+}*/
 
 int exec_pipe(t_btree *tree, char **env)
 {

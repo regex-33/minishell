@@ -63,3 +63,104 @@ void	merge_sort(char **arr, int left, int right)
 	}
 }
 
+
+void	merge_linked_list(t_list **head, t_list *left, t_list *right)
+{
+	t_list	*result;
+
+	result = NULL;
+	if (left == NULL)
+	{
+		*head = right;
+		return ;
+	}
+	else if (right == NULL)
+	{
+		*head = left;
+		return ;
+	}
+	// Compare nodes and merge
+	if (strcmp(left->content, right->content) <= 0)
+	{
+		*head = left;
+		left = left->next;
+	}
+	else
+	{
+		*head = right;
+		right = right->next;
+	}
+	result = *head;
+	while (left != NULL && right != NULL)
+	{
+		if (strcmp(left->content, right->content) <= 0)
+		{
+			result->next = left;
+			left = left->next;
+		}
+		else
+		{
+			result->next = right;
+			right = right->next;
+		}
+		result = result->next;
+	}
+	// Append remaining nodes
+	if (left != NULL)
+	{
+		result->next = left;
+	}
+	else if (right != NULL)
+	{
+		result->next = right;
+	}
+}
+
+// Merge sort for a linked list
+
+// Helper function to split the linked list into two halves
+void	split_list(t_list *head, t_list **left, t_list **right)
+{
+	t_list	*slow;
+	t_list	*fast;
+
+	slow = head;
+	fast = head->next;
+	// Use fast and slow pointer technique to find the midpoint
+	while (fast != NULL)
+	{
+		fast = fast->next;
+		if (fast != NULL)
+		{
+			slow = slow->next;
+			fast = fast->next;
+		}
+	}
+	// 'slow' is the midpoint, split the list into two halves
+	*left = head;
+	*right = slow->next;
+	slow->next = NULL; // Terminate the left half
+}
+
+void	merge_sort_linkedlist(t_list **head)
+{
+	t_list *current = *head;
+	t_list *left;
+	t_list *right;
+
+	// Base case: if list is empty or has only one node
+	if (current == NULL || current->next == NULL)
+	{
+		return ;
+	}
+
+	// Split the list into two halves
+	split_list(current, &left, &right);
+
+	// Recursively sort the two halves
+	merge_sort_linkedlist(&left);
+	merge_sort_linkedlist(&right);
+
+	// Merge the sorted halves
+	merge_linked_list(head, left, right);
+}
