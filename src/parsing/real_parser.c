@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:20:39 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 17:27:00 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/24 21:02:53 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,10 @@ int	parse_redir(t_list *tokens, t_list **redir_list)
 	t_list	*node;
 
 	token = next_token(tokens, 0);
-	next_token(tokens, CONSUME_TOK);
-	file_token = next_token(tokens, 0);
+	// next_token(tokens, CONSUME_TOK);
+	file_token = next_token(tokens, CONSUME_TOK);
 	if (!file_token || file_token->type != tok_literal)
 		return (ft_lstclear_libft(redir_list, free_redir), panic("minishell", PERR_EXP_TOK, 0), 1);
-	if (token == file_token)
-		ft_printf("SAMEEEE\n");
 	redir = new_redir(token, file_token);
 	if (!redir)
 		return (ft_lstclear_libft(redir_list, free_redir), perror("minishell"), 1);
@@ -137,51 +135,6 @@ t_node_type	get_nt(t_token *token)
 		return (nt_and_if);
 	return (nt_undefined);
 }
-
-// t_btree	*parse_simplecmd(t_list *tokens)
-// {
-// 	t_list	*args;
-// 	t_btree	*simplecmd_root;
-// 	t_token	*token;
-// 	bool	is_redir;
-// 	int		literals;
-// 	t_list	*node;
-// 
-// 	literals = 0;
-// 	is_redir = 0;
-// 	token = next_token(tokens, 0);
-// 	args = NULL;
-// 	while (token && (token->type == tok_literal || token->type == tok_redir))
-// 	{
-// 		if (token->type == tok_literal)
-// 		{
-// 			if (is_redir)
-// 				is_redir = 0;
-// 			else
-// 				literals++;
-// 		}
-// 		else
-// 		{
-// 			if (is_redir)	
-// 				return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-// 			else
-// 				is_redir = 1;
-// 		}
-// 		node = ft_lstnew(token);
-// 		if (!node)
-// 			return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
-// 		ft_lstadd_back_libft(&args, node);
-// 		token = next_token(tokens, CONSUME_TOK);
-// 	}
-// 	if (is_redir)
-// 		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-// 	if (!literals)
-// 		return (ft_lstclear_libft(&args, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
-// 	simplecmd_root = new_leaf(nt_simplecmd, args);
-// 	if (!simplecmd_root)
-// 		return (ft_lstclear_libft(&args, free), perror("minishell"), NULL);
-// 	return (simplecmd_root);
-// }
 
 t_btree	*parse_simplecmd(t_list *tokens)
 {
