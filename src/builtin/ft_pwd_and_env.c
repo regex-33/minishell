@@ -10,30 +10,27 @@ void	ft_pwd(void)
 	}
 	else
 	{
+		// hadle this case if errno :  errno = ERANGE; should add 5000 to the size of the buffer	
 		perror("getcwd() error");
 	}
 }
 
-void	ft_env(void)
+void	ft_env(char **env)
 {
 	char		**env_ptr;
-	extern char	**environ;
 
-	env_ptr = environ;
+	env_ptr = env;
+	if (!env_ptr)
+	{
+		ft_printf("THIS IS NULL\n");
+		return ;
+	}
 	while (*env_ptr != NULL)
 	{
-		printf("%s\n", *env_ptr);
+		if (ft_strchr(*env_ptr, '=') != NULL)
+			ft_printf("%s\n", *env_ptr);
 		env_ptr++;
 	}
-}
-char	*get_value(char *name)
-{
-	char	*temp;
-
-	temp = getenv(name);
-	if (!temp)
-		printf("Variable not found!\n");
-	return (temp);
 }
 
 /* i think should free the memory when you change the value of environ*/

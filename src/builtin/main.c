@@ -30,28 +30,29 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
-int	select_buildin_commands(char **args, char *line)
+int	select_buildin_commands(char **args, char *line, char **env)
 {
 	if (!ft_strcmp(args[0], "cd"))
-		ft_change_dir(args[1]);
+		ft_change_dir(args[1], env);
 	else if (!ft_strcmp(args[0], "pwd"))
 		ft_pwd();
 	else if (!ft_strcmp(args[0], "exit"))
 		ft_exit(args[1]);
 	else if (!ft_strcmp(args[0], "echo"))
-		ft_echo(args, line);
+		ft_echo(args, line, env);
 	else if (!ft_strcmp(args[0], "env"))
-		ft_env();
+		ft_env(env);
 	else if (!ft_strcmp(args[0], "export"))
-		ft_export(args[1]);
+		ft_export(args, env);
 	else if (!ft_strcmp(args[0], "get"))
-		get_value(args[1]);
+		get_value(args[1], env);
 	else if (!ft_strcmp(args[0], "unset"))
-		ft_unset(args[1]);
+		ft_unset(args[1], env);
 	else
 		return (0);
 	return (1);
 }
+
 
 char	*get_prompt(char *str, char *suffix)
 {
@@ -77,18 +78,49 @@ char	*get_prompt(char *str, char *suffix)
 }
 /* new things */
 
-char	**grep_paths(void)
+char	**grep_paths(char **env)
 {
 	char	*path_env;
 	char	**path_dirs;
 
-	path_env = get_value("PATH");
+	path_env = get_value("PATH", env);
 	if (!path_env)
 		path_env = "";
 	path_dirs = ft_split(path_env, ':');
 	if (!path_dirs)
 		return (perror(COMMAND_NOT_FOUND), NULL);
 	return (path_dirs);
+}
+
+char	**ft_creat_env(void)
+{
+	char **env;
+	extern char **environ;
+	int	env_count;
+	int i;
+
+	i = 0;
+	env_count = 0;
+	while (environ[env_count])
+		env_count++;
+	env = malloc(sizeof(char *) * (env_count + 1));	
+	if (!env)
+	{
+		printf("env malloc error\n");
+		return NULL;
+	}
+	while (environ[i])
+	{
+		env[i] = ft_strdup(environ[i]);
+		if (!env[i])
+		{
+			perror("minishell: malloc error\n");	
+			return NULL;
+		}
+		i++;
+	}
+	env[i] = NULL;
+	return env;
 }
 
 int	main(void)
@@ -98,7 +130,7 @@ int	main(void)
 	char	*prompt;
 	t_list	*tokens;
 	t_btree	*parse_tree;
-	char	**path_dirs;
+	char	**env = NULL;
 
 	while (1)
 	{
@@ -110,6 +142,13 @@ int	main(void)
 	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
 	//	free(pwd);
 		line = readline(prompt);
+		env = ft_creat_env();
+		if (env == NULL)
+		{
+			printf("env	is NULL\n");
+			return 1;
+		}
+
 		tokens = lexer(line);	
 		if (!tokens)
 		{
@@ -118,6 +157,7 @@ int	main(void)
 		}
 		add_history(line);
 		parse_tree = parse(tokens);
+<<<<<<< HEAD
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{
@@ -125,19 +165,22 @@ int	main(void)
 			continue;
 		}
 		prompt_heredoc(parse_tree);
+=======
+
+>>>>>>> youssef
 		ft_printf("--------- TREE v2 -------\n");
  		print_tree(parse_tree, 0, nt_undefined);
  		ft_printf("--------- COMMAND ----------\n");
  		ft_printf("%s\n", line);
 		//ft_printf("----------- EXECUTION ---------\n");
-		path_dirs = grep_paths();
-		//if (!path_dirs)
-		//	return 1;
- 		//__exec(parse_tree);
+
+ 		__exec(parse_tree, env);
+		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{
 			free(line);
-			continue ;
+			ft_printf("TREE IS NULL\n");
+			continue;
 		}
 		clear_btree(parse_tree, NULL);	
 		ft_lstclear_libft(&tokens, free);

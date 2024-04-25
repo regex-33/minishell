@@ -108,7 +108,7 @@ typedef struct s_btree
 
 t_list	*lexer(char *line);
 
-int __exec(t_btree *tree);
+int __exec(t_btree *tree, char **env); // i changed the prototype
 int	panic(char *prog_name, int err, char c);
 
 
