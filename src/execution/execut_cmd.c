@@ -82,7 +82,7 @@ int open_files(t_list *redir_list)
 }
 
 
-pid_t exec_cmd(t_list *redir_list, char **args, char **env)
+pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 {
   char **cmd_args;
   extern char **environ;
@@ -91,7 +91,9 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
 	int fd;
 
     //printf("i am in exec_cmd\n ");
-    path_dirs = grep_paths(env);
+    path_dirs = grep_paths(*env);
+	if (select_buildin_commands(args, env))
+		return 1;
     pid = fork();
     if (pid < 0)
     {
@@ -103,17 +105,14 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
 		fd = open_files(redir_list);
 		if (fd < 0)
 			return (0);
-		if (!select_buildin_commands(args, env))
-		{
-			cmd_args = get_cmd_args(args, path_dirs);
-			if (!cmd_args)
-				exit(EXIT_FAILURE);
-			//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
-			execve(cmd_args[0], cmd_args, environ);
-			perror("Execve failed");
+		cmd_args = get_cmd_args(args, path_dirs);
+		if (!cmd_args)
 			exit(EXIT_FAILURE);
-		}
-		exit(EXIT_SUCCESS);
+		//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
+		execve(cmd_args[0], cmd_args, *env);
+		perror("Execve failed");
+		exit(EXIT_FAILURE);
+		//exit(EXIT_SUCCESS);
     }
     else
     {
@@ -133,3 +132,6 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
     }
     return 1;
 }
+
+// echo * segv when no file on dir/h
+// export

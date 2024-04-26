@@ -71,7 +71,7 @@ char **get_expanded_args(t_cmd *cmd, char **env)
 	return NULL;
 }
 
-int exec_simple(t_btree *tree, char **env)
+int exec_simple(t_btree *tree, char ***env)
 {
 	char **args;
 	pid_t pid;
@@ -87,7 +87,7 @@ int exec_simple(t_btree *tree, char **env)
 
     ft_printf("EXEC: ");
 
-	args = get_expanded_args(cmd, env);
+	args = get_expanded_args(cmd, *env);
 	if (!args)
 	{
 		perror("minishell");
@@ -167,14 +167,14 @@ int	exec_simple(t_btree *tree, char **env)
 	return (0);
 }*/
 
-int exec_pipe(t_btree *tree, char **env)
+int exec_pipe(t_btree *tree, char ***env)
 {
 	__exec(tree->left, env);
 	ft_printf("PIPED to ");
 	return __exec(tree->right, env);
 }
 
-int exec_and_or(t_btree *tree, char **env)
+int exec_and_or(t_btree *tree, char ***env)
 {
 	int first_res;
 
@@ -204,7 +204,7 @@ int exec_and_or(t_btree *tree, char **env)
 	return (0);
 }
 
-int	exec_sub(t_btree *tree, char **env)
+int	exec_sub(t_btree *tree, char ***env)
 {
 	(void)env;
 	if (!tree)
@@ -212,7 +212,7 @@ int	exec_sub(t_btree *tree, char **env)
 	return (__exec(tree->left, env));
 }
 
-int __exec(t_btree *tree, char **env)
+int __exec(t_btree *tree, char ***env)
 {
 	if (!tree)
 		return (0);

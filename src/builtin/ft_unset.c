@@ -1,7 +1,7 @@
 #include "../inc/minishell.h"
 
 
-int	ft_unset(char *variable, char **env)
+int	ft_unset(char *variable, char ***envv)
 {
 	//extern char	**env;
 	int			env_count;
@@ -14,6 +14,7 @@ int	ft_unset(char *variable, char **env)
 
 	env_count = 0;
 	i = 0;
+	char **env = *envv;
 	if (!variable)
 		return (1);
 	while (env[env_count] != NULL)
@@ -56,6 +57,6 @@ int	ft_unset(char *variable, char **env)
 		}
 	}
 	new_environ[j] = NULL;
-	env= new_environ;
+	*envv = new_environ;
 	return (0);
 }

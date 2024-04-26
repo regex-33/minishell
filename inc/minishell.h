@@ -74,7 +74,7 @@ int			ft_export(char **variable, char ***env);
 
 /* ft_unset */
 
-int			ft_unset(char *variable, char **env);
+int			ft_unset(char *variable, char ***env);
 
 /* ft_pwd and ft_env */
 
@@ -92,6 +92,6 @@ void    print_prompt_with_user_details(void);
 char	**grep_paths(char **env);
 int			get_last_exit_status(void);
 char	*ft_path(void);
-int	select_buildin_commands(char **args, char **env);
+int	select_buildin_commands(char **args, char ***env);
 
 #endif

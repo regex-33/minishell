@@ -1,4 +1,5 @@
 .*.swp
+.vscode
 minishell
 obj
 .DS_Store

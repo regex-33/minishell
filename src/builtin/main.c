@@ -30,10 +30,10 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
-int	select_buildin_commands(char **args, char **env)
+int	select_buildin_commands(char **args, char ***env)
 {
 	if (!ft_strcmp(args[0], "cd"))
-		ft_change_dir(args[1], env);
+		ft_change_dir(args[1], *env);
 	else if (!ft_strcmp(args[0], "pwd"))
 		ft_pwd();
 	else if (!ft_strcmp(args[0], "exit"))
@@ -41,11 +41,11 @@ int	select_buildin_commands(char **args, char **env)
 	else if (!ft_strcmp(args[0], "echo"))
 		ft_echo(args);
 	else if (!ft_strcmp(args[0], "env"))
-		ft_env(env);
+		ft_env(*env);
 	else if (!ft_strcmp(args[0], "export"))
-		ft_export(args, &env);
+		ft_export(args, env);
 	else if (!ft_strcmp(args[0], "get"))
-		get_value(args[1], env);
+		get_value(args[1], *env);
 	else if (!ft_strcmp(args[0], "unset"))
 		ft_unset(args[1], env);
 	else
@@ -170,7 +170,7 @@ int	main(void)
  		ft_printf("%s\n", line);
 		//ft_printf("----------- EXECUTION ---------\n");
 
- 		__exec(parse_tree, env);
+ 		__exec(parse_tree, &env);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{
