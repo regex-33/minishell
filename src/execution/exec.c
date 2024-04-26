@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 23:15:04 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 15:20:54 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/26 17:41:13 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,18 +167,43 @@ int	exec_simple(t_btree *tree, char **env)
 	return (0);
 }*/
 
-int exec_pipe(t_btree *tree, char ***env)
+int	add_pipe(int pipes[2][2])
 {
-	__exec(tree->left, env);
-	ft_printf("PIPED to ");
-	return __exec(tree->right, env);
+	int	tmp[2];
+
+	if (pipe(tmp) == -1)
+		return (-1);
+	pipes[IN_PIPE][READ] = pipes[OUT_PIPE][READ];
+	pipes[IN_PIPE][WRITE] = pipes[OUT_PIPE][WRITE];
+	pipes[OUT_PIPE][READ] = tmp[READ];
+	pipes[OUT_PIPE][WRITE] = tmp[WRITE];
+	return (0);
+}
+
+int exec_pipe(t_btree *tree, char ***env, int pipes[2][2], int is_root)
+{
+	if (!tree)
+		return (0);
+	if (tree->left->type == nt_simplecmd)
+	{
+		add_pipe(pipes);
+		exec_piped_cmd(tree->left, env, pipes);
+	}
+	else
+		exec_pipe(tree, env, pipes, 0);
+	if (!is_root)
+	{
+		add_pipe(pipes);
+		return (exec_piped_cmd(tree->right, env, pipes));
+	}
+	else
+		return (exec_last_piped_cmd(tree->right, env, pipes[OUT_PIPE]));
 }
 
 int exec_and_or(t_btree *tree, char ***env)
 {
 	int first_res;
-
-	if (!tree)
+if (!tree)
 		return (0);
 	first_res = __exec(tree->left, env);
 	if (first_res)
@@ -214,10 +239,14 @@ int	exec_sub(t_btree *tree, char ***env)
 
 int __exec(t_btree *tree, char ***env)
 {
+	int pipes[2][2];
+
+	pipes[OUT_PIPE][READ] = STDIN_FILENO;
+	pipes[OUT_PIPE][WRITE] = STDOUT_FILENO;
 	if (!tree)
 		return (0);
 	if (tree->type == nt_pipe)
-		return exec_pipe(tree, env);
+		return (int)exec_pipe(tree, env, pipes, 1);
 	else if (tree->type == nt_and_if)
 		return exec_and_or(tree, env);
 	else if (tree->type == nt_or_if)

@@ -8,8 +8,7 @@ char	*ft_which(char *cmd, char **path_dirs)
 	int		i;
 
 	if (ft_strchr(cmd, '/'))
-	{
-		if (!access(cmd, F_OK) && !access(cmd, X_OK))
+	{ if (!access(cmd, F_OK) && !access(cmd, X_OK))
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
@@ -81,6 +80,71 @@ int open_files(t_list *redir_list)
 	return (1);
 }
 
+pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
+{
+	pid_t	pid;
+	t_cmd	*cmd;
+	char	**args;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), exit(1), -1);
+	if (pid == 0)
+	{
+		cmd = leaf->data;
+		close(pipes[OUT_PIPE][READ]);
+		if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
+			return (close(pipes[OUT_PIPE][WRITE]), exit(1), 0);
+		dup2(pipes[OUT_PIPE][WRITE], STDOUT_FILENO);
+
+		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
+			close(pipes[IN_PIPE][READ]);
+
+		close(pipes[OUT_PIPE][WRITE]);
+		args = get_expanded_args(cmd, *env);
+		args = get_cmd_args(args, grep_paths(*env));
+		if (!args)
+			return (perror("minishell:"), 0);
+		if (execve(args[0], args, *env))
+			return (perror("minishell"), exit(1), 0);
+	}
+	else
+	{
+		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
+			close(pipes[IN_PIPE][READ]);
+		return (close(pipes[OUT_PIPE][WRITE]), pid);
+	}
+	return (-1);
+}
+
+pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
+{
+	pid_t	pid;
+	t_cmd	*cmd;
+	char	**args;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), exit(1), -1);
+	if (pid == 0)
+	{
+		cmd = leaf->data;
+		if (dup2(fd[READ], STDIN_FILENO))
+			return (close(fd[READ]), exit(1), 0);
+		close(fd[READ]);
+		args = get_expanded_args(cmd, *env);
+		args = get_cmd_args(args, grep_paths(*env));
+		if (!args)
+			return (perror("minishell:"), 0);
+		if (execve(args[0], args, *env))
+			return (perror("minishell"), exit(1), 0);
+	}
+	else
+	{
+		return (close(fd[READ]), pid);
+	}
+	return (-1);
+}
 
 pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 {
