@@ -157,7 +157,6 @@ int	main(void)
 		}
 		add_history(line);
 		parse_tree = parse(tokens);
-<<<<<<< HEAD
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{
@@ -165,9 +164,6 @@ int	main(void)
 			continue;
 		}
 		prompt_heredoc(parse_tree);
-=======
-
->>>>>>> youssef
 		ft_printf("--------- TREE v2 -------\n");
  		print_tree(parse_tree, 0, nt_undefined);
  		ft_printf("--------- COMMAND ----------\n");

@@ -3,8 +3,7 @@
 
 char	*ft_which(char *cmd, char **path_dirs)
 {
-	char	*tmp;
-	char	*cmd_pathname;
+	char	*tmp; char	*cmd_pathname;
 	int		i;
 
 	if (ft_strchr(cmd, '/'))
@@ -29,7 +28,7 @@ char	*ft_which(char *cmd, char **path_dirs)
 	return (free(tmp), NULL);
 }
 
-char	**get_cmd_args(char	**cmd_args, char **path_dirs)
+char	*get_cmd_path(char	**cmd_args, char **path_dirs)
 {
 	char	*cmd_pathname;
 
@@ -47,16 +46,13 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 		}
 		return (ft_free_arr(cmd_args), perror("minishell"), NULL);
 	}
-	free(cmd_args[0]);
-	cmd_args[0] = cmd_pathname;
-	return (cmd_args);
+	return (cmd_pathname);
 }
 
 int open_files(t_list *redir_list)
 {
 	t_list	*redir;
 	int				fd;
-	t_token
 
 	redir = redir_list->content;
 	while (redir)
@@ -79,6 +75,61 @@ int open_files(t_list *redir_list)
 			close(fd);
 	}
 	return (1);
+}
+
+// pid_t	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2])
+// {
+// 	int	rfd[2];
+// 
+// 	add_pipe(pipes);
+// 	if (tree->left->type == nt_simplecmd)
+// 		exec_piped_cmd(tree->left, ctx, pipes, 1);
+// 	else
+// 		exec_pipe(tree->left, ctx, pipes);
+// 	return (exec_piped_cmd(tree->right, ctx, pipes, 0));
+// }
+
+pid_t	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_first)
+{
+	if (tree->left->type == nt_simplecmd)
+	{
+		add_pipe(pipes);
+		exec_piped_cmd(tree->left, ctx, pipes);
+	}
+	else
+		exec_pipe(tree->left, ctx, pipes, 0);
+	if (is_first)
+		return (exec_piped_cmd(tree->right, ctx, pipes, 1));
+	else
+	{
+		add_pipe(pipes);
+		return (exec_piped_cmd(tree->right, ctx, pipes));
+	}
+}
+
+pid_t	exec_piped_cmd(t_btree leaf, t_context *ctx, int pipes[2][2], int is_last)
+{
+	t_pid	pid;
+	t_cmd	*cmd;
+	char	**args;
+	char	*cmd_name;
+
+	cmd = leaf->data;
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), -1);
+	if (pid == 0)
+	{
+		close(pipes[OUT_PIPE][WRITE]);
+		args = get_expanded_args(cmd, env);
+		if (!args)
+			return (perror("minishell"), 0);
+		cmd_path = get_cmd_path(args, grep_paths(ctx->env))
+		if (!cmd_path)
+			return (perror("minishell"), 0);
+		if (execve(cmd_path, args, ctx->env))
+			return (perror("minishell"), 0);
+	}
 }
 
 

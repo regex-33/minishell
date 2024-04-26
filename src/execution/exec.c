@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,13 +7,11 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 23:15:04 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/24 15:20:54 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/25 16:54:06 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
 
 t_list	*expand_list(t_list *list, char **env)
 {
@@ -45,9 +44,8 @@ t_list	*expand_list(t_list *list, char **env)
 	return (expanding_list);
 }
 
-char **get_expanded_args(t_list *cmd_args, char **env)
+char **get_expanded_args(t_cmd *cmd, char **env)
 {
-	t_cmd *cmd = tree->data;
     t_list *list_args = cmd->cmd_args;
 
     t_list *expanding_list = expand_list(list_args, env);
@@ -163,12 +161,12 @@ int	exec_simple(t_btree *tree, char **env)
 	return (0);
 }*/
 
-int exec_pipe(t_btree *tree, char **env)
-{
-	__exec(tree->left, env);
-	ft_printf("PIPED to ");
-	return __exec(tree->right, env);
-}
+// int exec_pipe(t_btree *tree, char **env)
+// {
+// 	__exec(tree->left, env);
+// 	ft_printf("PIPED to ");
+// 	return __exec(tree->right, env);
+// }
 
 int exec_and_or(t_btree *tree, char **env)
 {

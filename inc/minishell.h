@@ -47,6 +47,8 @@
 
 /* change directory */
 
+int	get_last_exit_status();
+
 char		*extract_after_dollar(const char *str, char quots);
 char		*extract_substring(const char *str);
 void		ft_change_dir(const char *path, char **env);
