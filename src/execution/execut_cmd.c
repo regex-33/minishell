@@ -60,6 +60,7 @@ int open_files(t_list *redir_list)
 	
 	while (redir_list)
 	{
+		
         redir = redir_list->content;
 		if (redir->type == REDIR_IN)
 			fd = open(redir->filename, O_RDONLY);
@@ -123,14 +124,13 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
             int exit_status = WEXITSTATUS(status);
             if (exit_status != 0)
             {
-                ft_printf("Command execution failed with status %d\n", exit_status);
-                exit(exit_status);
-				return 0;
+                //ft_printf("Command execution failed with status %d\n", exit_status);
+                return (exit_status);
             }
         }
         return pid;
     }
-    return 1;
+    return pid;
 }
 
 // echo * segv when no file on dir/h

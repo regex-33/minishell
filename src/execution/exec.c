@@ -60,10 +60,10 @@ char **get_expanded_args(t_cmd *cmd, char **env)
         char **args = ft_list_to_array(expanding_list);
         if (!args)
         {
-            freeLinkedList(expanding_list);
+            //freeLinkedList(expanding_list);
             return NULL;
         }
-        freeLinkedList(expanding_list);
+        //freeLinkedList(expanding_list);
 		//printArray(args);
         //free_array(args);
 		return args;
@@ -85,7 +85,7 @@ int exec_simple(t_btree *tree, char ***env)
 
     //t_list *redir_list = cmd->redir_list;
 
-    ft_printf("EXEC: ");
+    //ft_printf("EXEC: ");
 
 	args = get_expanded_args(cmd, *env);
 	if (!args)
@@ -106,6 +106,8 @@ int exec_simple(t_btree *tree, char ***env)
 		perror("minishell");
 		return 0;
 	}
+	else if (pid == 1)
+		return 0;
 	else
 		return 1;
 	// else

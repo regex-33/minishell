@@ -99,6 +99,31 @@ char *ft_strndup(const char *src, size_t n)
     return dest;
 }
 
+int	split_and_add_to_list(t_list **list, char **join, char *value)
+{
+	char **value_split = NULL;
+	int index = 0;
+	int count = count_strings(value, ' ');
+	value_split = ft_split(value, ' ');
+	*join = ft_strjoin(*join, value_split[index++]);
+	if (*join == NULL)
+	{
+		perror("minishell");
+		return false;
+	}
+	ft_lstadd_back_libft(list, ft_lstnew(*join));
+	while (index < count - 1)
+	{
+		ft_lstadd_back_libft(list, ft_lstnew(strdup(value_split[index])));
+		free(value_split[index]);
+		index++;
+	}
+	*join = value_split[count - 1];
+	if (*join == NULL)
+		perror("minishell");
+	return true;
+}
+
 t_list **expand_arg_list(t_list **list, char *temp, char **env)
 {
 	int		in_quotes = 0;
@@ -107,15 +132,13 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 	char	quote = '\0';
 	char	*join = NULL;
 	int	have_asterisk = 0;
+	int		index = 0;
 
-	//printf("i am in before while\n");
 	while (temp[i])
 	{ 
-		//printf("i am in while\n");
+		index = 0;
 		if (temp[i] == '*' && in_quotes  == 0 && in_single_quotes == 0)
-		{
 			have_asterisk = 1;
-		}
 		if (temp[i] == '"' && !in_single_quotes)
 		{
 			quote = (in_quotes) ? '\0' : '"';
@@ -145,8 +168,22 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 				char *variable = extract_dollar(temp + i);
 				if (variable)
 				{
-					join = ft_strjoin_free(join, get_value(variable + 1, env));
+					char *value = get_value(variable + 1, env);
+					if (!value)
+						value = "";
+					if (strchr(value, '*'))
+					{
+						have_asterisk = 1;
+					}
+					if (quote != '\"' && (strchr(value, ' ') || strchr(value, '\t')))
+					{
+						if (!split_and_add_to_list(list, &join, value))//dont forget to free join
+							return NULL;
+					}
+					else
+						join = ft_strjoin_free(join, value);
 					int len = strlen(variable);
+					//printf("join : %s\n", join);
 					free(variable);
 					i += len;
 					continue;
@@ -158,19 +195,105 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 		free(char_str);
 		i++;
 	}
-//	printf("join : %s\n", join);
+
 	if (!have_asterisk)
-	{
-		ft_lstadd_back_libft(list, ft_lstnew(join));
-		return (list);
-	}
-	//printf(" i am here : %s | %d\n", join, have_asterisk);
+		return (ft_lstadd_back_libft(list, ft_lstnew(join)), list);
 	
-	expand_asterisk(join, list);
-	// if (!list)
-	// {
-	// 	perror("expand_asterisk failed\n");
-	// 	return (NULL);
-	// }
-	return (list);
+	return (expand_asterisk(join, list), list);
 }
+/*
+
+void	handle_regular_char(char *temp, char **join)
+{
+	char *char_str = ft_strndup(temp, 1);
+	*join = ft_strjoin_free(*join, char_str);
+	free(char_str);
+}
+
+void	handle_quotes(char c, int *in_quotes, int *in_single_quotes, char *quote)
+{
+	if (c == '"' && !(*in_single_quotes))
+	{
+		*quote = (*in_quotes) ? '\0' : '"';
+		*in_quotes = !(*in_quotes);
+	}
+	else if (c == '\'' && !(*in_quotes))
+	{
+		*quote = (*in_single_quotes) ? '\0' : '\'';
+		*in_single_quotes = !(*in_single_quotes);
+	}
+}
+
+void	handle_dollar(char *temp, int *i, char **join, char **env)
+{
+	if (temp[0] == '$' && *quote != '\'')
+	{
+		if (!strncmp(temp, "$?", 2))
+		{
+			char *str = ft_itoa(get_last_exit_status());
+			*join = ft_strjoin_free(*join, str);
+			free(str);
+			*i += 2;
+		}
+		else
+		{
+			char *variable = extract_dollar(temp);
+			if (variable)
+			{
+				char *value = get_value(variable + 1, env);
+				if (!value)
+					value = "";
+				if (*quote != '\"' && (strchr(value, ' ') || strchr(value, '\t')))
+				{
+					if (!split_and_add_to_list(list, join, value))//dont forget to free join
+						return NULL;
+				}
+				else
+					*join = ft_strjoin_free(*join, value);
+				int len = strlen(variable);
+				free(variable);
+				*i += len;
+			}
+		}
+	}
+}
+
+t_list	**expand_arg_list(t_list **list, char *temp, char **env)
+{
+	int		in_quotes = 0;
+	int		in_single_quotes = 0;
+	int		i = 0;
+	char	quote = '\0';
+	char	*join = NULL;
+	int		have_asterisk = 0;
+	int		index = 0;
+
+	while (temp[i])
+	{ 
+		index = 0;
+		if (temp[i] == '*' && in_quotes == 0 && in_single_quotes == 0)
+			have_asterisk = 1;
+		handle_quotes(temp[i], &in_quotes, &in_single_quotes, &quote);
+		handle_dollar(temp + i, &i, &join, env);
+		handle_regular_char(temp + i, &join);
+		i++;
+	}
+
+	if (!have_asterisk)
+		return (ft_lstadd_back_libft(list, ft_lstnew(join)), list);
+	
+	return (expand_asterisk(join, list), list);
+}
+
+
+
+
+*/
+
+
+// export test="*"
+// cat $test
+
+//export "a b c"=oewfowe
+//should not work
+

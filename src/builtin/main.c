@@ -151,8 +151,10 @@ int	main(void)
 
 		pwd = "minishell >";
 		prompt = get_prompt(pwd, "$ ");
+
 	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
 	//	free(pwd);
+
 		line = readline(prompt);
 		tokens = lexer(line);	
 		if (!tokens)
@@ -164,10 +166,10 @@ int	main(void)
 		add_history(line);
 		parse_tree = parse(tokens);
 
-		ft_printf("--------- TREE v2 -------\n");
- 		print_tree(parse_tree, 0, nt_undefined);
- 		ft_printf("--------- COMMAND ----------\n");
- 		ft_printf("%s\n", line);
+		//ft_printf("--------- TREE v2 -------\n");
+ 		//print_tree(parse_tree, 0, nt_undefined);
+ 		//ft_printf("--------- COMMAND ----------\n");
+ 		//ft_printf("%s\n", line);
 		//ft_printf("----------- EXECUTION ---------\n");
 
  		__exec(parse_tree, &env);

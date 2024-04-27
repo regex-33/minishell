@@ -58,7 +58,7 @@ void		ft_change_dir(const char *path, char **env);
 
 /* ft_echo */
 
-void		ft_echo(char **args);
+int         ft_echo(char **args);
 //void		ft_echo_print(char *temp, int start_index, char **env);
 
 /* ft_exit */
