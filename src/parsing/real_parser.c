@@ -53,12 +53,7 @@ t_token	*next_token(t_list *token_list, int flags)
 		is_init = 1;
 	}
 	if (current && (flags & CONSUME_TOK))
-	{
-		ft_printf("!!! Consumed: ");
-		print_token(current->content);
-		ft_printf("\n");
 		current = current->next;
-	}
 	if (!current)
 		return (NULL);
 	return ((t_token *)current->content);

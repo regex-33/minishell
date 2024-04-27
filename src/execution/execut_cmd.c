@@ -7,8 +7,7 @@ char	*ft_which(char *cmd, char **path_dirs)
 	int		i;
 
 	if (ft_strchr(cmd, '/'))
-	{
-		if (!access(cmd, F_OK) && !access(cmd, X_OK))
+	{ if (!access(cmd, F_OK) && !access(cmd, X_OK))
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
@@ -28,7 +27,7 @@ char	*ft_which(char *cmd, char **path_dirs)
 	return (free(tmp), NULL);
 }
 
-char	*get_cmd_path(char	**cmd_args, char **path_dirs)
+char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 {
 	char	*cmd_pathname;
 
@@ -46,22 +45,26 @@ char	*get_cmd_path(char	**cmd_args, char **path_dirs)
 		}
 		return (ft_free_arr(cmd_args), perror("minishell"), NULL);
 	}
-	return (cmd_pathname);
+	free(cmd_args[0]);
+	cmd_args[0] = cmd_pathname;
+	return (cmd_args);
 }
 
 int open_files(t_list *redir_list)
 {
-	t_list	*redir;
+	t_redir	*redir;
 	int				fd;
-
-	redir = redir_list->content;
-	while (redir)
+	//t_token *token;
+	
+	while (redir_list)
 	{
+		
+        redir = redir_list->content;
 		if (redir->type == REDIR_IN)
 			fd = open(redir->filename, O_RDONLY);
 		else if (redir->type == REDIR_OUT)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == REDIR_OUT_APPEND)
+		else if (redir->type == REDIR_APPEND)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd < 0)
 		{
@@ -69,78 +72,93 @@ int open_files(t_list *redir_list)
 			return -1;
 		}
 		else
-			dup2(fd, redir->fd)
-		redir = redir->next;
-		if (redir != NULL)
-			close(fd);
+			dup2(fd, redir->fd);
+		//if (redir != NULL)
+		close(fd);
+        redir_list = redir_list->next;
 	}
 	return (1);
 }
 
-// pid_t	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2])
-// {
-// 	int	rfd[2];
-// 
-// 	add_pipe(pipes);
-// 	if (tree->left->type == nt_simplecmd)
-// 		exec_piped_cmd(tree->left, ctx, pipes, 1);
-// 	else
-// 		exec_pipe(tree->left, ctx, pipes);
-// 	return (exec_piped_cmd(tree->right, ctx, pipes, 0));
-// }
-
-pid_t	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_first)
+pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
 {
-	if (tree->left->type == nt_simplecmd)
-	{
-		add_pipe(pipes);
-		exec_piped_cmd(tree->left, ctx, pipes);
-	}
-	else
-		exec_pipe(tree->left, ctx, pipes, 0);
-	if (is_first)
-		return (exec_piped_cmd(tree->right, ctx, pipes, 1));
-	else
-	{
-		add_pipe(pipes);
-		return (exec_piped_cmd(tree->right, ctx, pipes));
-	}
-}
-
-pid_t	exec_piped_cmd(t_btree leaf, t_context *ctx, int pipes[2][2], int is_last)
-{
-	t_pid	pid;
+	pid_t	pid;
 	t_cmd	*cmd;
 	char	**args;
-	char	*cmd_name;
 
-	cmd = leaf->data;
 	pid = fork();
 	if (pid < 0)
-		return (perror("minishell"), -1);
+		return (perror("minishell"), exit(1), -1);
 	if (pid == 0)
 	{
+		cmd = leaf->data;
+		close(pipes[OUT_PIPE][READ]);
+		if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
+			return (close(pipes[OUT_PIPE][WRITE]), exit(1), 0);
+		dup2(pipes[OUT_PIPE][WRITE], STDOUT_FILENO);
+
+		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
+			close(pipes[IN_PIPE][READ]);
+
 		close(pipes[OUT_PIPE][WRITE]);
-		args = get_expanded_args(cmd, env);
+		args = get_expanded_args(cmd, *env);
+		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
-			return (perror("minishell"), 0);
-		cmd_path = get_cmd_path(args, grep_paths(ctx->env))
-		if (!cmd_path)
-			return (perror("minishell"), 0);
-		if (execve(cmd_path, args, ctx->env))
-			return (perror("minishell"), 0);
+			return (perror("minishell:"), 0);
+		if (execve(args[0], args, *env))
+			return (perror("minishell"), exit(1), 0);
 	}
+	else
+	{
+		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
+			close(pipes[IN_PIPE][READ]);
+		return (close(pipes[OUT_PIPE][WRITE]), pid);
+	}
+	return (-1);
 }
 
-
-pid_t exec_cmd(t_list *redir_list, char **args, char **env)
+pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
 {
-//  char **cmd_args;
+	pid_t	pid;
+	t_cmd	*cmd;
+	char	**args;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), exit(1), -1);
+	if (pid == 0)
+	{
+		cmd = leaf->data;
+		if (dup2(fd[READ], STDIN_FILENO))
+			return (close(fd[READ]), exit(1), 0);
+		close(fd[READ]);
+		args = get_expanded_args(cmd, *env);
+		args = get_cmd_args(args, grep_paths(*env));
+		if (!args)
+			return (perror("minishell:"), 0);
+		if (execve(args[0], args, *env))
+			return (perror("minishell"), exit(1), 0);
+	}
+	else
+	{
+		return (close(fd[READ]), pid);
+	}
+	return (-1);
+}
+
+pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
+{
+  char **cmd_args;
+  extern char **environ;
+  extern int last_exit_status;
     char **path_dirs;
     pid_t pid;
 	int fd;
 
-    path_dirs = grep_paths(env);
+    //printf("i am in exec_cmd\n ");
+    path_dirs = grep_paths(*env);
+	if (select_buildin_commands(args, env))
+		return 1;
     pid = fork();
     if (pid < 0)
     {
@@ -152,17 +170,14 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
 		fd = open_files(redir_list);
 		if (fd < 0)
 			return (0);
-		if (!select_buildin_commands(args))
-		{
-			// cmd_args = get_cmd_args(args, path_dirs);
-			// if (!cmd_args)
-			// 	exit(EXIT_FAILURE);
-			//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
-			execve(args[0], args, NULL);
-			perror("Execve failed");
+		cmd_args = get_cmd_args(args, path_dirs);
+		if (!cmd_args)
 			exit(EXIT_FAILURE);
-		}
-		exit(EXIT_SUCCESS);
+		//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
+		execve(cmd_args[0], cmd_args, *env);
+		perror("Execve failed");
+		exit(EXIT_FAILURE);
+		//exit(EXIT_SUCCESS);
     }
     else
     {
@@ -173,10 +188,20 @@ pid_t exec_cmd(t_list *redir_list, char **args, char **env)
             int exit_status = WEXITSTATUS(status);
             if (exit_status != 0)
             {
-                ft_printf("Command execution failed with status %d\n", exit_status);
-				return 0;
+                //ft_printf("Command execution failed with status %d\n", exit_status);
+				last_exit_status = exit_status;
+                return (exit_status);
             }
         }
+		else if (WIFSIGNALED(status))
+		{
+			last_exit_status = WTERMSIG(status) + 128;
+			return (last_exit_status);
+		}
         return pid;
     }
+    return pid;
 }
+
+// echo * segv when no file on dir/h
+// export

@@ -46,6 +46,11 @@
 #define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
 
 /* change directory */
+typedef struct s_context
+{
+    char    **env;
+    int     last_status;
+}          t_context;
 
 int	get_last_exit_status();
 
@@ -55,8 +60,8 @@ void		ft_change_dir(const char *path, char **env);
 
 /* ft_echo */
 
-void		ft_echo(char **args, char *str,  char **env);
-void		ft_echo_print(char *temp, int start_index, char **env);
+int         ft_echo(char **args);
+//void		ft_echo_print(char *temp, int start_index, char **env);
 
 /* ft_exit */
 
@@ -67,11 +72,11 @@ void		ft_exit(const char *exit_code);
 /* ft_export */
 
 int			is_valid_identifier(const char *variable);
-int			ft_export(char **variable, char **env);
+int			ft_export(char **variable, char ***env);
 
 /* ft_unset */
 
-int			ft_unset(char *variable, char **env);
+int			ft_unset(char *variable, char ***env);
 
 /* ft_pwd and ft_env */
 
@@ -86,7 +91,9 @@ void    print_prompt_with_user_details(void);
 
 /* main */
 
+char	**grep_paths(char **env);
 int			get_last_exit_status(void);
 char	*ft_path(void);
+int	select_buildin_commands(char **args, char ***env);
 
 #endif

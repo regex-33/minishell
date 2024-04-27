@@ -1,3 +1,4 @@
+char	*get_cmd_path(char	**cmd_args, char **path_dirs);
 /*  asterisk functions */
 
 void	printLinkedList(t_list *head);
@@ -15,7 +16,7 @@ int is_valid_chars(char c);
 char	*extract_dollar(const char *str);
 char	*ft_strjoin_free(char *s1, const char *s2);
 char *ft_strndup(const char *src, size_t n);
-t_list	**ft_echo_process(t_list **list, char *temp, char **env);
+t_list	**expand_arg_list(t_list **list, char *temp, char **env);
 
 /*  mereg sort  */
 

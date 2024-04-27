@@ -1,5 +1,20 @@
 #include "minishell.h"
 
+char *join_strings(char **args, int index)
+{
+	char *str = NULL;
+
+	while (args[index])
+	{
+		str = ft_strjoin_free(str, args[index]);
+        if (!args[index + 1])
+            return str;
+		str = ft_strjoin_free(str, " ");
+		index++;
+	}
+	return (str);
+}
+
 void	printArray(char **array)
 {
 	int i = 0;
@@ -8,6 +23,7 @@ void	printArray(char **array)
 	{
 		printf("Array is empty\n");
 	}
+    //printf("Array is not empty\n");
 	while (array[i])
 	{
 		ft_printf("%s\n", array[i]);
@@ -21,7 +37,7 @@ void	free_array(char **array)
 		return;
 	for (size_t i = 0; array[i] != NULL; i++)
 		free(array[i]);
-	free(array);
+	//free(array);
 }
 
 char **ft_list_to_array(t_list *list)

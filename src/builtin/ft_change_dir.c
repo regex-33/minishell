@@ -73,6 +73,7 @@ void	ft_change_dir(const char *path, char **env)
 		if (chdir(dir) == -1)
         {
 		    last_exit_status = 1;
+			printf(" i am here\n");
 			ft_putstr_fd(" No such file or directory\n", 2);
         }
 	}
