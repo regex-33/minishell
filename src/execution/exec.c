@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 23:15:04 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/04/26 17:41:13 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/04/26 18:31:12 by bchanaa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ int exec_pipe(t_btree *tree, char ***env, int pipes[2][2], int is_root)
 		exec_piped_cmd(tree->left, env, pipes);
 	}
 	else
-		exec_pipe(tree, env, pipes, 0);
+		exec_pipe(tree->left, env, pipes, 0);
 	if (!is_root)
 	{
 		add_pipe(pipes);
@@ -237,7 +237,26 @@ int __exec(t_btree *tree, char ***env)
 	if (!tree)
 		return (0);
 	if (tree->type == nt_pipe)
-		return (int)exec_pipe(tree, env, pipes, 1);
+	{
+		pid_t	pid;
+		int status;
+		pid = exec_pipe(tree, env, pipes, 1);
+		if (pid < 0)
+			return (1);
+		waitpid(pid, &status, 0);
+		while (wait(NULL) > 0);
+		if (WIFEXITED(status))
+		{
+			ft_printf("Pipe status: %d\n", (WEXITSTATUS(status)));
+			return WEXITSTATUS(status);
+		}
+			
+		else if (WIFSIGNALED(status))
+		{
+			ft_printf("Pipe status signaled: %d\n", (128 + WTERMSIG(status)));
+			return (128 + WTERMSIG(status));
+		}
+	}
 	else if (tree->type == nt_and_if)
 		return exec_and_or(tree, env);
 	else if (tree->type == nt_or_if)
