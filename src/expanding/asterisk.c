@@ -122,6 +122,17 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 			ft_lstadd_back_libft(&temp, new);
 		}
 	}
+	if (!temp)
+	{
+		new = ft_lstnew(ft_strdup(pattern));
+		if (!new)
+		{
+			perror("lstnew failed\n");
+			closedir(dir);
+			return (0);
+		}
+		ft_lstadd_back_libft(&temp, new);
+	}
 	closedir(dir);
 	return (move_temp_list_to_list(matches, &temp));
 }

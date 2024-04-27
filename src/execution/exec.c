@@ -80,12 +80,7 @@ int exec_simple(t_btree *tree, char ***env)
         return 0;
 
     t_cmd *cmd = tree->data;
-    //t_list *list_args = cmd->cmd_args;
 	t_list	*redir = cmd->redir_list;
-
-    //t_list *redir_list = cmd->redir_list;
-
-    //ft_printf("EXEC: ");
 
 	args = get_expanded_args(cmd, *env);
 	if (!args)
@@ -93,12 +88,6 @@ int exec_simple(t_btree *tree, char ***env)
 		perror("minishell");
 		return 0;
     }
-	// else
-	// {
-	// //	printArray(args);
-	// //	free_array(args);
-	// 	return 1;
-	// }
 	
 	pid = exec_cmd(redir, args, env);
 	if (pid < 0)
@@ -107,9 +96,9 @@ int exec_simple(t_btree *tree, char ***env)
 		return 0;
 	}
 	else if (pid == 1)
-		return 0;
-	else
 		return 1;
+	else
+		return 0;
 	// else
 	// {
 	// 	return 1;
@@ -179,15 +168,15 @@ int exec_pipe(t_btree *tree, char ***env)
 int exec_and_or(t_btree *tree, char ***env)
 {
 	int first_res;
+	first_res = 0;
 
 	if (!tree)
 		return (0);
 	first_res = __exec(tree->left, env);
 	if (first_res)
 	{
-		if (tree->type == nt_and_if)
+		if (tree->type == nt_or_if)
 		{
-			ft_printf(" AND ");
 			return __exec(tree->right, env);
 		}
 		else
@@ -195,9 +184,8 @@ int exec_and_or(t_btree *tree, char ***env)
 	}
 	if (!first_res)
 	{
-		if (tree->type == nt_or_if)
+		if (tree->type == nt_and_if)
 		{
-			ft_printf(" OR ");
 			return (__exec(tree->right, env));
 		}
 		else

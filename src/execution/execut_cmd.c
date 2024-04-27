@@ -87,6 +87,7 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 {
   char **cmd_args;
   extern char **environ;
+  extern int last_exit_status;
     char **path_dirs;
     pid_t pid;
 	int fd;
@@ -125,9 +126,15 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
             if (exit_status != 0)
             {
                 //ft_printf("Command execution failed with status %d\n", exit_status);
+				last_exit_status = exit_status;
                 return (exit_status);
             }
         }
+		else if (WIFSIGNALED(status))
+		{
+			last_exit_status = WTERMSIG(status) + 128;
+			return (last_exit_status);
+		}
         return pid;
     }
     return pid;

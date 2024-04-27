@@ -171,10 +171,8 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 					char *value = get_value(variable + 1, env);
 					if (!value)
 						value = "";
-					if (strchr(value, '*'))
-					{
+					if (!strchr(value, '\"') && strchr(value, '*'))
 						have_asterisk = 1;
-					}
 					if (quote != '\"' && (strchr(value, ' ') || strchr(value, '\t')))
 					{
 						if (!split_and_add_to_list(list, &join, value))//dont forget to free join
@@ -182,8 +180,8 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 					}
 					else
 						join = ft_strjoin_free(join, value);
+
 					int len = strlen(variable);
-					//printf("join : %s\n", join);
 					free(variable);
 					i += len;
 					continue;
