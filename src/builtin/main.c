@@ -30,31 +30,51 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
+
+int	is_builtin(char *cmd_name)
+{
+	if (!ft_strcmp(cmd_name, "cd"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "pwd"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "exit"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "echo"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "env"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "export"))
+		return (1);
+	else if (!ft_strcmp(cmd_name, "unset"))
+		return (1);
+	return (0);
+}
+
 int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
 {
-	int		fd;
+	int	status;
 
-	fd	= open_files(redir_list, env);
-	if (fd < 0)
-		return (0);
-	printf("file descriptor: %d\n", fd);
-	if (!ft_strcmp(args[0], "cd"))
-		ft_change_dir(args[1], *env); // return status code
-	else if (!ft_strcmp(args[0], "pwd"))
-		return (ft_pwd(fd));
-	else if (!ft_strcmp(args[0], "exit"))
-		ft_exit(args[1]);
-	else if (!ft_strcmp(args[0], "echo"))
-		return (ft_echo(args, fd));
-	else if (!ft_strcmp(args[0], "env"))
-		return (ft_env(*env, fd));
-	else if (!ft_strcmp(args[0], "export"))
-		return (ft_export(args, env, fd));
-	else if (!ft_strcmp(args[0], "unset"))
-		return (ft_unset(args[1], env));
-	else
+	status = 1;
+	if (!is_builtin(args[0]))
 		return (-1);
-	return (1);
+	if (open_files(redir_list, env))
+		return (1);
+	if (!ft_strcmp(args[0], "cd"))
+		status = ft_change_dir(args[1], *env); // return status code
+	else if (!ft_strcmp(args[0], "pwd"))
+		status = ft_pwd(1);
+	else if (!ft_strcmp(args[0], "exit"))
+		status = ft_exit(args[1]);
+	else if (!ft_strcmp(args[0], "echo"))
+		status = ft_echo(args, 1);
+	else if (!ft_strcmp(args[0], "env"))
+		status = ft_env(*env, 1);
+	else if (!ft_strcmp(args[0], "export"))
+		status = ft_export(args, env, 1);
+	else if (!ft_strcmp(args[0], "unset"))
+		status = ft_unset(args[1], env);
+	restore_redir(redir_list);
+	return (status);
 }
 
 

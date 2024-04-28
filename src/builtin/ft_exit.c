@@ -50,30 +50,25 @@ bool	is_numeric(const char *str)
 	return (true);
 }
 
-void	ft_exit(const char *exit_code)
+int	ft_exit(const char *exit_code)
 {
 	char	*endptr;
-	int		code;
+	unsigned char	code;
 
 	if (exit_code && count_strings(exit_code, ' ') > 1)
 	{
 		ft_putstr_fd(" too many arguments\n", 2);
-		exit(1);
+		return (1);
 	}
 	endptr = skip_chars(exit_code);
 	if (!endptr)
-		exit(0);
+		return (1);
 	else if (!is_numeric(endptr))
 	{
 		ft_putstr_fd(" numeric argument required\n", 2);
-		exit(2);
+		exit(255);
 	}
-	code = atoi(endptr);
-	if (errno == ERANGE || code < -128 || code > 255)
-	{
-		exit(42);
-	}
-	if (code < 0)
-		code = 256 + code;
+	code = (unsigned char) atoi(endptr);
 	exit(code);
+	return (1);
 }

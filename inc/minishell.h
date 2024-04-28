@@ -56,7 +56,7 @@ int	get_last_exit_status();
 
 char		*extract_after_dollar(const char *str, char quots);
 char		*extract_substring(const char *str);
-void		ft_change_dir(const char *path, char **env);
+int			ft_change_dir(const char *path, char **env);
 
 /* ft_echo */
 
@@ -67,7 +67,7 @@ int         ft_echo(char **args, int fd);
 
 char		*skip_chars(const char *str);
 bool		is_numeric(const char *str);
-void		ft_exit(const char *exit_code);
+int			ft_exit(const char *exit_code);
 
 /* ft_export */
 

@@ -45,6 +45,7 @@ typedef struct s_redir
 	char			*delimiter;
 	t_redir_type	type;
 	int				fd;
+	int				bak_fd;
 }			t_redir;
 
 typedef struct s_cmd

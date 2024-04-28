@@ -51,7 +51,7 @@ char	*extract_substring(const char *str)
 	return (extract_after_dollar(substring, quote));
 }
 
-void	ft_change_dir(const char *path, char **env)
+int	ft_change_dir(const char *path, char **env)
 {
 	const char	*dir;
 	extern int	last_exit_status;
@@ -60,7 +60,7 @@ void	ft_change_dir(const char *path, char **env)
 	{
 		last_exit_status = 1;
 		ft_putstr_fd(" too many arguments\n", 2);
-		return ;
+		return (1);
 	}
 	if (path != NULL)
 	{
@@ -75,8 +75,10 @@ void	ft_change_dir(const char *path, char **env)
 		    last_exit_status = 1;
 			printf(" i am here\n");
 			ft_putstr_fd(" No such file or directory\n", 2);
+			return (1);
         }
 	}
 	else
 		chdir(get_value("HOME", env));
+	return (0);
 }

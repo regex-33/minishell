@@ -17,7 +17,7 @@ int	getredir_fd(char *str, int len)
 	int		fd;
 	char	tmp;
 
-	if (str[0] == '<' || str[1] == '>')
+	if (str[0] == '<' || str[0] == '>')
 		return (str[0] == '>');
 	tmp = str[len];
 	str[len] = 0;
@@ -55,6 +55,7 @@ t_redir	*new_redir(t_token *redir_token, t_token *file_token)
 		return (free(redir), NULL);
 	redir->filename = NULL;
 	redir->delimiter = NULL;
+	redir->bak_fd = -1;
 	redir->fd = getredir_fd(redir_token->value, redir_token->len);
 	redir->type = getredir_type(redir_token->value, redir_token->len);
 	str = ft_substr(file_token->value, 0, file_token->len);

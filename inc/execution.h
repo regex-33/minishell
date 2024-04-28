@@ -8,4 +8,6 @@ pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2]);
 char **get_expanded_args(t_cmd *cmd, char **env);
 
 
+void    restore_redir(t_list *redir_list);
 int open_files(t_list *redir_list, char ***env);
+

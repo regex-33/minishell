@@ -87,38 +87,47 @@ int count_array(char **array)
 		i++;
 	return i;
 }
-
-int open_files(t_list *redir_list, char ***env)
+void	restore_redir(t_list *redir_list)
 {
 	t_redir	*redir;
-	int				fd;
+
+	while (redir_list)
+	{
+		redir = redir_list->content;
+		if (redir->bak_fd >= 0)
+		{
+			dup2(redir->bak_fd, redir->fd);
+			close(redir->bak_fd);
+		}
+		redir_list = redir_list->next;
+	}
+}
+
+int	open_files(t_list *redir_list, char ***env)
+{
+	t_redir	*redir;
 	char		**files;
-	fd = 1;
+	int	fd;
 	//t_token *token;
 	
-	if (!redir_list)
-		return (fd);
-	(void)fd;
-	printf("I am in open_files\n");
 	while (redir_list)
 	{
         redir = redir_list->content;
 		files = expand_filename(redir->filename, *env);
 		if (!files)
 		{
+			restore_redir(redir_list);
 			perror("minishell");
-			return -1;
+			return (1);
 		}
 		if (count_array(files) > 1)
 		{
+			restore_redir(redir_list);
 			ft_putstr_fd("minishell: ", STDERR_FILENO);
 			ft_putstr_fd("ambiguous redirect\n", STDERR_FILENO);
 			free_array(files);
-			return -1;
+			return (1);
 		}
-		printArray(files);
-		/*
-        redir = redir_list->content;
 		if (redir->type == REDIR_IN)
 			fd = open(redir->filename, O_RDONLY);
 		else if (redir->type == REDIR_OUT)
@@ -128,28 +137,30 @@ int open_files(t_list *redir_list, char ***env)
 		else if (redir->type == REDIR_HERE)
 		{
 			fd = open(redir->filename, O_RDONLY);
-			unlink(redir->filename);
+			//unlink(redir->filename);
 		}
 		if (fd < 0)
 		{
+			restore_redir(redir_list);
 			perror("minishell");
-			return -1;
+			return 1;
 		}
-		else
-			dup2(fd, redir->fd);
-		//if (redir != NULL)
+		redir->bak_fd = dup(redir->fd);
+		if (redir->bak_fd < 0)
+			return (restore_redir(redir_list), perror("minishell"), 1);
+		dup2(fd, redir->fd);
 		close(fd);
-		*/
         redir_list = redir_list->next;
 	}
-	return (fd);
+	return (0);
 }
 
-pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
+pid_t	exec_piped_cmd(t_btree *tree, char ***env, int pipes[2][2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
 	char	**args;
+	t_list	*redir_list;
 
 	pid = fork();
 	if (pid < 0)
@@ -164,9 +175,15 @@ pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
 		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
 			close(pipes[IN_PIPE][READ]);
 
-		if (leaf->type == nt_subcmd)
-			exit(__exec(leaf->left, env));
-		cmd = leaf->data;
+		if (tree->type == nt_subcmd)
+			redir_list = tree->data;
+		else
+			redir_list = ((t_cmd *)tree->data)->redir_list;
+		if (open_files(redir_list, env))
+			return (exit(1), 0);
+		if (tree->type == nt_subcmd)
+			exit(__exec(tree->left, env));
+		cmd = tree->data;
 		args = get_expanded_args(cmd, *env);
 		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
@@ -187,6 +204,7 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
+	t_list	*redir_list;
 	char	**args;
 
 	pid = fork();
@@ -198,6 +216,12 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 			return (close(fd[READ]), exit(1), 0);
 		close(fd[READ]);
 		if (tree->type == nt_subcmd)
+			redir_list = tree->data;
+		else
+			redir_list = ((t_cmd *)tree->data)->redir_list;
+		if (open_files(redir_list, env))
+			return (exit(1), 0);
+		if (tree->type == nt_subcmd)
 			exit(__exec(tree->left, env));
 		cmd = tree->data;
 		args = get_expanded_args(cmd, *env);
@@ -208,9 +232,7 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 			return (perror("minishell"), exit(1), 0);
 	}
 	else
-	{
 		return (close(fd[READ]), pid);
-	}
 	return (-1);
 }
 
@@ -221,7 +243,6 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
 	extern int last_exit_status;
 	char **path_dirs;
     pid_t pid;
-	int fd;
 
     path_dirs = grep_paths(*env);
 	if (!path_dirs)
@@ -237,9 +258,8 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
     }
     if (pid == 0)
     {
-		fd = open_files(redir_list, env);
-		if (fd < 0)
-			return (0);
+		if (open_files(redir_list, env))
+			return (exit(EXIT_FAILURE), 0);
 		cmd_args = get_cmd_args(args, path_dirs);
 		if (!cmd_args)
 			exit(EXIT_FAILURE);
