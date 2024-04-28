@@ -73,10 +73,10 @@ char **get_expanded_args(t_cmd *cmd, char **env)
 int exec_simple(t_btree *tree, char ***env)
 {
 	char **args;
-	pid_t pid;
+	int	status;
 
     if (!tree)
-        return 0;
+        return 1;
 
     t_cmd *cmd = tree->data;
 	t_list	*redir = cmd->redir_list;
@@ -85,25 +85,11 @@ int exec_simple(t_btree *tree, char ***env)
 	if (!args)
 	{
 		perror("minishell");
-		return 0;
+		return 1;
     }
 	
-	pid = exec_cmd(redir, args, env);
-	if (pid < 0)
-	{
-		perror("minishell");
-		return 0;
-	}
-	else if (pid == 1)
-		return 1;
-	else
-		return 0;
-	// else
-	// {
-	// 	return 1;
-	// }
-
-    return 0;
+	status = exec_cmd(redir, args, env);
+	return (status);
 }
 
 /*
@@ -174,7 +160,7 @@ int exec_pipe(t_btree *tree, char ***env, int pipes[2][2], int is_root)
 {
 	if (!tree)
 		return (0);
-	if (tree->left->type == nt_simplecmd)
+	if (tree->left->type != nt_pipe)
 	{
 		add_pipe(pipes);
 		exec_piped_cmd(tree->left, env, pipes);
@@ -193,38 +179,50 @@ int exec_pipe(t_btree *tree, char ***env, int pipes[2][2], int is_root)
 int exec_and_or(t_btree *tree, char ***env)
 {
 	int first_res;
-	first_res = 0;
 
+	first_res = 0;
 	if (!tree)
 		return (0);
 	first_res = __exec(tree->left, env);
-	if (first_res)
+	if (tree->type == nt_or_if && first_res)
 	{
-		if (tree->type == nt_or_if)
-		{
-			return __exec(tree->right, env);
-		}
-		else
-			return (0);
+		return __exec(tree->right, env);
 	}
-	if (!first_res)
+	if (tree->type == nt_and_if && !first_res)
 	{
-		if (tree->type == nt_and_if)
-		{
-			return (__exec(tree->right, env));
-		}
-		else
-			return (0);
+		return __exec(tree->right, env);
 	}
-	return (0);
+	return (first_res);
 }
 
 int	exec_sub(t_btree *tree, char ***env)
 {
-	(void)env;
-	if (!tree)
+	pid_t	pid;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), 1);
+	if (pid == 0) // CHILD
+	{
+		exit(__exec(tree->left, env));
+	}
+	else
+	{
+		int status;
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+		{
+			ft_printf("subcmd status: %d\n", (WEXITSTATUS(status)));
+			return WEXITSTATUS(status);
+		}
+			
+		else if (WIFSIGNALED(status))
+		{
+			ft_printf("subcmd status signaled: %d\n", (128 + WTERMSIG(status)));
+			return (128 + WTERMSIG(status));
+		}
 		return (1);
-	return (__exec(tree->left, env));
+	}
 }
 
 int __exec(t_btree *tree, char ***env)

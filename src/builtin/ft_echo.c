@@ -1,7 +1,5 @@
 #include "../../inc/minishell.h"
 
-
-
 /* don't forget to free the memory if join is failed */
 int	ft_echo(char **args)
 {

@@ -76,6 +76,8 @@ t_list	*lexer(char *line)
 
 	tokens = NULL;
 	i = 0;
+	if (!line)
+		return (NULL);
 	while (line[i])
 	{
 		if (line[i] == 32 || line[i] == '\t')
