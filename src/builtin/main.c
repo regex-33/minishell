@@ -30,26 +30,30 @@ int	get_last_exit_status(void)
 {
 	return (last_exit_status);
 }
-int	select_buildin_commands(char **args, char ***env)
+int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
 {
+	int		fd;
+
+	fd	= open_files(redir_list, env);
+	if (fd < 0)
+		return (0);
+	printf("file descriptor: %d\n", fd);
 	if (!ft_strcmp(args[0], "cd"))
-		ft_change_dir(args[1], *env);
+		ft_change_dir(args[1], *env); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
-		ft_pwd();
+		return (ft_pwd(fd));
 	else if (!ft_strcmp(args[0], "exit"))
 		ft_exit(args[1]);
 	else if (!ft_strcmp(args[0], "echo"))
-		ft_echo(args);
+		return (ft_echo(args, fd));
 	else if (!ft_strcmp(args[0], "env"))
-		ft_env(*env);
+		return (ft_env(*env, fd));
 	else if (!ft_strcmp(args[0], "export"))
-		ft_export(args, env);
-	else if (!ft_strcmp(args[0], "get"))
-		get_value(args[1], *env);
+		return (ft_export(args, env, fd));
 	else if (!ft_strcmp(args[0], "unset"))
-		ft_unset(args[1], env);
+		return (ft_unset(args[1], env));
 	else
-		return (0);
+		return (-1);
 	return (1);
 }
 

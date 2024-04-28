@@ -50,15 +50,74 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 	return (cmd_args);
 }
 
-int open_files(t_list *redir_list)
+
+char **expand_filename(char *filename, char **env)
+{
+	char **files = NULL;
+	t_list *expanding_list = NULL;
+
+	if (!expand_arg_list(&expanding_list, filename, env))
+	{
+		perror("minishell");
+		return NULL;
+	}
+	if (expanding_list)
+    {
+        files = ft_list_to_array(expanding_list);
+        if (!files)
+        {
+            freeLinkedList(expanding_list);
+            return NULL;
+        }
+        //freeLinkedList(expanding_list);
+		//printArray(args);
+        //free_array(args);
+		return files;
+    }
+	return NULL;
+}
+int count_array(char **array)
+{
+	int i;
+
+	i = 0;
+	if (!array || !*array)
+		return 0;
+	while (array[i])
+		i++;
+	return i;
+}
+
+int open_files(t_list *redir_list, char ***env)
 {
 	t_redir	*redir;
 	int				fd;
+	char		**files;
+	fd = 1;
 	//t_token *token;
 	
+	if (!redir_list)
+		return (fd);
+	(void)fd;
+	printf("I am in open_files\n");
 	while (redir_list)
 	{
-		
+        redir = redir_list->content;
+		files = expand_filename(redir->filename, *env);
+		if (!files)
+		{
+			perror("minishell");
+			return -1;
+		}
+		if (count_array(files) > 1)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd("ambiguous redirect\n", STDERR_FILENO);
+			free_array(files);
+			return -1;
+		}
+		printArray(files);
+		/*
         redir = redir_list->content;
 		if (redir->type == REDIR_IN)
 			fd = open(redir->filename, O_RDONLY);
@@ -66,6 +125,11 @@ int open_files(t_list *redir_list)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redir->type == REDIR_APPEND)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		else if (redir->type == REDIR_HERE)
+		{
+			fd = open(redir->filename, O_RDONLY);
+			unlink(redir->filename);
+		}
 		if (fd < 0)
 		{
 			perror("minishell");
@@ -75,9 +139,10 @@ int open_files(t_list *redir_list)
 			dup2(fd, redir->fd);
 		//if (redir != NULL)
 		close(fd);
+		*/
         redir_list = redir_list->next;
 	}
-	return (1);
+	return (fd);
 }
 
 pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
@@ -148,17 +213,20 @@ pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
 
 pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 {
-  char **cmd_args;
-  extern char **environ;
-  extern int last_exit_status;
-    char **path_dirs;
+	char **cmd_args;
+	extern char **environ;
+	extern int last_exit_status;
+	char **path_dirs;
     pid_t pid;
 	int fd;
 
     //printf("i am in exec_cmd\n ");
     path_dirs = grep_paths(*env);
-	if (select_buildin_commands(args, env))
-		return 1;
+	if (!path_dirs)
+		return -1;
+	int status = select_buildin_commands(args, redir_list, env);
+	if (status != -1)
+		return (status);
     pid = fork();
     if (pid < 0)
     {
@@ -167,7 +235,7 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
     }
     if (pid == 0)
     {
-		fd = open_files(redir_list);
+		fd = open_files(redir_list, env);
 		if (fd < 0)
 			return (0);
 		cmd_args = get_cmd_args(args, path_dirs);
@@ -177,7 +245,6 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 		execve(cmd_args[0], cmd_args, *env);
 		perror("Execve failed");
 		exit(EXIT_FAILURE);
-		//exit(EXIT_SUCCESS);
     }
     else
     {

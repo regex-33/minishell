@@ -76,7 +76,7 @@ int	is_valid_identifier(const char *variable)
 	return (1);
 }
 
-void	ft_print_free(char **variable)
+void	ft_print_free(char **variable, int fd)
 {
 	int		i;
 	char	*str;
@@ -87,19 +87,19 @@ void	ft_print_free(char **variable)
 	{
 		temp = variable[i];
 		str = ft_strchr(variable[i], '=');
-		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd("declare -x ", fd);
 		while (*variable[i] && *variable[i] != '=')
-			write(1, variable[i]++, 1);
+			write(fd, variable[i]++, 1);
 		ft_putstr_fd("=\"", 1);
 		if (str != NULL)
-			ft_putstr_fd(str + 1, 1);
-		ft_putstr_fd("\"\n", 1);
+			ft_putstr_fd(str + 1, fd);
+		ft_putstr_fd("\"\n", fd);
 		free(temp);
 		i++;
 	}
 	free(variable);
 }
-int	ft_sort_export_cmd(char **environ_exp)
+int	ft_sort_export_cmd(char **environ_exp, int fd)
 {
 	int		i;
 	char	**variable;
@@ -137,58 +137,11 @@ int	ft_sort_export_cmd(char **environ_exp)
 	}
 	variable[env_count] = NULL;
 	merge_sort(variable, 0, env_count - 1);
-	ft_print_free(variable);
+	ft_print_free(variable, fd);
 	return (1);
 }
 
-char	**concatStrings(char **str1, char **str2)
-{
-	int		count1 = 0, count2;
-	char	**result;
 
-	count1 = 0, count2 = 0;
-	while (str1[count1] != NULL)
-		count1++;
-	while (str2[count2] != NULL)
-		count2++;
-
-	result = (char **)malloc((count1 + count2 + 1) * sizeof(char *));
-	if (result == NULL)
-	{
-		printf("Memory allocation failed!\n");
-		exit(1);
-	}
-	int i = 0;
-	while(str1[i])
-	{
-		result[i] = strdup(str1[i]);
-		if (result[i] == NULL)
-		{
-			printf("Memory allocation failed!\n");
-			for (int j = 0; j < i; j++)
-				free(result[j]);
-			free(result);
-			exit(1);
-		}
-		i++;
-	}
-	i = 0;
-	while (str2[i])
-	{
-		result[count1 + i] = strdup(str2[i]);
-		if (result[count1 + i] == NULL)
-		{
-			printf("Memory allocation failed!\n");
-			for (int j = 0; j < count1 + i; j++)
-				free(result[j]);
-			free(result);
-			exit(1);
-		}
-		i++;
-	}
-	result[count1 + count2] = NULL;
-	return (result);
-}
 
 int	check_variable_name(char *variable)
 {
@@ -208,7 +161,7 @@ int	check_variable_name(char *variable)
 	return (free(str), 1);
 }
 
-int	ft_export(char **variable, char ***env_ptr)
+int	ft_export(char **variable, char ***env_ptr, int fd)
 {
 	int			env_count;
 	char		**new_environ;
@@ -225,36 +178,29 @@ int	ft_export(char **variable, char ***env_ptr)
 	name_len = 0;
 	to_equal = 0;
 	j = 1;
-	should_countinue = 0;
-	// check if str is null 
-
-	to_equal = 0;
-
-	printf("variable[1] : %s\n", variable[1]);
+	//printf("variable[1] : %s\n", variable[1]);
 	if (variable[1] == NULL)
 	{
-		if (!ft_sort_export_cmd(*env_ptr))
+		if (!ft_sort_export_cmd(*env_ptr, fd))
 			return (1);
 		return (0);
 	}
-	if (check_variable_name(variable[1]) == 0)
-		return (0);
+	//if (check_variable_name(variable[1]) == 0)
+	//	return (0);
 	while (variable[j])
 	{
-		if (check_variable_name(variable[j]) == 0)
-			return (0);
+		if (!check_variable_name(variable[j]))
+			return (1);
 		env = *env_ptr;
 		should_countinue = 0;
 		env_count = 0;
 		i = 0;
 		add_to_value = 0;
 		str = variable[j];
+
 		if (!str)
-		{
-			perror("minishell: malloc error");
-			return (0);
-		}
-		printf("str : %s\n", str);
+			return (perror("minishell: malloc error"), 1);
+
 		if (!is_valid_identifier(str))
 		{
 			last_exit_status = 1;
@@ -290,15 +236,15 @@ int	ft_export(char **variable, char ***env_ptr)
 		if (!should_countinue)
 		{
 			new_environ = malloc((env_count + 2) * sizeof(char *));
-			if (new_environ == NULL)
-				return (perror("minishell"), 0); // should free
+			if (!new_environ) 
+				return (perror("minishell"), 1); // should free
 			while (i < env_count)
 			{
 				new_environ[i] = ft_strdup(env[i]);
 				i++;
 			}
 			new_environ[env_count] = ft_strdup(str);
-			printf("new_environ[%d] : %s\n", env_count, new_environ[env_count]);
+			//printf("new_environ[%d] : %s\n", env_count, new_environ[env_count]);
 			new_environ[env_count + 1] = NULL;
 			*env_ptr = new_environ;
 		}
@@ -311,5 +257,5 @@ int	ft_export(char **variable, char ***env_ptr)
 		// free_array(env);
 		j++;
 	}
-	return (1);
+	return (0);
 }

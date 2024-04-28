@@ -60,7 +60,7 @@ void		ft_change_dir(const char *path, char **env);
 
 /* ft_echo */
 
-int         ft_echo(char **args);
+int         ft_echo(char **args, int fd);
 //void		ft_echo_print(char *temp, int start_index, char **env);
 
 /* ft_exit */
@@ -72,7 +72,7 @@ void		ft_exit(const char *exit_code);
 /* ft_export */
 
 int			is_valid_identifier(const char *variable);
-int			ft_export(char **variable, char ***env);
+int			ft_export(char **variable, char ***env, int fd);
 
 /* ft_unset */
 
@@ -80,8 +80,8 @@ int			ft_unset(char *variable, char ***env);
 
 /* ft_pwd and ft_env */
 
-void		ft_pwd(void);
-void		ft_env(char **env);
+int		ft_pwd(int fd);
+int ft_env(char **env, int fd);
 char		*get_value(char *name, char **env);
 
 /* ft_get_username and get_hostname */
@@ -94,6 +94,6 @@ void    print_prompt_with_user_details(void);
 char	**grep_paths(char **env);
 int			get_last_exit_status(void);
 char	*ft_path(void);
-int	select_buildin_commands(char **args, char ***env);
+int	select_buildin_commands(char **args, t_list *redir_list, char ***env);
 
 #endif

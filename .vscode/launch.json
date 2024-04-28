@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/Users/yachtata/temp_git",
-      "program": "/Users/yachtata/temp_git/build/Debug/outDebug",
+      "cwd": "/Users/yachtata/minishell/src/execution",
+      "program": "/Users/yachtata/minishell/src/execution/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
