@@ -156,20 +156,21 @@ pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
 		return (perror("minishell"), exit(1), -1);
 	if (pid == 0)
 	{
-		cmd = leaf->data;
 		close(pipes[OUT_PIPE][READ]);
 		if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
 			return (close(pipes[OUT_PIPE][WRITE]), exit(1), 0);
 		dup2(pipes[OUT_PIPE][WRITE], STDOUT_FILENO);
-
+		close(pipes[OUT_PIPE][WRITE]);
 		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
 			close(pipes[IN_PIPE][READ]);
 
-		close(pipes[OUT_PIPE][WRITE]);
+		if (leaf->type == nt_subcmd)
+			exit(__exec(leaf->left, env));
+		cmd = leaf->data;
 		args = get_expanded_args(cmd, *env);
 		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
-			return (perror("minishell:"), 0);
+			return (perror("minishell"), 0);
 		if (execve(args[0], args, *env))
 			return (perror("minishell"), exit(1), 0);
 	}
@@ -182,7 +183,7 @@ pid_t	exec_piped_cmd(t_btree *leaf, char ***env, int pipes[2][2])
 	return (-1);
 }
 
-pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
+pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
@@ -193,14 +194,16 @@ pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
 		return (perror("minishell"), exit(1), -1);
 	if (pid == 0)
 	{
-		cmd = leaf->data;
 		if (dup2(fd[READ], STDIN_FILENO))
 			return (close(fd[READ]), exit(1), 0);
 		close(fd[READ]);
+		if (tree->type == nt_subcmd)
+			exit(__exec(tree->left, env));
+		cmd = tree->data;
 		args = get_expanded_args(cmd, *env);
 		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
-			return (perror("minishell:"), 0);
+			return (perror("minishell"), 0);
 		if (execve(args[0], args, *env))
 			return (perror("minishell"), exit(1), 0);
 	}
@@ -211,7 +214,7 @@ pid_t	exec_last_piped_cmd(t_btree *leaf, char ***env, int fd[2])
 	return (-1);
 }
 
-pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
+int	exec_cmd(t_list *redir_list, char **args, char ***env)
 {
 	char **cmd_args;
 	extern char **environ;
@@ -220,7 +223,6 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
     pid_t pid;
 	int fd;
 
-    //printf("i am in exec_cmd\n ");
     path_dirs = grep_paths(*env);
 	if (!path_dirs)
 		return -1;
@@ -230,8 +232,8 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
     pid = fork();
     if (pid < 0)
     {
-        perror("Fork failed");
-        return -1;
+        perror("minishell");
+        return (1);
     }
     if (pid == 0)
     {
@@ -243,7 +245,7 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
 			exit(EXIT_FAILURE);
 		//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
 		execve(cmd_args[0], cmd_args, *env);
-		perror("Execve failed");
+		perror("minishell");
 		exit(EXIT_FAILURE);
     }
     else
@@ -251,23 +253,12 @@ pid_t exec_cmd(t_list *redir_list, char **args, char ***env)
         int status;
         waitpid(pid, &status, 0);
         if (WIFEXITED(status))
-        {
-            int exit_status = WEXITSTATUS(status);
-            if (exit_status != 0)
-            {
-                //ft_printf("Command execution failed with status %d\n", exit_status);
-				last_exit_status = exit_status;
-                return (exit_status);
-            }
-        }
+            last_exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-		{
 			last_exit_status = WTERMSIG(status) + 128;
-			return (last_exit_status);
-		}
-        return pid;
+        return (last_exit_status);
     }
-    return pid;
+    return (1);
 }
 
 // echo * segv when no file on dir/h
