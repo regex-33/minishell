@@ -197,13 +197,17 @@ int exec_and_or(t_btree *tree, char ***env)
 
 int	exec_sub(t_btree *tree, char ***env)
 {
+	t_list	*redir_list;
 	pid_t	pid;
 
+	redir_list = tree->data;
 	pid = fork();
 	if (pid < 0)
 		return (perror("minishell"), 1);
 	if (pid == 0) // CHILD
 	{
+		if (open_files(redir_list, env))
+			return (exit(1), 0);
 		exit(__exec(tree->left, env));
 	}
 	else

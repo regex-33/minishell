@@ -16,6 +16,9 @@ int check_existence(const char *path)
 }
 int excute_failed(char **args)
 {
+	struct stat sb;
+
+	stat(args[0], &sb);
 	//if (access(args[0], F_OK))
 	if (check_existence(args[0]))
 		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
@@ -23,6 +26,9 @@ int excute_failed(char **args)
 	else if (!is_directory(args[0]))
 		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
 			ft_putendl_fd(": Not a directory", 2), 1);
+	else if (sb.st_mode & S_IRUSR)
+		return (ft_putstr_fd("minishell: cd", 2), ft_putstr_fd(args[0], 2),
+			ft_putendl_fd(": Permission denied", 2), 1);
 	return (1);
 }
 

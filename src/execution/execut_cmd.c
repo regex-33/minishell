@@ -27,6 +27,35 @@ char	*ft_which(char *cmd, char **path_dirs)
 	return (free(tmp), NULL);
 }
 
+void	print_err(char *mid, char *suffix)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (mid && !suffix)
+		ft_putendl_fd(mid, 2);
+	if (mid && suffix)
+		ft_putstr_fd(mid, 2);
+	if (suffix)
+		ft_putendl_fd(suffix, 2);
+}
+
+int	is_valid_cmd(char *pathname)
+{
+	struct stat sb;
+
+	if (stat(pathname, &sb))
+	{
+		if (errno == ENOENT)
+			return (print_err(pathname, " : command not found."), 127);
+		if (errno == EACCES)
+			return (print_err(pathname, " : Permission denied."), 126);
+	}
+	if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		return (print_err(pathname, " : is a directory."), 126);
+	if (access(pathname, X_OK))
+		return (print_err(pathname, " : Permission denied."), 126);
+	return (0);
+}
+
 char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 {
 	char	*cmd_pathname;
@@ -115,6 +144,8 @@ int handle_heredoc(char **filename, char **env)
 		if (!expanded_line)
 			return (perror("minishell"), -1);
 		ft_putstr_fd(expanded_line, new_fd);
+
+
 		free(expanded_line);
 		free_array(args);
 		free(line);
@@ -223,12 +254,16 @@ pid_t	exec_piped_cmd(t_btree *tree, char ***env, int pipes[2][2])
 		if (open_files(redir_list, env))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
+		{
+			if (open_files(redir_list, env))
+				return (exit(1), 0);
 			exit(__exec(tree->left, env));
+		}
 		cmd = tree->data;
 		args = get_expanded_args(cmd, *env);
 		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
-			return (perror("minishell"), 0);
+			return (exit(1), 0);
 		if (execve(args[0], args, *env))
 			return (perror("minishell"), exit(1), 0);
 	}
@@ -263,12 +298,16 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 		if (open_files(redir_list, env))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
+		{
+			if (open_files(redir_list, env))
+				return (exit(1), 0);
 			exit(__exec(tree->left, env));
+		}
 		cmd = tree->data;
 		args = get_expanded_args(cmd, *env);
 		args = get_cmd_args(args, grep_paths(*env));
 		if (!args)
-			return (perror("minishell"), 0);
+			return (exit(1), 0);
 		if (execve(args[0], args, *env))
 			return (perror("minishell"), exit(1), 0);
 	}
@@ -293,10 +332,7 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
 		return (status);
     pid = fork();
     if (pid < 0)
-    {
-        perror("minishell");
-        return (1);
-    }
+        return (perror("minishell"), 0);
     if (pid == 0)
     {
 		if (open_files(redir_list, env))
@@ -304,10 +340,8 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
 		cmd_args = get_cmd_args(args, path_dirs);
 		if (!cmd_args)
 			exit(EXIT_FAILURE);
-		//printf("CMD ARGS: %s ==> args : %s\n", cmd_args[0], cmd_args[1]);
-		execve(cmd_args[0], cmd_args, *env);
-		perror("minishell");
-		exit(EXIT_FAILURE);
+		if (execve(cmd_args[0], cmd_args, *env))
+			return (perror("minishell"), exit(1), 0);
     }
     else
     {
