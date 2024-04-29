@@ -1,32 +1,41 @@
 #include "../../inc/minishell.h"
-
+  
 int	ft_pwd(int fd)
 {
+	//extern char last_path[1024];
 	char	cwd[1024];
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
 		ft_putstr_fd(cwd, fd);
 		ft_putchar_fd('\n', fd);
+		//ft_strcpy(last_path, cwd);
 	}
 	else
 	{
-		// hadle this case if errno :  errno = ERANGE; should add 5000 to the size of the buffer	
-		perror("getcwd() error");
-		return 1;
+		// if (last_path[0] != '\0')
+		// {
+		// 	ft_putstr_fd(last_path, fd);
+		// 	ft_putchar_fd('\n', fd);
+		// }
+		// else
+		// {
+		//	perror("getcwd() error");
+			return (1);
+//		}
 	}
-	return 0;
+	return (0);
 }
 
 int	ft_env(char **env, int fd)
 {
-	char		**env_ptr;
+	char	**env_ptr;
 
 	env_ptr = env;
 	if (!env_ptr)
 	{
 		ft_printf("THIS IS NULL\n");
-		return 1;
+		return (1);
 	}
 	while (*env_ptr != NULL)
 	{
@@ -37,7 +46,7 @@ int	ft_env(char **env, int fd)
 		}
 		env_ptr++;
 	}
-	return 0;
+	return (0);
 }
 
 /* i think should free the memory when you change the value of environ*/

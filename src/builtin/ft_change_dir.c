@@ -1,84 +1,57 @@
 #include "../../inc/minishell.h"
 
-char	*extract_after_dollar(const char *str, char quots)
+int	is_directory(const char *path)
 {
-	const char	*start;
-	const char	*end;
-	size_t		length;
-	char		*substring;
+	struct stat	path_stat;
 
-	if (str[0] != '$')
-	{
-		return ((char *)str);
-	}
-	start = str;
-	end = str + 1;
-	while (*end != '\0' && *end != quots)
-		end++;
-	length = end - start;
-	substring = (char *)malloc(length + 1);
-	if (substring == NULL)
-	{
-		perror("Memory allocation failed");
-		return (NULL);
-	}
-	ft_strncpy(substring, start, length);
-	substring[length] = '\0';
-	return (substring);
+	stat(path, &path_stat);
+	return (S_ISDIR(path_stat.st_mode));
 }
 
-char	*extract_substring(const char *str)
+int check_existence(const char *path)
 {
-	const char	*start;
-	char		*substring;
-	char		quote;
+	struct stat	path_stat;
 
-	substring = NULL;
-	quote = '\0';
-	if (*str == '\'' || *str == '\"')
-		quote = *str;
-	while (*str == quote)
-		str++;
-	start = str;
-	while (*str != '\0' && *str != quote)
-		str++;
-	substring = (char *)malloc((str - start + 1) * sizeof(char));
-	if (substring != NULL)
-	{
-		ft_memcpy(substring, start, str - start);
-		substring[str - start] = '\0';
-	}
-	return (extract_after_dollar(substring, quote));
+	return (stat(path, &path_stat));
+}
+int excute_failed(char **args)
+{
+	//if (access(args[0], F_OK))
+	if (check_existence(args[0]))
+		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
+			ft_putendl_fd(": No such file or directory", 2), 1);
+	else if (!is_directory(args[0]))
+		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
+			ft_putendl_fd(": Not a directory", 2), 1);
+	return (1);
 }
 
-int	ft_change_dir(const char *path, char **env)
+extern int	ft_change_dir(char **path, char **env)
 {
-	const char	*dir;
-	extern int	last_exit_status;
+	static char	last_path[1024] = "";
+	char	*home;
 
-	if (path && count_strings(path, ' ') > 1)
+	if (path && path[0])
 	{
-		last_exit_status = 1;
-		ft_putstr_fd(" too many arguments\n", 2);
-		return (1);
+		if (chdir(path[0]) == -1)
+			return (excute_failed(path));
+		getcwd(last_path, sizeof(last_path));
 	}
-	if (path != NULL)
+    else
 	{
-		dir = extract_substring(path);
-		if (dir[0] == '$')
+		home = get_value("HOME", env);
+		if (!home)
+			return (ft_putendl_fd("minishell: cd: HOME not se", 2), 1);
+        if (last_path[0] == '\0')
 		{
-			dir++;
-			dir = get_value((char *)dir, env);
-		}
-		if (chdir(dir) == -1)
-        {
-		    last_exit_status = 1;
-			printf(" i am here\n");
-			ft_putstr_fd(" No such file or directory\n", 2);
-			return (1);
+            /* If last_path is empty, use HOME directory*/
+            if (chdir(home) == -1)
+				return (perror("minishell: cd"), 1);
+            getcwd(last_path, sizeof(last_path));
         }
+		else
+			chdir(home);
 	}
-	else
-		chdir(get_value("HOME", env));
 	return (0);
 }
+

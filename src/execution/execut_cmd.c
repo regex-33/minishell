@@ -51,7 +51,7 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 }
 
 
-char **expand_filename(char *filename, char **env)
+char **expand_filename_here_doc(char *filename, char **env)
 {
 	char **files = NULL;
 	t_list *expanding_list = NULL;
@@ -69,9 +69,7 @@ char **expand_filename(char *filename, char **env)
             freeLinkedList(expanding_list);
             return NULL;
         }
-        //freeLinkedList(expanding_list);
-		//printArray(args);
-        //free_array(args);
+        freeLinkedList(expanding_list);
 		return files;
     }
 	return NULL;
@@ -87,6 +85,48 @@ int count_array(char **array)
 		i++;
 	return i;
 }
+int handle_heredoc(char **filename, char **env)
+{
+	int new_fd;
+	int old_fd;
+	char	**args = NULL;
+	char	*line = NULL;
+	char	*new_filename = NULL;
+	char	*expanded_line = NULL;
+
+	new_filename = random_filename();
+	if (!new_filename)
+		return (perror("minishell"), -1);
+	new_fd = open(new_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (new_fd < 0)
+		return (perror("minishell"), -1);
+	//printf("OLD FILENAME : %s |  NEW FILENAME: %s\n", *filename, new_filename);
+
+	old_fd = open(*filename, O_RDONLY);
+	if (old_fd < 0)
+		return (perror("minishell"), -1);
+	line = get_next_line(old_fd);
+	while (line)
+	{
+		args =	expand_filename_here_doc(line, env);
+		if (!args)
+			return (perror("minishell"), -1);
+		expanded_line = join_strings(args, 0);
+		if (!expanded_line)
+			return (perror("minishell"), -1);
+		ft_putstr_fd(expanded_line, new_fd);
+		free(expanded_line);
+		free_array(args);
+		free(line);
+		line = get_next_line(old_fd);
+	}
+	close(old_fd);
+	close(new_fd);
+	unlink(*filename);
+	*filename = new_filename;
+	return 0;
+}
+
 void	restore_redir(t_list *redir_list)
 {
 	t_redir	*redir;
@@ -113,7 +153,7 @@ int	open_files(t_list *redir_list, char ***env)
 	while (redir_list)
 	{
         redir = redir_list->content;
-		files = expand_filename(redir->filename, *env);
+		files = expand_filename_here_doc(redir->filename, *env);
 		if (!files)
 		{
 			restore_redir(redir_list);
@@ -136,15 +176,16 @@ int	open_files(t_list *redir_list, char ***env)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else if (redir->type == REDIR_HERE)
 		{
+			if (handle_heredoc(&redir->filename, *env))
+				return (restore_redir(redir_list), perror("minishell"), 1);
 			fd = open(redir->filename, O_RDONLY);
-			//unlink(redir->filename);
+			if (fd < 0)
+				return (restore_redir(redir_list), perror("minishell"), 1);
+			unlink(redir->filename);
+			//printf("FILENAME: %s\n", redir->filename);
 		}
 		if (fd < 0)
-		{
-			restore_redir(redir_list);
-			perror("minishell");
-			return 1;
-		}
+			return (restore_redir(redir_list), perror("minishell"), 1);
 		redir->bak_fd = dup(redir->fd);
 		if (redir->bak_fd < 0)
 			return (restore_redir(redir_list), perror("minishell"), 1);

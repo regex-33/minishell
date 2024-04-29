@@ -60,7 +60,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
 	if (open_files(redir_list, env))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		status = ft_change_dir(args[1], *env); // return status code
+		status = ft_change_dir(++args, *env); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
 		status = ft_pwd(1);
 	else if (!ft_strcmp(args[0], "exit"))

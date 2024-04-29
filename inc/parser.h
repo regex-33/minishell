@@ -141,3 +141,6 @@ void	print_token_list(t_list *token_list);
 int		match_pattern(char *str, int flags, char *sentinel);
 void	E(t_list *tokens);
 void	P(t_list *tokens);
+
+// youssef add this
+char	*random_filename(void);

@@ -134,6 +134,8 @@ t_list **expand_arg_list(t_list **list, char *temp, char **env)
 	int	have_asterisk = 0;
 	int		index = 0;
 
+	if (!temp)
+		return NULL;
 	while (temp[i])
 	{ 
 		index = 0;

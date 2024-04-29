@@ -10,4 +10,6 @@ char **get_expanded_args(t_cmd *cmd, char **env);
 
 void    restore_redir(t_list *redir_list);
 int open_files(t_list *redir_list, char ***env);
+char **expand_filename_here_doc(char *filename, char **env);
+int count_array(char **array);
 
