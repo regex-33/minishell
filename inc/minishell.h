@@ -71,12 +71,22 @@ int			ft_exit(const char *exit_code);
 
 /* ft_export */
 
-int			is_valid_identifier(const char *variable);
 int			ft_export(char **variable, char ***env, int fd);
+int	update_existing_variable(char **variable, char ***env_ptr, int *env_count, int add_to_value);
+int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index);
+int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local);
+int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local);
+
+/* ft_export_etc    */
+
+int	check_variable_name(char *variable);
+int	ft_sort_export_cmd(char **environ_exp, int fd, int i);
+void	ft_print_free(char **variable, int fd);
+int	is_valid_identifier(const char *variable);
 
 /* ft_unset */
 
-int			ft_unset(char *variable, char ***env);
+int			ft_unset(char **variable, char ***env);
 
 /* ft_pwd and ft_env */
 

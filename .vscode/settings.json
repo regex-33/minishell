@@ -64,7 +64,8 @@
     "stddef.h": "c",
     "readline.h": "c",
     "stat.h": "c",
-    "libft.h": "c"
+    "libft.h": "c",
+    "sstream": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

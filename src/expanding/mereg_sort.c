@@ -63,7 +63,6 @@ void	merge_sort(char **arr, int left, int right)
 	}
 }
 
-
 void	merge_linked_list(t_list **head, t_list *left, t_list *right)
 {
 	t_list	*result;
@@ -144,23 +143,21 @@ void	split_list(t_list *head, t_list **left, t_list **right)
 
 void	merge_sort_linkedlist(t_list **head)
 {
-	t_list *current = *head;
-	t_list *left;
-	t_list *right;
+	t_list	*current;
+	t_list	*left;
+	t_list	*right;
 
+	current = *head;
 	// Base case: if list is empty or has only one node
 	if (current == NULL || current->next == NULL)
 	{
 		return ;
 	}
-
 	// Split the list into two halves
 	split_list(current, &left, &right);
-
 	// Recursively sort the two halves
 	merge_sort_linkedlist(&left);
 	merge_sort_linkedlist(&right);
-
 	// Merge the sorted halves
 	merge_linked_list(head, left, right);
 }
