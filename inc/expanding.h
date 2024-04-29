@@ -1,3 +1,5 @@
+#include "types.h"
+
 char	*get_cmd_path(char	**cmd_args, char **path_dirs);
 /*  asterisk functions */
 

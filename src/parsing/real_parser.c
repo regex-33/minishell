@@ -159,8 +159,8 @@ t_btree	*parse_simplecmd(t_list *tokens)
 		}
 		token = next_token(tokens, 0);
 	}
-	if (!cmd->cmd_args)
-		return (free_cmd(cmd), panic("minishell", PERR_EXP_TOK, 0), NULL);
+//	if (!cmd->cmd_args && !cmd->redir_list)
+//		return (free_cmd(cmd), panic("minishell", PERR_EXP_TOK, 0), NULL);
 	simplecmd_root = new_leaf(nt_simplecmd, cmd);
 	if (!simplecmd_root)
 		return(perror("minishell"), free_cmd(cmd), NULL);

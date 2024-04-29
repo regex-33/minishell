@@ -70,25 +70,28 @@ char **get_expanded_args(t_cmd *cmd, char **env)
 	return NULL;
 }
 
-int exec_simple(t_btree *tree, char ***env)
+int exec_simple(t_btree *tree, t_context *ctx)
 {
 	char **args;
 	int	status;
 
     if (!tree)
         return 1;
-
     t_cmd *cmd = tree->data;
 	t_list	*redir = cmd->redir_list;
-
-	args = get_expanded_args(cmd, *env);
+	if (!cmd->cmd_args)
+	{
+		open_files(cmd->redir_list, ctx->env);
+		restore_redir(cmd->redir_list);
+		return (0);
+	}
+	args = get_expanded_args(cmd, ctx->env);
 	if (!args)
 	{
 		perror("minishell");
 		return 1;
     }
-	
-	status = exec_cmd(redir, args, env);
+	status = exec_cmd(redir, args, ctx);
 	return (status);
 }
 
@@ -156,46 +159,46 @@ int	add_pipe(int pipes[2][2])
 	return (0);
 }
 
-int exec_pipe(t_btree *tree, char ***env, int pipes[2][2], int is_root)
+int exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_root)
 {
 	if (!tree)
 		return (0);
 	if (tree->left->type != nt_pipe)
 	{
 		add_pipe(pipes);
-		exec_piped_cmd(tree->left, env, pipes);
+		exec_piped_cmd(tree->left, ctx, pipes);
 	}
 	else
-		exec_pipe(tree->left, env, pipes, 0);
+		exec_pipe(tree->left, ctx, pipes, 0);
 	if (!is_root)
 	{
 		add_pipe(pipes);
-		return (exec_piped_cmd(tree->right, env, pipes));
+		return (exec_piped_cmd(tree->right, ctx, pipes));
 	}
 	else
-		return (exec_last_piped_cmd(tree->right, env, pipes[OUT_PIPE]));
+		return (exec_last_piped_cmd(tree->right, ctx, pipes[OUT_PIPE]));
 }
 
-int exec_and_or(t_btree *tree, char ***env)
+int exec_and_or(t_btree *tree, t_context *ctx)
 {
 	int first_res;
 
 	first_res = 0;
 	if (!tree)
 		return (0);
-	first_res = __exec(tree->left, env);
+	first_res = __exec(tree->left, ctx);
 	if (tree->type == nt_or_if && first_res)
 	{
-		return __exec(tree->right, env);
+		return __exec(tree->right, ctx);
 	}
 	if (tree->type == nt_and_if && !first_res)
 	{
-		return __exec(tree->right, env);
+		return __exec(tree->right, ctx);
 	}
 	return (first_res);
 }
 
-int	exec_sub(t_btree *tree, char ***env)
+int	exec_sub(t_btree *tree, t_context *ctx)
 {
 	t_list	*redir_list;
 	pid_t	pid;
@@ -206,9 +209,9 @@ int	exec_sub(t_btree *tree, char ***env)
 		return (perror("minishell"), 1);
 	if (pid == 0) // CHILD
 	{
-		if (open_files(redir_list, env))
+		if (open_files(redir_list, ctx->env))
 			return (exit(1), 0);
-		exit(__exec(tree->left, env));
+		exit(__exec(tree->left, ctx));
 	}
 	else
 	{
@@ -229,7 +232,7 @@ int	exec_sub(t_btree *tree, char ***env)
 	}
 }
 
-int __exec(t_btree *tree, char ***env)
+int __exec(t_btree *tree, t_context *ctx)
 {
 	int pipes[2][2];
 
@@ -241,7 +244,7 @@ int __exec(t_btree *tree, char ***env)
 	{
 		pid_t	pid;
 		int status;
-		pid = exec_pipe(tree, env, pipes, 1);
+		pid = exec_pipe(tree, ctx, pipes, 1);
 		if (pid < 0)
 			return (1);
 		waitpid(pid, &status, 0);
@@ -259,12 +262,12 @@ int __exec(t_btree *tree, char ***env)
 		}
 	}
 	else if (tree->type == nt_and_if)
-		return exec_and_or(tree, env);
+		return exec_and_or(tree, ctx);
 	else if (tree->type == nt_or_if)
-		return exec_and_or(tree, env);
+		return exec_and_or(tree, ctx);
 	else if (tree->type == nt_subcmd)
-		return exec_sub(tree, env);
+		return exec_sub(tree, ctx);
 	else
-		return exec_simple(tree, env);
+		return exec_simple(tree, ctx);
 	return (0);
 }

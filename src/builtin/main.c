@@ -50,17 +50,17 @@ int	is_builtin(char *cmd_name)
 	return (0);
 }
 
-int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
+int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 {
 	int	status;
 
 	status = 1;
 	if (!is_builtin(args[0]))
 		return (-1);
-	if (open_files(redir_list, env))
+	if (open_files(redir_list, ctx->env))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		status = ft_change_dir(++args, *env); // return status code
+		status = ft_change_dir(++args, ctx->env); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
 		status = ft_pwd(1);
 	else if (!ft_strcmp(args[0], "exit"))
@@ -68,11 +68,11 @@ int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
 	else if (!ft_strcmp(args[0], "echo"))
 		status = ft_echo(args, 1);
 	else if (!ft_strcmp(args[0], "env"))
-		status = ft_env(*env, 1);
+		status = ft_env(ctx->env, 1);
 	else if (!ft_strcmp(args[0], "export"))
-		status = ft_export(args, env, 1);
+		status = ft_export(args, &ctx->env, 1);
 	else if (!ft_strcmp(args[0], "unset"))
-		status = ft_unset(args, env);
+		status = ft_unset(args, &ctx->env);
 	restore_redir(redir_list);
 	return (status);
 }
@@ -153,16 +153,17 @@ int	main(void)
 	char	*pwd;
 	char	*prompt;
 	t_list	*tokens;
+	t_context	ctx;
 	t_btree	*parse_tree;
-	char	**env = NULL;
 
-	env = ft_creat_env();
-	if (env == NULL)
+	ctx.env = NULL;
+	ctx.env = ft_creat_env();
+	if (ctx.env == NULL)
 	{
-		while(env && *env)
+		while(ctx.env && *(ctx.env))
 		{
-			free(*env);
-			env++;
+			free(*(ctx.env));
+			ctx.env++;
 		}
 		printf("env	is NULL\n");
 		return 1;
@@ -198,7 +199,7 @@ int	main(void)
 		prompt_heredoc(parse_tree);
 		//ft_printf("----------- EXECUTION ---------\n");
 
- 		__exec(parse_tree, &env);
+ 		__exec(parse_tree, &ctx);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{

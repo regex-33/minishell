@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <dirent.h>
-
+# include "types.h"
 
 /* COLORS */
 
@@ -46,11 +46,6 @@
 #define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
 
 /* change directory */
-typedef struct s_context
-{
-    char    **env;
-    int     last_status;
-}          t_context;
 
 int	get_last_exit_status();
 
@@ -104,6 +99,6 @@ void    print_prompt_with_user_details(void);
 char	**grep_paths(char **env);
 int			get_last_exit_status(void);
 char	*ft_path(void);
-int	select_buildin_commands(char **args, t_list *redir_list, char ***env);
+int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
 
 #endif

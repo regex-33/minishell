@@ -174,7 +174,7 @@ void	restore_redir(t_list *redir_list)
 	}
 }
 
-int	open_files(t_list *redir_list, char ***env)
+int	open_files(t_list *redir_list, char **env)
 {
 	t_redir	*redir;
 	char		**files;
@@ -184,7 +184,7 @@ int	open_files(t_list *redir_list, char ***env)
 	while (redir_list)
 	{
         redir = redir_list->content;
-		files = expand_filename_here_doc(redir->filename, *env);
+		files = expand_filename_here_doc(redir->filename, env);
 		if (!files)
 		{
 			restore_redir(redir_list);
@@ -207,7 +207,7 @@ int	open_files(t_list *redir_list, char ***env)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else if (redir->type == REDIR_HERE)
 		{
-			if (handle_heredoc(&redir->filename, *env))
+			if (handle_heredoc(&redir->filename, env))
 				return (restore_redir(redir_list), perror("minishell"), 1);
 			fd = open(redir->filename, O_RDONLY);
 			if (fd < 0)
@@ -227,7 +227,7 @@ int	open_files(t_list *redir_list, char ***env)
 	return (0);
 }
 
-pid_t	exec_piped_cmd(t_btree *tree, char ***env, int pipes[2][2])
+pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
@@ -251,20 +251,20 @@ pid_t	exec_piped_cmd(t_btree *tree, char ***env, int pipes[2][2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (open_files(redir_list, env))
+		if (open_files(redir_list, ctx->env))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
-			if (open_files(redir_list, env))
+			if (open_files(redir_list, ctx->env))
 				return (exit(1), 0);
-			exit(__exec(tree->left, env));
+			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, *env);
-		args = get_cmd_args(args, grep_paths(*env));
+		args = get_expanded_args(cmd, ctx->env);
+		args = get_cmd_args(args, grep_paths(ctx->env));
 		if (!args)
 			return (exit(1), 0);
-		if (execve(args[0], args, *env))
+		if (execve(args[0], args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
 	}
 	else
@@ -276,7 +276,7 @@ pid_t	exec_piped_cmd(t_btree *tree, char ***env, int pipes[2][2])
 	return (-1);
 }
 
-pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
+pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
@@ -295,20 +295,20 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (open_files(redir_list, env))
+		if (open_files(redir_list, ctx->env))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
-			if (open_files(redir_list, env))
+			if (open_files(redir_list, ctx->env))
 				return (exit(1), 0);
-			exit(__exec(tree->left, env));
+			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, *env);
-		args = get_cmd_args(args, grep_paths(*env));
+		args = get_expanded_args(cmd, ctx->env);
+		args = get_cmd_args(args, grep_paths(ctx->env));
 		if (!args)
 			return (exit(1), 0);
-		if (execve(args[0], args, *env))
+		if (execve(args[0], args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
 	}
 	else
@@ -316,18 +316,17 @@ pid_t	exec_last_piped_cmd(t_btree *tree, char ***env, int fd[2])
 	return (-1);
 }
 
-int	exec_cmd(t_list *redir_list, char **args, char ***env)
+int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 {
 	char **cmd_args;
-	extern char **environ;
 	extern int last_exit_status;
 	char **path_dirs;
     pid_t pid;
 
-    path_dirs = grep_paths(*env);
+    path_dirs = grep_paths(ctx->env);
 	if (!path_dirs)
 		return -1;
-	int status = select_buildin_commands(args, redir_list, env);
+	int status = select_buildin_commands(args, redir_list, ctx);
 	if (status != -1)
 		return (status);
     pid = fork();
@@ -335,12 +334,12 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
         return (perror("minishell"), 0);
     if (pid == 0)
     {
-		if (open_files(redir_list, env))
+		if (open_files(redir_list, ctx->env))
 			return (exit(EXIT_FAILURE), 0);
 		cmd_args = get_cmd_args(args, path_dirs);
 		if (!cmd_args)
 			exit(EXIT_FAILURE);
-		if (execve(cmd_args[0], cmd_args, *env))
+		if (execve(cmd_args[0], cmd_args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
     }
     else
@@ -348,10 +347,10 @@ int	exec_cmd(t_list *redir_list, char **args, char ***env)
         int status;
         waitpid(pid, &status, 0);
         if (WIFEXITED(status))
-            last_exit_status = WEXITSTATUS(status);
+            ctx->last_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-			last_exit_status = WTERMSIG(status) + 128;
-        return (last_exit_status);
+			ctx->last_status = WTERMSIG(status) + 128;
+        return (ctx->last_status);
     }
     return (1);
 }
