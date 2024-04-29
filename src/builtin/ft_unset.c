@@ -1,31 +1,51 @@
 #include "../inc/minishell.h"
 
-
-int	ft_unset(char *variable, char ***env_ptr)
+int	get_env_count(char **env)
 {
-	int			env_count;
-	char		**new_environ;
-	int			i;
-	int			j = 0;
-	int			k;
-	char		*equals_pos;
-	int			var_length;
-	char		**env;
+	int	count;
 
-	env_count = 0;
-	i = 0;
-	env = *env_ptr;
-	if (!variable)
-		return (1);
-	while (env[env_count] != NULL)
-		env_count++;
+	count = 0;
+	while (env[count] != NULL)
+		count++;
+	return (count);
+}
+
+char	**allocate_new_environ(int env_count)
+{
+	char	**new_environ;
+
 	new_environ = malloc(env_count * sizeof(char *));
-	if (new_environ == NULL)
-		return (perror("malloc fial"), 1);
-	while (i < env_count)
+	if (!new_environ)
+		return (perror("minishell"), NULL);
+	return (new_environ);
+}
+
+
+int	copy_variable_to_new_environment(char *env_var, char **new_environ, int *j)
+{
+	new_environ[*j] = strdup(env_var);
+	if (!new_environ[*j])
+	{
+		while (*j > 0)
+			free(new_environ[(*j)--]);
+		return (perror("minishell"), 1);
+	}
+	(*j)++;
+	return (0);
+}
+
+int	copy_env_except_variable(char **env, char **new_environ, char *variable,
+		int *j)
+{
+	int		i;
+	char	*equals_pos;
+	int		var_length;
+
+	i = 0;
+	while (env[i] != NULL)
 	{
 		equals_pos = ft_strchr(env[i], '=');
-		if (equals_pos == NULL)
+		if (!equals_pos)
 		{
 			i++;
 			continue ;
@@ -35,22 +55,36 @@ int	ft_unset(char *variable, char ***env_ptr)
 			i++;
 		else
 		{
-			new_environ[j] = ft_strdup(env[i]);
-			if (new_environ[j] == NULL)
-			{
-				k = 0;
-				while (k < j)
-				{
-					free(new_environ[k]);
-					k++;
-				}
-				return (free(new_environ), perror("minishell"), 1);
-			}
+			if (copy_variable_to_new_environment(env[i], new_environ, j))
+				return (1);
 			i++;
-			j++;
 		}
 	}
-	new_environ[j] = NULL;
-	*env_ptr = new_environ;
+	new_environ[*j] = NULL;
+	return (0);
+}
+
+int	ft_unset(char **variable, char ***env_ptr)
+{
+	char	**new_environ;
+	int		j;
+	char	**env;
+	int		index;
+
+	if (!variable || !*variable)
+		return (0);
+	index = 1;
+	while (variable[index])
+	{
+		env = *env_ptr;
+		j = 0;
+		new_environ = allocate_new_environ(get_env_count(env));
+		if (!new_environ)
+			return (1);
+		if (copy_env_except_variable(env, new_environ, variable[index], &j))
+			return (1);
+		*env_ptr = new_environ;
+		index++;
+	}
 	return (0);
 }

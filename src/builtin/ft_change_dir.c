@@ -8,6 +8,15 @@ int	is_directory(const char *path)
 	return (S_ISDIR(path_stat.st_mode));
 }
 
+int check_permission(const char *path)
+{
+	struct stat	path_stat;
+
+	stat(path, &path_stat);
+	return (path_stat.st_mode & S_IRUSR);
+}
+
+
 int check_existence(const char *path)
 {
 	struct stat	path_stat;
@@ -20,7 +29,10 @@ int excute_failed(char **args)
 
 	stat(args[0], &sb);
 	//if (access(args[0], F_OK))
-	if (check_existence(args[0]))
+	if (!check_permission(args[0]))
+		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
+			ft_putendl_fd(": Permission denied", 2), 1);
+	else if (check_existence(args[0]))
 		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
 			ft_putendl_fd(": No such file or directory", 2), 1);
 	else if (!is_directory(args[0]))

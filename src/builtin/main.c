@@ -72,7 +72,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, char ***env)
 	else if (!ft_strcmp(args[0], "export"))
 		status = ft_export(args, env, 1);
 	else if (!ft_strcmp(args[0], "unset"))
-		status = ft_unset(args[1], env);
+		status = ft_unset(args, env);
 	restore_redir(redir_list);
 	return (status);
 }

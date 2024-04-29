@@ -17,7 +17,7 @@ int	ft_echo(char **args, int fd)
 			return (0);
 	}
 	str = join_strings(args, index);
-	if (str == NULL)
+	if (!str)
 		return (perror("minishell"), 1);
 	ft_putstr_fd(str, fd);
 	if (index != 2)
