@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef PARSER_H
+# define PARSER_H
 # define TOKEN_D " \t|<>&()"
 
 # define O_LETTERS 1
@@ -71,3 +73,5 @@ void	P(t_list *tokens);
 
 // youssef add this
 char	*random_filename(void);
+
+#endif

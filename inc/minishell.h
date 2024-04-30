@@ -51,7 +51,7 @@ int	get_last_exit_status();
 
 char		*extract_after_dollar(const char *str, char quots);
 char		*extract_substring(const char *str);
-extern int	ft_change_dir(char **path, char **env);
+extern int	ft_change_dir(char **path, t_context *ctx);
 
 /* ft_echo */
 
@@ -85,7 +85,7 @@ int			ft_unset(char **variable, char ***env);
 
 /* ft_pwd and ft_env */
 
-int		ft_pwd(int fd);
+int		ft_pwd(int fd, t_context *ctx);
 int ft_env(char **env, int fd);
 char		*get_value(char *name, char **env);
 

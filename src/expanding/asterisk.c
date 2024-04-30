@@ -114,11 +114,7 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 				continue;
 			new = ft_lstnew(ft_strdup(entry->d_name));
 			if (!new)
-			{
-				perror("lstnew failed\n");
-				closedir(dir);
-				return (0);
-			}
+				return (perror("lstnew failed\n"), closedir(dir), 0);
 			ft_lstadd_back_libft(&temp, new);
 		}
 	}
@@ -126,11 +122,7 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 	{
 		new = ft_lstnew(ft_strdup(pattern));
 		if (!new)
-		{
-			perror("lstnew failed\n");
-			closedir(dir);
-			return (0);
-		}
+			return (perror("lstnew failed\n"), closedir(dir), 0);
 		ft_lstadd_back_libft(&temp, new);
 	}
 	closedir(dir);
@@ -143,7 +135,6 @@ void	*expand_asterisk(char *command, t_list **list)
 {
 	char	*token;
 	t_list	*new;
-//	t_list	**current;
 
 	token = strtok(command, " \t");
 	while (token != NULL)
@@ -152,19 +143,13 @@ void	*expand_asterisk(char *command, t_list **list)
 		{
 			/* don't forget to free memory if is failed */
 			if(!expand_wildcard(token, list))
-			{
-				printf("expand_wildcard failed\n");
-				return (NULL);
-			}
+				return (ft_putendl_fd("expand_wildcard failed", 2), NULL);
 		}
 		else
 		{
 			new = ft_lstnew(ft_strdup(token));
 			if (!new)
-			{
-				perror("lstnew failed\n");
-				return (NULL);
-			}
+				return (ft_putendl_fd("lstnew failed", 2), NULL);
 			ft_lstadd_back_libft(list, new);
 		}
 		token = strtok(NULL, " ");

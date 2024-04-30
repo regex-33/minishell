@@ -1,3 +1,6 @@
+#ifndef EXPANDING_H
+#define EXPANDING_H
+
 #include "types.h"
 
 char	*get_cmd_path(char	**cmd_args, char **path_dirs);
@@ -26,3 +29,5 @@ void	merge(char **arr, int left, int mid, int right);
 void	merge_sort(char **arr, int left, int right);
 
 void	merge_sort_linkedlist(t_list **head);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef EXECUTION_H
+#define EXECUTION_H
+
 #include "types.h"
 
 void	printArray(char **array);
@@ -15,3 +18,4 @@ int open_files(t_list *redir_list, char **env);
 char **expand_filename_here_doc(char *filename, char **env);
 int count_array(char **array);
 
+#endif

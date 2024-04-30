@@ -13,7 +13,7 @@ int check_permission(const char *path)
 	struct stat	path_stat;
 
 	stat(path, &path_stat);
-	return (path_stat.st_mode & S_IRUSR);
+	return (path_stat.st_mode & S_IXUSR);
 }
 
 
@@ -29,24 +29,21 @@ int excute_failed(char **args)
 
 	stat(args[0], &sb);
 	//if (access(args[0], F_OK))
-	if (!check_permission(args[0]))
-		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
-			ft_putendl_fd(": Permission denied", 2), 1);
-	else if (check_existence(args[0]))
+	if (check_existence(args[0]))
 		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
 			ft_putendl_fd(": No such file or directory", 2), 1);
 	else if (!is_directory(args[0]))
 		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
 			ft_putendl_fd(": Not a directory", 2), 1);
-	else if (sb.st_mode & S_IRUSR)
-		return (ft_putstr_fd("minishell: cd", 2), ft_putstr_fd(args[0], 2),
+	else if (!check_permission(args[0]))
+		return (ft_putstr_fd("minishell: cd ", 2), ft_putstr_fd(args[0], 2),
 			ft_putendl_fd(": Permission denied", 2), 1);
 	return (1);
 }
 
-extern int	ft_change_dir(char **path, char **env)
+int	ft_change_dir(char **path, t_context *ctx)
 {
-	static char	last_path[1024] = "";
+	char	last_path[1024] = "";
 	char	*home;
 
 	if (path && path[0])
@@ -54,10 +51,12 @@ extern int	ft_change_dir(char **path, char **env)
 		if (chdir(path[0]) == -1)
 			return (excute_failed(path));
 		getcwd(last_path, sizeof(last_path));
+		free(ctx->last_pwd);
+		ctx->last_pwd = ft_strdup(last_path);
 	}
     else
 	{
-		home = get_value("HOME", env);
+		home = get_value("HOME", ctx->env);
 		if (!home)
 			return (ft_putendl_fd("minishell: cd: HOME not se", 2), 1);
         if (last_path[0] == '\0')
@@ -66,10 +65,11 @@ extern int	ft_change_dir(char **path, char **env)
             if (chdir(home) == -1)
 				return (perror("minishell: cd"), 1);
             getcwd(last_path, sizeof(last_path));
+			free(ctx->last_pwd);
+			ctx->last_pwd = ft_strdup(last_path);
         }
 		else
 			chdir(home);
 	}
 	return (0);
 }
-

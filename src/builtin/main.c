@@ -60,9 +60,9 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	if (open_files(redir_list, ctx->env))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		status = ft_change_dir(++args, ctx->env); // return status code
+		status = ft_change_dir(++args, ctx); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
-		status = ft_pwd(1);
+		status = ft_pwd(1, ctx);
 	else if (!ft_strcmp(args[0], "exit"))
 		status = ft_exit(args[1]);
 	else if (!ft_strcmp(args[0], "echo"))
@@ -147,6 +147,25 @@ char	**ft_creat_env(void)
 	return env;
 }
 
+int init_context(t_context *ctx)
+{
+	ctx->env = NULL;
+	ctx->env = ft_creat_env();
+	if (ctx->env == NULL)
+	{
+		while(ctx->env && *(ctx->env))
+		{
+			free(*(ctx->env));
+			ctx->env++;
+		}
+		return (ft_printf("env	is NULL\n"), 1);
+	}
+	ctx->last_pwd = get_value("PWD", ctx->env);
+	if (!ctx->last_pwd)
+		ctx->last_pwd = ft_strdup("");
+	return 0;
+}
+
 int	main(void)
 {
 	char	*line;
@@ -156,18 +175,8 @@ int	main(void)
 	t_context	ctx;
 	t_btree	*parse_tree;
 
-	ctx.env = NULL;
-	ctx.env = ft_creat_env();
-	if (ctx.env == NULL)
-	{
-		while(ctx.env && *(ctx.env))
-		{
-			free(*(ctx.env));
-			ctx.env++;
-		}
-		printf("env	is NULL\n");
+	if (init_context(&ctx))
 		return 1;
-	}
 	while (1)
 	{
 		//print_prompt_with_user_details();

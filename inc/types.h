@@ -4,7 +4,7 @@ typedef struct s_context
 {
     char    **env;
     char    **path_dirs;
-    char    **last_pwd;
+    char    *last_pwd;
     int     last_status;
 }          t_context;
 

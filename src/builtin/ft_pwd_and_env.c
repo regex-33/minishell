@@ -1,28 +1,25 @@
 #include "../../inc/minishell.h"
-  
-int	ft_pwd(int fd)
+
+int	ft_pwd(int fd, t_context *ctx)
 {
-	//extern char last_path[1024];
 	char	cwd[1024];
+	char	*temp;
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
-	{
-		ft_putstr_fd(cwd, fd);
-		ft_putchar_fd('\n', fd);
-		//ft_strcpy(last_path, cwd);
-	}
+		return (ft_putstr_fd(cwd, fd), ft_putchar_fd('\n', fd), 0);
 	else
 	{
-		// if (last_path[0] != '\0')
-		// {
-		// 	ft_putstr_fd(last_path, fd);
-		// 	ft_putchar_fd('\n', fd);
-		// }
-		// else
-		// {
-		//	perror("getcwd() error");
-			return (1);
-//		}
+		if (ctx->last_pwd)
+			return (ft_putstr_fd(ctx->last_pwd, fd), ft_putchar_fd('\n', fd), 0);
+		else
+		{
+			temp = get_value("PWD", ctx->env);
+			if (temp)
+				return (ft_putstr_fd(temp, fd), ft_putchar_fd('\n', fd), 0);
+			else
+				return (ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+						fd), 1);
+		}
 	}
 	return (0);
 }
@@ -33,10 +30,7 @@ int	ft_env(char **env, int fd)
 
 	env_ptr = env;
 	if (!env_ptr)
-	{
-		ft_printf("THIS IS NULL\n");
-		return (1);
-	}
+		return (printf("minishell"), 1);
 	while (*env_ptr != NULL)
 	{
 		if (ft_strchr(*env_ptr, '=') != NULL)
