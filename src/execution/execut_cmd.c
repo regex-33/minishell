@@ -1,16 +1,13 @@
 #include "minishell.h"
 
-
 char	*ft_which(char *cmd, char **path_dirs)
 {
-	char	*tmp; char	*cmd_pathname;
+	char	*tmp;
+	char	*cmd_pathname;
 	int		i;
 
-	if (ft_strchr(cmd, '/'))
-	{ if (!access(cmd, F_OK) && !access(cmd, X_OK))
-			return (ft_strdup(cmd));
+	if (!path_dirs)
 		return (NULL);
-	}
 	tmp = ft_strjoin("/", cmd);
 	if (!tmp)
 		return (NULL);
@@ -38,7 +35,7 @@ void	print_err(char *mid, char *suffix)
 		ft_putendl_fd(suffix, 2);
 }
 
-int	is_valid_cmd(char *pathname)
+int	check_cmd_name(char *pathname)
 {
 	struct stat sb;
 
@@ -54,6 +51,32 @@ int	is_valid_cmd(char *pathname)
 	if (access(pathname, X_OK))
 		return (print_err(pathname, " : Permission denied."), 126);
 	return (0);
+}
+
+int	init_command(t_prexec *pexec, t_context *ctx, char **args)
+{
+	char	**path_dirs;
+
+	pexec->err = 0;
+	path_dirs = grep_paths(ctx->env);
+	if (ft_strchr(args[0], '/'))
+	{
+		pexec->err = check_cmd_name(args[0]);
+		if (pexec->err)
+			return (pexec->err);
+		pexec->cmd_name = ft_strdup(args[0]);
+	}
+	else
+	{
+		pexec->cmd_name = ft_which(args[0], path_dirs);
+		if (!pexec->cmd_name)
+		{
+			pexec->err = 127;
+			print_err(args[0], " : command not found");
+		}
+	}
+	pexec->args = args;
+	return (pexec->err);
 }
 
 char	**get_cmd_args(char	**cmd_args, char **path_dirs)
@@ -79,7 +102,6 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 	return (cmd_args);
 }
 
-
 char **expand_filename_here_doc(char *filename, char **env)
 {
 	char **files = NULL;
@@ -103,6 +125,7 @@ char **expand_filename_here_doc(char *filename, char **env)
     }
 	return NULL;
 }
+
 int count_array(char **array)
 {
 	int i;
@@ -114,6 +137,7 @@ int count_array(char **array)
 		i++;
 	return i;
 }
+
 int handle_heredoc(char **filename, char **env)
 {
 	int new_fd;
@@ -231,8 +255,8 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 {
 	pid_t	pid;
 	t_cmd	*cmd;
-	char	**args;
 	t_list	*redir_list;
+	t_prexec	pexec;
 
 	pid = fork();
 	if (pid < 0)
@@ -260,11 +284,10 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, ctx->env);
-		args = get_cmd_args(args, grep_paths(ctx->env));
-		if (!args)
-			return (exit(1), 0);
-		if (execve(args[0], args, ctx->env))
+		pexec.args = get_expanded_args(cmd, ctx->env);
+		if (init_command(&pexec, ctx, pexec.args))
+			return (exit(pexec.err), 0);
+		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
 	}
 	else
@@ -281,7 +304,7 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 	pid_t	pid;
 	t_cmd	*cmd;
 	t_list	*redir_list;
-	char	**args;
+	t_prexec	pexec;
 
 	pid = fork();
 	if (pid < 0)
@@ -304,11 +327,12 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, ctx->env);
-		args = get_cmd_args(args, grep_paths(ctx->env));
-		if (!args)
-			return (exit(1), 0);
-		if (execve(args[0], args, ctx->env))
+		pexec.args = get_expanded_args(cmd, ctx->env);
+		if (!pexec.args)
+			return (perror("minishell"), exit(1), 0);
+		if (init_command(&pexec, ctx, pexec.args))
+			return (exit(pexec.err), 0);
+		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
 	}
 	else
@@ -318,14 +342,10 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 
 int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 {
-	char **cmd_args;
 	extern int last_exit_status;
-	char **path_dirs;
     pid_t pid;
+	t_prexec	pexec;
 
-    path_dirs = grep_paths(ctx->env);
-	if (!path_dirs)
-		return -1;
 	int status = select_buildin_commands(args, redir_list, ctx);
 	if (status != -1)
 		return (status);
@@ -336,10 +356,9 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
     {
 		if (open_files(redir_list, ctx->env))
 			return (exit(EXIT_FAILURE), 0);
-		cmd_args = get_cmd_args(args, path_dirs);
-		if (!cmd_args)
-			exit(EXIT_FAILURE);
-		if (execve(cmd_args[0], cmd_args, ctx->env))
+		if (init_command(&pexec, ctx, args))
+			exit(pexec.err);
+		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
     }
     else

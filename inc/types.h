@@ -31,6 +31,14 @@ typedef struct s_cmd
 	t_list	*redir_list;
 }	t_cmd;
 
+typedef struct s_prexec
+{
+	char	*cmd_name;
+	char	**args;
+	int		err;
+}		t_prexec;
+
+
 typedef struct s_info
 {
 	t_list	*processes;

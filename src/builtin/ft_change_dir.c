@@ -58,14 +58,14 @@ int	ft_change_dir(char **path, t_context *ctx)
 	{
 		home = get_value("HOME", ctx->env);
 		if (!home)
-			return (ft_putendl_fd("minishell: cd: HOME not se", 2), 1);
-        if (last_path[0] == '\0')
+			return (ft_putendl_fd("minishell: cd: HOME not set", 2), 1);
+        if (last_path[0] == '\0')// LAST PATH 3AMR &&&&&&&&&&&& PATH == NULL
 		{
             /* If last_path is empty, use HOME directory*/
             if (chdir(home) == -1)
 				return (perror("minishell: cd"), 1);
             getcwd(last_path, sizeof(last_path));
-			free(ctx->last_pwd);
+		//	free(ctx->last_pwd);
 			ctx->last_pwd = ft_strdup(last_path);
         }
 		else

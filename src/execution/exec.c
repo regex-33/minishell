@@ -188,13 +188,9 @@ int exec_and_or(t_btree *tree, t_context *ctx)
 		return (0);
 	first_res = __exec(tree->left, ctx);
 	if (tree->type == nt_or_if && first_res)
-	{
 		return __exec(tree->right, ctx);
-	}
 	if (tree->type == nt_and_if && !first_res)
-	{
 		return __exec(tree->right, ctx);
-	}
 	return (first_res);
 }
 
