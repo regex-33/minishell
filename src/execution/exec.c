@@ -26,21 +26,12 @@ t_list	*expand_list(t_list *list, t_context *ctx)
 		token = list->content;
 		value = ft_substr(token->value, 0, token->len);
 		if (!value)
-		{
-			ft_printf("Error: failed to copy token\n");
-			return (0);
-		}
+			return (ft_putstr_fd("Error: failed to copy token\n", 2), NULL);
 		if (!expand_arg_list(&expanding_list, value, ctx))
-		{
-			ft_printf("Error: failed to expand token\n");
-			return (0);
-		}
+			return (ft_putstr_fd("Error: failed to expand token\n", 2), NULL);
 		free(value);
 		list = list->next;
 	}
-	/* don't forget to memory */
-
-	//printLinkedList(expanding_list);
 	return (expanding_list);
 }
 
@@ -58,16 +49,10 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx)
     {
         char **args = ft_list_to_array(expanding_list);
         if (!args)
-        {
-            //freeLinkedList(expanding_list);
-            return NULL;
-        }
-        //freeLinkedList(expanding_list);
-		//printArray(args);
-        //free_array(args);
-		return args;
+            return (freeLinkedList(expanding_list), NULL);
+        return (freeLinkedList(expanding_list), args);
     }
-	return NULL;
+	return (perror("minishell"), NULL);
 }
 
 int exec_simple(t_btree *tree, t_context *ctx)
@@ -81,16 +66,13 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	t_list	*redir = cmd->redir_list;
 	if (!cmd->cmd_args)
 	{
-		open_files(cmd->redir_list, ctx);
+		redirect(cmd->redir_list, ctx);
 		restore_redir(cmd->redir_list);
 		return (0);
 	}
 	args = get_expanded_args(cmd, ctx);
 	if (!args)
-	{
-		perror("minishell");
 		return 1;
-    }
 	status = exec_cmd(redir, args, ctx);
 	return (status);
 }
@@ -154,7 +136,7 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 		return (perror("minishell"), 1);
 	if (pid == 0) // CHILD
 	{
-		if (open_files(redir_list, ctx))
+		if (redirect(redir_list, ctx))
 			return (exit(1), 0);
 		exit(__exec(tree->left, ctx));
 	}

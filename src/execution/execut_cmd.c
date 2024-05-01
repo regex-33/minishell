@@ -37,7 +37,7 @@ void	print_err(char *mid, char *suffix)
 
 int	check_cmd_name(char *pathname)
 {
-	struct stat sb;
+	struct stat	sb;
 
 	if (stat(pathname, &sb))
 	{
@@ -79,14 +79,13 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 	return (pexec->err);
 }
 
-char	**get_cmd_args(char	**cmd_args, char **path_dirs)
+char	**get_cmd_args(char **cmd_args, char **path_dirs)
 {
 	char	*cmd_pathname;
 
 	if (!cmd_args || !path_dirs)
 		return (NULL);
 	cmd_pathname = ft_which(cmd_args[0], path_dirs);
-	//printf("CMD PATHNAME: %s, cmd : %s\n", cmd_pathname, cmd);
 	if (!cmd_pathname)
 	{
 		if (!ft_strchr(cmd_args[0], '/'))
@@ -102,84 +101,87 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 	return (cmd_args);
 }
 
-
-char **expand_filename_here_doc(char *filename, t_context *ctx)
+char	**expand_filename_here_doc(char *filename, t_context *ctx)
 {
-	char **files = NULL;
-	t_list *expanding_list = NULL;
+	char	**files;
+	t_list	*expanding_list;
 
+	files = NULL;
+	expanding_list = NULL;
 	if (!expand_arg_list(&expanding_list, filename, ctx))
-	{
-		perror("minishell");
-		return NULL;
-	}
+		return (NULL);
 	if (expanding_list)
-    {
-        files = ft_list_to_array(expanding_list);
-        if (!files)
-        {
-            freeLinkedList(expanding_list);
-            return NULL;
-        }
-        freeLinkedList(expanding_list);
-		return files;
-    }
-	return NULL;
+	{
+		files = ft_list_to_array(expanding_list);
+		if (!files)
+			return (freeLinkedList(expanding_list), NULL);
+		return (freeLinkedList(expanding_list), files);
+	}
+	return (NULL);
 }
 
-int count_array(char **array)
+int	count_array(char **array)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!array || !*array)
-		return 0;
+		return (0);
 	while (array[i])
 		i++;
-	return i;
+	return (i);
 }
-int handle_heredoc(char **filename, t_context *ctx)
+
+int	read_and_expand_heredoc(int old_fd, int new_fd, t_context *ctx)
 {
-	int new_fd;
-	int old_fd;
-	char	**args = NULL;
-	char	*line = NULL;
-	char	*new_filename = NULL;
-	char	*expanded_line = NULL;
+	char	**args;
+	char	*line;
+	char	*expanded_line;
 
-	new_filename = random_filename();
-	if (!new_filename)
-		return (perror("minishell"), -1);
-	new_fd = open(new_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (new_fd < 0)
-		return (perror("minishell"), -1);
-	//printf("OLD FILENAME : %s |  NEW FILENAME: %s\n", *filename, new_filename);
-
-	old_fd = open(*filename, O_RDONLY);
-	if (old_fd < 0)
-		return (perror("minishell"), -1);
+	args = NULL;
+	line = NULL;
+	expanded_line = NULL;
 	line = get_next_line(old_fd);
 	while (line)
 	{
-		args =	expand_filename_here_doc(line, ctx);
+		args = expand_filename_here_doc(line, ctx);
 		if (!args)
 			return (perror("minishell"), -1);
 		expanded_line = join_strings(args, 0);
 		if (!expanded_line)
 			return (perror("minishell"), -1);
 		ft_putstr_fd(expanded_line, new_fd);
-
-
 		free(expanded_line);
 		free_array(args);
 		free(line);
 		line = get_next_line(old_fd);
 	}
+	return (0);
+}
+
+int	handle_heredoc(char **filename, t_context *ctx)
+{
+	int		new_fd;
+	int		old_fd;
+	char	*new_filename;
+
+	new_filename = NULL;
+	new_filename = random_filename();
+	if (!new_filename)
+		return (perror("minishell"), -1);
+	new_fd = open(new_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (new_fd < 0)
+		return (perror("minishell"), -1);
+	old_fd = open(*filename, O_RDONLY);
+	if (old_fd < 0)
+		return (perror("minishell"), -1);
+	if (read_and_expand_heredoc(old_fd, new_fd, ctx) == -1)
+		return (-1);
 	close(old_fd);
 	close(new_fd);
 	unlink(*filename);
 	*filename = new_filename;
-	return 0;
+	return (0);
 }
 
 void	restore_redir(t_list *redir_list)
@@ -198,64 +200,66 @@ void	restore_redir(t_list *redir_list)
 	}
 }
 
+int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
+{
+	int fd;
+
+	fd = 1;
+	if (redir->type == REDIR_IN)
+		fd = open(redir->filename, O_RDONLY);
+	else if (redir->type == REDIR_OUT)
+		fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (redir->type == REDIR_APPEND)
+		fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else if (redir->type == REDIR_HERE)
+	{
+		if (handle_heredoc(&redir->filename, ctx))
+			return (restore_redir(redir_list), -1);
+		fd = open(redir->filename, O_RDONLY);
+		if (fd < 0)
+			return (restore_redir(redir_list), -1);
+		unlink(redir->filename);
+	}
+	if (fd < 0)
+		return (restore_redir(redir_list), -1);
+	return (fd);
+}
+
 int	open_files(t_list *redir_list, t_context *ctx)
 {
 	t_redir	*redir;
-	char		**files;
-	int	fd;
-	//t_token *token;
-	
+	char	**files;
+	int		fd;
+
 	while (redir_list)
 	{
-        redir = redir_list->content;
+		redir = redir_list->content;
 		files = expand_filename_here_doc(redir->filename, ctx);
 		if (!files)
-		{
-			restore_redir(redir_list);
-			perror("minishell");
-			return (1);
-		}
-		if (count_array(files) > 1)
-		{
-			restore_redir(redir_list);
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd("ambiguous redirect\n", STDERR_FILENO);
-			free_array(files);
-			return (1);
-		}
-		if (redir->type == REDIR_IN)
-			fd = open(redir->filename, O_RDONLY);
-		else if (redir->type == REDIR_OUT)
-			fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == REDIR_APPEND)
-			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else if (redir->type == REDIR_HERE)
-		{
-			if (handle_heredoc(&redir->filename, ctx))
-				return (restore_redir(redir_list), perror("minishell"), 1);
-			fd = open(redir->filename, O_RDONLY);
-			if (fd < 0)
-				return (restore_redir(redir_list), perror("minishell"), 1);
-			unlink(redir->filename);
-			//printf("FILENAME: %s\n", redir->filename);
-		}
-		if (fd < 0)
 			return (restore_redir(redir_list), perror("minishell"), 1);
+		if (count_array(files) > 1)
+			return (restore_redir(redir_list), ft_putstr_fd("minishell: ",
+					STDERR_FILENO), ft_putstr_fd("ambiguous redirect\n",
+					STDERR_FILENO), free_array(files), 1);
+		fd = open_file(redir, ctx, redir_list);
+		if (fd < 0)
+			return (perror("minishell"), 1);
 		redir->bak_fd = dup(redir->fd);
 		if (redir->bak_fd < 0)
 			return (restore_redir(redir_list), perror("minishell"), 1);
 		dup2(fd, redir->fd);
 		close(fd);
-        redir_list = redir_list->next;
+		redir_list = redir_list->next;
 	}
 	return (0);
 }
 
+
 pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 {
-	pid_t	pid;
-	t_cmd	*cmd;
-	t_list	*redir_list;
+	pid_t		pid;
+	t_cmd		*cmd;
+	t_list		*redir_list;
 	t_prexec	pexec;
 
 	pid = fork();
@@ -270,7 +274,6 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 		close(pipes[OUT_PIPE][WRITE]);
 		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
 			close(pipes[IN_PIPE][READ]);
-
 		if (tree->type == nt_subcmd)
 			redir_list = tree->data;
 		else
@@ -301,9 +304,9 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 
 pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 {
-	pid_t	pid;
-	t_cmd	*cmd;
-	t_list	*redir_list;
+	pid_t		pid;
+	t_cmd		*cmd;
+	t_list		*redir_list;
 	t_prexec	pexec;
 
 	pid = fork();
@@ -342,36 +345,36 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 
 int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 {
-	extern int last_exit_status;
-    pid_t pid;
+	extern int	last_exit_status;
+	pid_t		pid;
 	t_prexec	pexec;
+	int			status;
 
-	int status = select_buildin_commands(args, redir_list, ctx);
+	status = select_buildin_commands(args, redir_list, ctx);
 	if (status != -1)
 		return (status);
-    pid = fork();
-    if (pid < 0)
-        return (perror("minishell"), 0);
-    if (pid == 0)
-    {
+	pid = fork();
+	if (pid < 0)
+		return (perror("minishell"), 0);
+	if (pid == 0)
+	{
 		if (open_files(redir_list, ctx))
 			return (exit(EXIT_FAILURE), 0);
 		if (init_command(&pexec, ctx, args))
 			exit(pexec.err);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
-    }
-    else
-    {
-        int status;
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status))
-            ctx->last_status = WEXITSTATUS(status);
+	}
+	else
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			ctx->last_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 			ctx->last_status = WTERMSIG(status) + 128;
-        return (ctx->last_status);
-    }
-    return (1);
+		return (ctx->last_status);
+	}
+	return (1);
 }
 
 // echo * segv when no file on dir/h

@@ -62,7 +62,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	ctx->last_status = 1;
 	if (!is_builtin(args[0]))
 		return (-1);
-	if (open_files(redir_list, ctx))
+	if (redirect(redir_list, ctx))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
 		ctx->last_status = ft_change_dir(++args, ctx); // return status code

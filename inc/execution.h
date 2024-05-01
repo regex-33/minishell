@@ -14,7 +14,7 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx);
 
 
 void    restore_redir(t_list *redir_list);
-int open_files(t_list *redir_list, t_context *ctx);
+int redirect(t_list *redir_list, t_context *ctx);
 char **expand_filename_here_doc(char *filename, t_context *ctx);
 int count_array(char **array);
 
