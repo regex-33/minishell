@@ -184,19 +184,38 @@ int	handle_heredoc(char **filename, t_context *ctx)
 	return (0);
 }
 
+// void	restore_redir(t_list *redir_list)
+// {
+// 	t_redir	*redir;
+// 
+// 	while (redir_list)
+// 	{
+// 		redir = redir_list->content;
+// 		if (redir->bak_fd >= 0)
+// 		{
+// 			dup2(redir->bak_fd, redir->fd); // bak = 4, bak = 5
+// 			close(redir->bak_fd);
+// 			ft_printf("restoring bak: %d to %d", redir->bak_fd, redir->fd);
+// 		}
+// 		else
+// 			ft_printf("no restore\n");
+// 		redir_list = redir_list->next;
+// 	}
+// }
+
 void	restore_redir(t_list *redir_list)
 {
 	t_redir	*redir;
 
-	while (redir_list)
+	if (!redir_list)
+		return ;
+	if (redir_list->next)
+		restore_redir(redir_list->next);
+	redir = redir_list->content;
+	if (redir->bak_fd >= 0)
 	{
-		redir = redir_list->content;
-		if (redir->bak_fd >= 0)
-		{
-			dup2(redir->bak_fd, redir->fd);
-			close(redir->bak_fd);
-		}
-		redir_list = redir_list->next;
+		dup2(redir->bak_fd, redir->fd);
+		close(redir->bak_fd);
 	}
 }
 
