@@ -80,12 +80,12 @@ char	**get_cmd_args(char	**cmd_args, char **path_dirs)
 }
 
 
-char **expand_filename_here_doc(char *filename, char **env)
+char **expand_filename_here_doc(char *filename, t_context *ctx)
 {
 	char **files = NULL;
 	t_list *expanding_list = NULL;
 
-	if (!expand_arg_list(&expanding_list, filename, env))
+	if (!expand_arg_list(&expanding_list, filename, ctx))
 	{
 		perror("minishell");
 		return NULL;
@@ -114,7 +114,7 @@ int count_array(char **array)
 		i++;
 	return i;
 }
-int handle_heredoc(char **filename, char **env)
+int handle_heredoc(char **filename, t_context *ctx)
 {
 	int new_fd;
 	int old_fd;
@@ -137,7 +137,7 @@ int handle_heredoc(char **filename, char **env)
 	line = get_next_line(old_fd);
 	while (line)
 	{
-		args =	expand_filename_here_doc(line, env);
+		args =	expand_filename_here_doc(line, ctx);
 		if (!args)
 			return (perror("minishell"), -1);
 		expanded_line = join_strings(args, 0);
@@ -174,7 +174,7 @@ void	restore_redir(t_list *redir_list)
 	}
 }
 
-int	open_files(t_list *redir_list, char **env)
+int	open_files(t_list *redir_list, t_context *ctx)
 {
 	t_redir	*redir;
 	char		**files;
@@ -184,7 +184,7 @@ int	open_files(t_list *redir_list, char **env)
 	while (redir_list)
 	{
         redir = redir_list->content;
-		files = expand_filename_here_doc(redir->filename, env);
+		files = expand_filename_here_doc(redir->filename, ctx);
 		if (!files)
 		{
 			restore_redir(redir_list);
@@ -207,7 +207,7 @@ int	open_files(t_list *redir_list, char **env)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else if (redir->type == REDIR_HERE)
 		{
-			if (handle_heredoc(&redir->filename, env))
+			if (handle_heredoc(&redir->filename, ctx))
 				return (restore_redir(redir_list), perror("minishell"), 1);
 			fd = open(redir->filename, O_RDONLY);
 			if (fd < 0)
@@ -251,16 +251,16 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (open_files(redir_list, ctx->env))
+		if (open_files(redir_list, ctx))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
-			if (open_files(redir_list, ctx->env))
+			if (open_files(redir_list, ctx))
 				return (exit(1), 0);
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, ctx->env);
+		args = get_expanded_args(cmd, ctx);
 		args = get_cmd_args(args, grep_paths(ctx->env));
 		if (!args)
 			return (exit(1), 0);
@@ -295,16 +295,16 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (open_files(redir_list, ctx->env))
+		if (open_files(redir_list, ctx))
 			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
-			if (open_files(redir_list, ctx->env))
+			if (open_files(redir_list, ctx))
 				return (exit(1), 0);
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
-		args = get_expanded_args(cmd, ctx->env);
+		args = get_expanded_args(cmd, ctx);
 		args = get_cmd_args(args, grep_paths(ctx->env));
 		if (!args)
 			return (exit(1), 0);
@@ -334,7 +334,7 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
         return (perror("minishell"), 0);
     if (pid == 0)
     {
-		if (open_files(redir_list, ctx->env))
+		if (open_files(redir_list, ctx))
 			return (exit(EXIT_FAILURE), 0);
 		cmd_args = get_cmd_args(args, path_dirs);
 		if (!cmd_args)

@@ -6,6 +6,9 @@ int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
 	{
 		if (!ft_strncmp(env[*env_count_local], str, name_len))
 		{
+			if (!ft_strchr(env[*env_count_local], '='))
+				env[*env_count_local] = ft_strjoin(env[*env_count_local],
+						"=");
 			env[*env_count_local] = ft_strjoin(env[*env_count_local],
 					&str[name_len + 2]);
 			return (1);
@@ -60,6 +63,7 @@ int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index)
 	}
 	new_environ[env_count] = ft_strdup(variable[index]);
 	new_environ[env_count + 1] = NULL;
+	free_array(*env_ptr);
 	*env_ptr = new_environ;
 	return (1);
 }
@@ -92,7 +96,7 @@ int	update_existing_variable(char **variable, char ***env_ptr, int *env_count,
 	env_count_local = 0;
 	add_to_value = parse_existing_variable(str);
 	if (add_to_value == -1)
-		return (perror("minishell"), -1);
+		return (-1);
 	if (add_to_value == 1)
 		result = handle_plus_sign(env, str, (ft_strchr(str, '+') - str),
 				&env_count_local);
@@ -127,7 +131,6 @@ int	ft_export(char **variable, char ***env_ptr, int fd)
 	}
 	while (variable[j])
 	{
-		//printf("variable[%d]: %s\n", j, variable[j]);
 		env_count = j;
 		if (!check_variable_name(variable[j]))
 			return (1);
@@ -135,11 +138,7 @@ int	ft_export(char **variable, char ***env_ptr, int fd)
 		if (result == -1)
 			return (1);
 		else if (result == 0)
-		{
-			//printf (" i am here\n");
-		//	printf("youssef variable[%d]: %s\n", j, variable[j]);
 			result = add_new_variable(variable, env_ptr, env_count, j);
-		}
 		if (result == -1)
 			return (1);
 		env_count++;

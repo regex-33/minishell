@@ -1,43 +1,6 @@
 #include "../../inc/minishell.h"
 
-/*
-char	*get_hostname(void)
-{
-	char	*hostname;
-	int		fd;
-	ssize_t	bytes_read;
-	char	*cwd;
-	char	*cwd;
 
-	hostname = (char *)malloc(MAX_HOSTNAME_LENGTH * sizeof(char));
-	if (!hostname)
-	{
-		perror("Memory allocation failed");
-		exit(EXIT_FAILURE);
-	}
-	fd = open(HOSTNAME_FILE, O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Failed to open hostname file");
-		free(hostname);
-		exit(EXIT_FAILURE);
-	}
-	bytes_read = read(fd, hostname, MAX_HOSTNAME_LENGTH);
-	if (bytes_read == -1)
-	{
-		perror("Failed to read hostname");
-		free(hostname);
-		close(fd);
-		exit(EXIT_FAILURE);
-	}
-	// Remove trailing newline character
-	if (bytes_read > 0 && hostname[bytes_read - 1] == '\n')
-	{
-		hostname[bytes_read - 1] = '\0';
-	}
-	close(fd);
-	return (hostname);
-}*/
 char	*ft_path(void)
 {
 	char *cwd;

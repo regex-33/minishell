@@ -42,7 +42,7 @@ void	free_array(char **array)
 		return;
 	for (size_t i = 0; array[i] != NULL; i++)
 		free(array[i]);
-	//free(array);
+	free(array);
 }
 
 char **ft_list_to_array(t_list *list)

@@ -13,7 +13,7 @@
 
 #include "minishell.h"
 
-t_list	*expand_list(t_list *list, char **env)
+t_list	*expand_list(t_list *list, t_context *ctx)
 {
 	t_token	*token;
 	char	*value;
@@ -30,7 +30,7 @@ t_list	*expand_list(t_list *list, char **env)
 			ft_printf("Error: failed to copy token\n");
 			return (0);
 		}
-		if (!expand_arg_list(&expanding_list, value, env))
+		if (!expand_arg_list(&expanding_list, value, ctx))
 		{
 			ft_printf("Error: failed to expand token\n");
 			return (0);
@@ -44,7 +44,7 @@ t_list	*expand_list(t_list *list, char **env)
 	return (expanding_list);
 }
 
-char **get_expanded_args(t_cmd *cmd, char **env)
+char **get_expanded_args(t_cmd *cmd, t_context *ctx)
 {
     t_list *list_args;
 	t_list *expanding_list;
@@ -53,7 +53,7 @@ char **get_expanded_args(t_cmd *cmd, char **env)
 		return NULL;
 	
 	list_args = cmd->cmd_args;
-    expanding_list = expand_list(list_args, env);
+    expanding_list = expand_list(list_args, ctx);
     if (expanding_list)
     {
         char **args = ft_list_to_array(expanding_list);
@@ -81,11 +81,11 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	t_list	*redir = cmd->redir_list;
 	if (!cmd->cmd_args)
 	{
-		open_files(cmd->redir_list, ctx->env);
+		open_files(cmd->redir_list, ctx);
 		restore_redir(cmd->redir_list);
 		return (0);
 	}
-	args = get_expanded_args(cmd, ctx->env);
+	args = get_expanded_args(cmd, ctx);
 	if (!args)
 	{
 		perror("minishell");
@@ -209,7 +209,7 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 		return (perror("minishell"), 1);
 	if (pid == 0) // CHILD
 	{
-		if (open_files(redir_list, ctx->env))
+		if (open_files(redir_list, ctx))
 			return (exit(1), 0);
 		exit(__exec(tree->left, ctx));
 	}

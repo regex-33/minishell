@@ -26,7 +26,7 @@ void	execute_command(char *command) {
 	}
 }
 
-int	get_last_exit_status(void)
+int	get_last_exit_status(int last_exit_status)
 {
 	return (last_exit_status);
 }
@@ -52,29 +52,27 @@ int	is_builtin(char *cmd_name)
 
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 {
-	int	status;
-
-	status = 1;
+	ctx->last_status = 1;
 	if (!is_builtin(args[0]))
 		return (-1);
-	if (open_files(redir_list, ctx->env))
+	if (open_files(redir_list, ctx))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		status = ft_change_dir(++args, ctx); // return status code
+		ctx->last_status = ft_change_dir(++args, ctx); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
-		status = ft_pwd(1, ctx);
+		ctx->last_status = ft_pwd(1, ctx);
 	else if (!ft_strcmp(args[0], "exit"))
-		status = ft_exit(args[1]);
+		ctx->last_status = ft_exit(args, ctx);
 	else if (!ft_strcmp(args[0], "echo"))
-		status = ft_echo(args, 1);
+		ctx->last_status = ft_echo(args, 1);
 	else if (!ft_strcmp(args[0], "env"))
-		status = ft_env(ctx->env, 1);
+		ctx->last_status = ft_env(ctx->env, 1);
 	else if (!ft_strcmp(args[0], "export"))
-		status = ft_export(args, &ctx->env, 1);
+		ctx->last_status = ft_export(args, &ctx->env, 1);
 	else if (!ft_strcmp(args[0], "unset"))
-		status = ft_unset(args, &ctx->env);
+		ctx->last_status = ft_unset(args, &ctx->env);
 	restore_redir(redir_list);
-	return (status);
+	return (ctx->last_status);
 }
 
 
@@ -166,6 +164,27 @@ int init_context(t_context *ctx)
 	return 0;
 }
 
+void	handle_equal_signal(int signum, siginfo_t *info, void *ptr)
+{
+	(void)signum;
+	(void)ptr;
+	(void)info;
+	rl_redisplay();
+}
+
+void	handle_sigint_signal(int signum, siginfo_t *info, void *ptr)
+{
+	(void)signum;
+	(void)ptr;
+	(void)info;
+	//ctx.last_status = 1;
+	ft_printf("\n");
+	rl_on_new_line();// notify Readline that the cursor has moved to a new line.
+	//rl_replace_line("", 0); // Replace the contents of rl_line_buffer with text.
+	rl_redisplay(); // Change what's displayed on the screen to reflect the current contents of rl_line_buffer.
+
+}
+
 int	main(void)
 {
 	char	*line;
@@ -174,9 +193,17 @@ int	main(void)
 	t_list	*tokens;
 	t_context	ctx;
 	t_btree	*parse_tree;
+	struct sigaction	sa;
+
 
 	if (init_context(&ctx))
 		return 1;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handle_equal_signal;
+	sigaction(SIGQUIT, &sa, NULL);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handle_sigint_signal;
+	sigaction(SIGINT, &sa, NULL);
 	while (1)
 	{
 		//print_prompt_with_user_details();

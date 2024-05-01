@@ -51,7 +51,7 @@ int	ft_change_dir(char **path, t_context *ctx)
 		if (chdir(path[0]) == -1)
 			return (excute_failed(path));
 		getcwd(last_path, sizeof(last_path));
-		free(ctx->last_pwd);
+		//free(ctx->last_pwd);
 		ctx->last_pwd = ft_strdup(last_path);
 	}
     else
@@ -65,7 +65,7 @@ int	ft_change_dir(char **path, t_context *ctx)
             if (chdir(home) == -1)
 				return (perror("minishell: cd"), 1);
             getcwd(last_path, sizeof(last_path));
-			free(ctx->last_pwd);
+			//free(ctx->last_pwd);
 			ctx->last_pwd = ft_strdup(last_path);
         }
 		else
