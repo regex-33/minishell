@@ -201,9 +201,9 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_equal_signal;
 	sigaction(SIGQUIT, &sa, NULL);
-	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = handle_sigint_signal;
-	sigaction(SIGINT, &sa, NULL);
+	// sa.sa_flags = SA_SIGINFO;
+	// sa.sa_sigaction = handle_sigint_signal;
+	// sigaction(SIGINT, &sa, NULL);
 	while (1)
 	{
 		//print_prompt_with_user_details();

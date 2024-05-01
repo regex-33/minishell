@@ -14,7 +14,6 @@ char *join_strings(char **args, int index)
 		str = ft_strjoin_free(str, " ");
         if (!str)
             return NULL;
-        if (!args[index + 1])
 		index++;
 	}
 	return (str);

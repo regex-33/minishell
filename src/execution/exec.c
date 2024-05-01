@@ -95,57 +95,6 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	return (status);
 }
 
-/*
-int	exec_simple(t_btree *tree, char **env)
-{
-	t_token *token = NULL;
-	t_list	*list_args;
-	char	**args = NULL;
-	t_list	*expanding_list = NULL;
-
-	(void) env;
-	(void) token;
-	if (!tree)
-		return (0);
-	t_cmd *cmd = tree->data;
-	list_args = cmd->cmd_args;
-	t_list *redir_list = cmd->redir_list;
-	(void)redir_list;
-
-	ft_printf("EXEC: ");
-	expanding_list = expand_list(list_args, env);
-	if (expanding_list)
-	{
-		ft_list_to_array(list_args, &args);
-		if (!args)
-		{
-			ft_printf("Error: failed to convert list to array\n");
-			return (0);
-		}
-		//printLinkedList(expanding_list);
-		freeLinkedList(expanding_list);
-		if (args)
-		{
-			printf("args: %lu\n", sizeof(args) / sizeof(args[0]));
-			printArray(args);
-		}
-		return (1);
-	}
-	// while (list)
-	// {
-	// 	token = list->content;
-	// 	write(1, token->value, token->len);
-	// 	ft_printf("\n");
-	// 	list = list->next;
-	// }
-	// write(1, token->value, token->len);
-	// ft_printf(" ");
-	// token = list_args->content;
-	// if (ft_strnstr("true", "true", 4))
-		//return (1);
-	return (0);
-}*/
-
 int	add_pipe(int pipes[2][2])
 {
 	int	tmp[2];
