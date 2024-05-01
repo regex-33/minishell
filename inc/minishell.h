@@ -27,6 +27,9 @@
 #include <stdbool.h>
 #include <dirent.h>
 # include "types.h"
+#include   <signal.h>
+#include <readline/readline.h>
+
 
 /* COLORS */
 
@@ -47,7 +50,6 @@
 
 /* change directory */
 
-int	get_last_exit_status();
 
 char		*extract_after_dollar(const char *str, char quots);
 char		*extract_substring(const char *str);
@@ -62,7 +64,7 @@ int         ft_echo(char **args, int fd);
 
 char		*skip_chars(const char *str);
 bool		is_numeric(const char *str);
-int			ft_exit(const char *exit_code);
+int			ft_exit(char **exit_code, t_context *ctx);
 
 /* ft_export */
 
@@ -97,7 +99,7 @@ void    print_prompt_with_user_details(void);
 /* main */
 
 char	**grep_paths(char **env);
-int			get_last_exit_status(void);
+int			get_last_exit_status(int last_exit_status);
 char	*ft_path(void);
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
 

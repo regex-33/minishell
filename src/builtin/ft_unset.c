@@ -63,7 +63,6 @@ int	copy_env_except_variable(char **env, char **new_environ, char *variable,
 	new_environ[*j] = NULL;
 	return (0);
 }
-
 int	ft_unset(char **variable, char ***env_ptr)
 {
 	char	**new_environ;
@@ -83,6 +82,7 @@ int	ft_unset(char **variable, char ***env_ptr)
 			return (1);
 		if (copy_env_except_variable(env, new_environ, variable[index], &j))
 			return (1);
+		free_array(env);
 		*env_ptr = new_environ;
 		index++;
 	}

@@ -14,7 +14,6 @@ char *join_strings(char **args, int index)
 		str = ft_strjoin_free(str, " ");
         if (!str)
             return NULL;
-        if (!args[index + 1])
 		index++;
 	}
 	return (str);
@@ -42,7 +41,7 @@ void	free_array(char **array)
 		return;
 	for (size_t i = 0; array[i] != NULL; i++)
 		free(array[i]);
-	//free(array);
+	free(array);
 }
 
 char **ft_list_to_array(t_list *list)

@@ -21,7 +21,7 @@ int is_valid_chars(char c);
 char	*extract_dollar(const char *str);
 char	*ft_strjoin_free(char *s1, const char *s2);
 char *ft_strndup(const char *src, size_t n);
-t_list	**expand_arg_list(t_list **list, char *temp, char **env);
+t_list	**expand_arg_list(t_list **list, char *temp,  t_context *ctx);
 
 /*  mereg sort  */
 

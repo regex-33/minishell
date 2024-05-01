@@ -62,6 +62,9 @@ void	merge_sort(char **arr, int left, int right)
 		merge(arr, left, mid, right);
 	}
 }
+/*													*/
+/*				merge sort liked list 				*/
+/*													*/
 
 void	merge_linked_list(t_list **head, t_list *left, t_list *right)
 {

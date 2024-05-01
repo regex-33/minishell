@@ -110,7 +110,7 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 		if (match_wildcard(pattern, entry->d_name))
 		{
 			//  don't forget to free memory 
-			if (entry->d_name[0] == '.')
+			if (pattern[0] != '.' && entry->d_name[0] == '.')
 				continue;
 			new = ft_lstnew(ft_strdup(entry->d_name));
 			if (!new)
