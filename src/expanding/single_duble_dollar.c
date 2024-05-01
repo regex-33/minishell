@@ -159,7 +159,7 @@ t_list **expand_arg_list(t_list **list, char *temp, t_context *ctx)
 		{
 			if (!strncmp(temp + i, "$?", 2))
 			{
-				char *str = ft_itoa(get_last_exit_status(ctx->last_status));
+				char *str = ft_itoa(get_status(ctx->last_status, SET_STATUS));
 				join = ft_strjoin_free(join, str);
 				free(str);
 				i += 2;

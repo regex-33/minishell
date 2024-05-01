@@ -26,10 +26,17 @@ void	execute_command(char *command) {
 	}
 }
 
-int	get_last_exit_status(int last_exit_status)
+int	get_status(int last_exit_status, int flags)
 {
-	return (last_exit_status);
+	static int	status;
+
+	if (flags == SET_STATUS)
+		status = last_exit_status;
+	return (status);
 }
+
+// Set: get_status(your_status, SET_STATUS);
+// Get: get_status(0, 0);
 
 int	is_builtin(char *cmd_name)
 {
@@ -182,7 +189,6 @@ void	handle_sigint_signal(int signum, siginfo_t *info, void *ptr)
 	rl_on_new_line();// notify Readline that the cursor has moved to a new line.
 	//rl_replace_line("", 0); // Replace the contents of rl_line_buffer with text.
 	rl_redisplay(); // Change what's displayed on the screen to reflect the current contents of rl_line_buffer.
-
 }
 
 int	main(void)

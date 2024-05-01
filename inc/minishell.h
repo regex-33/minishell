@@ -48,6 +48,8 @@
 #define HOSTNAME_FILE "/proc/sys/kernel/hostname"
 #define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
 
+# define SET_STATUS 1
+
 /* change directory */
 
 
@@ -99,8 +101,8 @@ void    print_prompt_with_user_details(void);
 /* main */
 
 char	**grep_paths(char **env);
-int			get_last_exit_status(int last_exit_status);
+int 	get_status(int last_exit_status, int flags);
 char	*ft_path(void);
-int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
+int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
 
 #endif
