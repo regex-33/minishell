@@ -1,4 +1,6 @@
 .*.swp
+test.c
+a.out
 .vscode
 minishell
 obj

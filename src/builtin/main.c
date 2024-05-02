@@ -191,6 +191,12 @@ void	handle_sigint_signal(int signum, siginfo_t *info, void *ptr)
 	rl_redisplay(); // Change what's displayed on the screen to reflect the current contents of rl_line_buffer.
 }
 
+void	handle_interrupt(int sig)
+{
+	(void)sig;
+	rl_redisplay();
+}
+
 int	main(void)
 {
 	char	*line;
@@ -200,6 +206,7 @@ int	main(void)
 	t_context	ctx;
 	t_btree	*parse_tree;
 	struct sigaction	sa;
+	//struct sigaction	saint;
 
 
 	if (init_context(&ctx))
@@ -207,6 +214,9 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_equal_signal;
 	sigaction(SIGQUIT, &sa, NULL);
+	 // saint.sa_handler = handle_interrupt;
+	 // sigemptyset(&saint.sa_mask);
+	 // sigaction(SIGINT, &saint, NULL);
 	// sa.sa_flags = SA_SIGINFO;
 	// sa.sa_sigaction = handle_sigint_signal;
 	// sigaction(SIGINT, &sa, NULL);

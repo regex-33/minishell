@@ -20,6 +20,9 @@ int	getredir_fd(char *str, int len)
 	if (str[0] == '<' || str[0] == '>')
 		return (str[0] == '>');
 	tmp = str[len];
+	if (len - 1 > 10 || 
+		(len - 1 == 10 && ft_strncmp(str, "2147483647", 10) > 0))
+		return (-1);
 	str[len] = 0;
 	fd = ft_atoi(str);
 	str[len] = tmp;

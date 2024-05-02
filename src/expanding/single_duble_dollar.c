@@ -172,7 +172,8 @@ t_list **expand_arg_list(t_list **list, char *temp, t_context *ctx)
 				{
 					char *value = get_value(variable + 1, ctx->env);
 					if (!value)
-						value = "";
+						return NULL;
+						//value = "";
 					if (!strchr(value, '\"') && strchr(value, '*'))
 						have_asterisk = 1;
 					if (quote != '\"' && (strchr(value, ' ') || strchr(value, '\t')))

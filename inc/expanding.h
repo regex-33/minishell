@@ -13,7 +13,7 @@ int	match_wildcard(const char *pattern, const char *filename);
 int expand_wildcard(const char *pattern, t_list **matches);
 void	*expand_asterisk(char *command, t_list **list);
 
-/*  single duble dollar */
+/*  single double dollar */
 
 char	*extract_dollar(const char *str);
 //char	*get_value(char *name);
@@ -23,7 +23,7 @@ char	*ft_strjoin_free(char *s1, const char *s2);
 char *ft_strndup(const char *src, size_t n);
 t_list	**expand_arg_list(t_list **list, char *temp,  t_context *ctx);
 
-/*  mereg sort  */
+/*  merge sort  */
 
 void	merge(char **arr, int left, int mid, int right);
 void	merge_sort(char **arr, int left, int right);

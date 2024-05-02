@@ -240,8 +240,19 @@ int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 		unlink(redir->filename);
 	}
 	if (fd < 0)
-		return (restore_redir(redir_list), -1);
+		return (restore_redir(redir_list), ft_putstr_fd("minishell: ", 2), perror(redir->filename), -1);
 	return (fd);
+}
+
+void	print_fd_err(int fd)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (fd < 0)
+		ft_putstr_fd("file descriptor out of range", 2);
+	else
+		ft_putnbr_fd(fd, 2);
+	ft_putstr_fd(": ", 2);
+	perror(NULL);
 }
 
 int	redirect(t_list *redir_list, t_context *ctx)
@@ -262,10 +273,10 @@ int	redirect(t_list *redir_list, t_context *ctx)
 					STDERR_FILENO), free_array(files), 1);
 		fd = open_file(redir, ctx, redir_list);
 		if (fd < 0)
-			return (perror("minishell"), 1);
+			return (1);
 		redir->bak_fd = dup(redir->fd);
 		if (redir->bak_fd < 0)
-			return (restore_redir(redir_list), perror("minishell"), 1);
+			return (restore_redir(redir_list), print_fd_err(redir->fd), 1);
 		dup2(fd, redir->fd);
 		close(fd);
 		redir_list = redir_list->next;
@@ -306,6 +317,8 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
+		if (!cmd->cmd_args)
+			return (restore_redir(redir_list), exit(0), 0);
 		pexec.args = get_expanded_args(cmd, ctx);
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
@@ -349,6 +362,8 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
+		if (!cmd->cmd_args)
+			return (restore_redir(redir_list), exit(0), 0);
 		pexec.args = get_expanded_args(cmd, ctx);
 		if (!pexec.args)
 			return (perror("minishell"), exit(1), 0);
