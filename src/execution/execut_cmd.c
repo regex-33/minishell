@@ -109,7 +109,7 @@ char	**expand_filename_here_doc(char *filename, t_context *ctx)
 	files = NULL;
 	expanding_list = NULL;
 	if (!expand_arg_list(&expanding_list, filename, ctx))
-		return (NULL);
+		return (freeLinkedList(expanding_list) ,NULL);
 	if (expanding_list)
 	{
 		files = ft_list_to_array(expanding_list);

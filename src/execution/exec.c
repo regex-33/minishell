@@ -28,7 +28,7 @@ t_list	*expand_list(t_list *list, t_context *ctx)
 		if (!value)
 			return (ft_putstr_fd("Error: failed to copy token\n", 2), NULL);
 		if (!expand_arg_list(&expanding_list, value, ctx))
-			return (ft_putstr_fd("Error: failed to expand token\n", 2), NULL);
+			return (freeLinkedList(expanding_list) , NULL);
 		free(value);
 		list = list->next;
 	}
@@ -38,7 +38,7 @@ t_list	*expand_list(t_list *list, t_context *ctx)
 char **get_expanded_args(t_cmd *cmd, t_context *ctx)
 {
     t_list *list_args;
-	t_list *expanding_list;
+	t_list *expanding_list = NULL;
 
 	if (!cmd)
 		return NULL;
@@ -50,9 +50,11 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx)
         char **args = ft_list_to_array(expanding_list);
         if (!args)
             return (freeLinkedList(expanding_list), NULL);
+		//printf("args\n");
+		//printArray(args);
         return (freeLinkedList(expanding_list), args);
     }
-	return (perror("minishell"), NULL);
+	return (NULL);
 }
 
 int exec_simple(t_btree *tree, t_context *ctx)
@@ -72,7 +74,10 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	}
 	args = get_expanded_args(cmd, ctx);
 	if (!args)
+	{
+		printf("args is NULL\n");
 		return 1;
+	}
 	status = exec_cmd(redir, args, ctx);
 	return (status);
 }

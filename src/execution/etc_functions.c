@@ -55,9 +55,14 @@ char **ft_list_to_array(t_list *list)
     int i = 0;
     while (list)
     {
-        array[i] = ft_strdup(list->content);
+        if (!list->content || !ft_strlen(list->content))
+            array[i] = strdup("");
+        else
+            array[i] = ft_strdup(list->content);
+        //printf("array[%d] = %s\n", i, array[i]);
         if (!array[i])
         {
+            printf("Error: %s\n", strerror(errno));
             perror("minishell");
             while (i > 0)
                 free(array[i--]);
