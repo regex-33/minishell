@@ -58,6 +58,11 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 	char	**path_dirs;
 
 	pexec->err = 0;
+	pexec->cmd_name = NULL;
+	if (*(args[0]) == 0)
+	{
+		return (0);
+	}
 	path_dirs = grep_paths(ctx->env);
 	if (ft_strchr(args[0], '/'))
 	{
@@ -203,18 +208,19 @@ int	handle_heredoc(char **filename, t_context *ctx)
 // 	}
 // }
 
-void	restore_redir(t_list *redir_list)
+void	reset_redir(t_list *redir_list, int restore)
 {
 	t_redir	*redir;
 
 	if (!redir_list)
 		return ;
 	if (redir_list->next)
-		restore_redir(redir_list->next);
+		reset_redir(redir_list->next, restore);
 	redir = redir_list->content;
 	if (redir->bak_fd >= 0)
 	{
-		dup2(redir->bak_fd, redir->fd);
+		if (restore)
+			dup2(redir->bak_fd, redir->fd);
 		close(redir->bak_fd);
 	}
 }
@@ -233,14 +239,14 @@ int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 	else if (redir->type == REDIR_HERE)
 	{
 		if (handle_heredoc(&redir->filename, ctx))
-			return (restore_redir(redir_list), -1);
+			return (reset_redir(redir_list, 1), -1);
 		fd = open(redir->filename, O_RDONLY);
 		if (fd < 0)
-			return (restore_redir(redir_list), -1);
+			return (reset_redir(redir_list, 1), -1);
 		unlink(redir->filename);
 	}
 	if (fd < 0)
-		return (restore_redir(redir_list), ft_putstr_fd("minishell: ", 2), perror(redir->filename), -1);
+		return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2), perror(redir->filename), -1);
 	return (fd);
 }
 
@@ -266,9 +272,9 @@ int	redirect(t_list *redir_list, t_context *ctx)
 		redir = redir_list->content;
 		files = expand_filename_here_doc(redir->filename, ctx);
 		if (!files)
-			return (restore_redir(redir_list), perror("minishell"), 1);
+			return (reset_redir(redir_list, 1), perror("minishell"), 1);
 		if (count_array(files) > 1)
-			return (restore_redir(redir_list), ft_putstr_fd("minishell: ",
+			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ",
 					STDERR_FILENO), ft_putstr_fd("ambiguous redirect\n",
 					STDERR_FILENO), free_array(files), 1);
 		fd = open_file(redir, ctx, redir_list);
@@ -276,7 +282,7 @@ int	redirect(t_list *redir_list, t_context *ctx)
 			return (1);
 		redir->bak_fd = dup(redir->fd);
 		if (redir->bak_fd < 0)
-			return (restore_redir(redir_list), print_fd_err(redir->fd), 1);
+			return (reset_redir(redir_list, 1), print_fd_err(redir->fd), 1);
 		dup2(fd, redir->fd);
 		close(fd);
 		redir_list = redir_list->next;
@@ -291,6 +297,7 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 	t_cmd		*cmd;
 	t_list		*redir_list;
 	t_prexec	pexec;
+	int			status;
 
 	pid = fork();
 	if (pid < 0)
@@ -308,18 +315,25 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (redirect(redir_list, ctx))
-			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
 			if (redirect(redir_list, ctx))
 				return (exit(1), 0);
+			reset_redir(redir_list, 0);
 			exit(__exec(tree->left, ctx));
 		}
 		cmd = tree->data;
 		if (!cmd->cmd_args)
-			return (restore_redir(redir_list), exit(0), 0);
+			return (exit(0), 0);
 		pexec.args = get_expanded_args(cmd, ctx);
+		if (!pexec.args)
+			return (perror("minishell"), exit(1), 0);
+		status = select_buildin_commands(pexec.args, cmd->redir_list, ctx);
+		if (status != -1)
+			return (exit(status), 0);
+		if (redirect(redir_list, ctx))
+			return (exit(1), 0);
+		reset_redir(redir_list, 0);
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
@@ -340,6 +354,7 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 	t_cmd		*cmd;
 	t_list		*redir_list;
 	t_prexec	pexec;
+	int			status;
 
 	pid = fork();
 	if (pid < 0)
@@ -353,8 +368,6 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (redirect(redir_list, ctx))
-			return (exit(1), 0);
 		if (tree->type == nt_subcmd)
 		{
 			if (redirect(redir_list, ctx))
@@ -363,10 +376,16 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 		}
 		cmd = tree->data;
 		if (!cmd->cmd_args)
-			return (restore_redir(redir_list), exit(0), 0);
+			return (exit(0), 0);
 		pexec.args = get_expanded_args(cmd, ctx);
 		if (!pexec.args)
 			return (perror("minishell"), exit(1), 0);
+		status = select_buildin_commands(pexec.args, cmd->redir_list, ctx);
+		if (status != -1)
+			return (exit(status), 0);
+		if (redirect(redir_list, ctx))
+			return (exit(1), 0);
+		reset_redir(redir_list, 0);
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
@@ -394,8 +413,9 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 	{
 		if (redirect(redir_list, ctx))
 			return (exit(EXIT_FAILURE), 0);
+		reset_redir(redir_list, 0);
 		if (init_command(&pexec, ctx, args))
-			exit(pexec.err);
+			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 			return (perror("minishell"), exit(1), 0);
 	}
@@ -403,10 +423,10 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 	{
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
-			ctx->last_status = WEXITSTATUS(status);
+			status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-			ctx->last_status = WTERMSIG(status) + 128;
-		return (ctx->last_status);
+			status = WTERMSIG(status) + 128;
+		return (status);
 	}
 	return (1);
 }

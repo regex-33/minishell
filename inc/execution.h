@@ -13,7 +13,7 @@ pid_t	exec_last_piped_cmd(t_btree *leaf, t_context *ctx, int fd[2]);
 char **get_expanded_args(t_cmd *cmd, t_context *ctx);
 
 
-void    restore_redir(t_list *redir_list);
+void    reset_redir(t_list *redir_list, int restore);
 int redirect(t_list *redir_list, t_context *ctx);
 char **expand_filename_here_doc(char *filename, t_context *ctx);
 int count_array(char **array);

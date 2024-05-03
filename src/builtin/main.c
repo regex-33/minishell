@@ -59,27 +59,29 @@ int	is_builtin(char *cmd_name)
 
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 {
-	ctx->last_status = 1;
+	int	status;
+
+	status = 1;
 	if (!is_builtin(args[0]))
 		return (-1);
 	if (redirect(redir_list, ctx))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		ctx->last_status = ft_change_dir(++args, ctx); // return status code
+		status = ft_change_dir(++args, ctx); // return status code
 	else if (!ft_strcmp(args[0], "pwd"))
-		ctx->last_status = ft_pwd(1, ctx);
+		status = ft_pwd(1, ctx);
 	else if (!ft_strcmp(args[0], "exit"))
-		ctx->last_status = ft_exit(args, ctx);
+		status = ft_exit(args);
 	else if (!ft_strcmp(args[0], "echo"))
-		ctx->last_status = ft_echo(args, 1);
+		status = ft_echo(args, 1);
 	else if (!ft_strcmp(args[0], "env"))
-		ctx->last_status = ft_env(ctx->env, 1);
+		status = ft_env(ctx->env, 1);
 	else if (!ft_strcmp(args[0], "export"))
-		ctx->last_status = ft_export(args, &ctx->env, 1);
+		status = ft_export(args, &ctx->env, 1);
 	else if (!ft_strcmp(args[0], "unset"))
-		ctx->last_status = ft_unset(args, &ctx->env);
-	restore_redir(redir_list);
-	return (ctx->last_status);
+		status = ft_unset(args, &ctx->env);
+	reset_redir(redir_list, 1);
+	return (status);
 }
 
 
@@ -193,6 +195,7 @@ void	handle_sigint_signal(int signum, siginfo_t *info, void *ptr)
 
 void	handle_interrupt(int sig)
 {
+	buff[MAXENTRY];
 	(void)sig;
 	rl_redisplay();
 }
@@ -206,7 +209,7 @@ int	main(void)
 	t_context	ctx;
 	t_btree	*parse_tree;
 	struct sigaction	sa;
-	//struct sigaction	saint;
+	struct sigaction	saint;
 
 
 	if (init_context(&ctx))
@@ -214,9 +217,9 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_equal_signal;
 	sigaction(SIGQUIT, &sa, NULL);
-	 // saint.sa_handler = handle_interrupt;
-	 // sigemptyset(&saint.sa_mask);
-	 // sigaction(SIGINT, &saint, NULL);
+	saint.sa_handler = handle_interrupt;
+	sigemptyset(&saint.sa_mask);
+	sigaction(SIGINT, &saint, NULL);
 	// sa.sa_flags = SA_SIGINFO;
 	// sa.sa_sigaction = handle_sigint_signal;
 	// sigaction(SIGINT, &sa, NULL);
@@ -251,7 +254,7 @@ int	main(void)
 		prompt_heredoc(parse_tree);
 		//ft_printf("----------- EXECUTION ---------\n");
 
- 		__exec(parse_tree, &ctx);
+ 		get_status(__exec(parse_tree, &ctx), SET_STATUS);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
 		{

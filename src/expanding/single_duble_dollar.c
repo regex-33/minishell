@@ -108,6 +108,7 @@ int	split_and_add_to_list(t_list **list, char **join, char *value)
 	*join = ft_strjoin(*join, value_split[index++]);
 	if (*join == NULL)
 	{
+		printf("join is null\n");
 		perror("minishell");
 		return false;
 	}
@@ -120,7 +121,10 @@ int	split_and_add_to_list(t_list **list, char **join, char *value)
 	}
 	*join = value_split[count - 1];
 	if (*join == NULL)
+	{
+		printf("join is null\n");
 		perror("minishell");
+	}
 	return true;
 }
 
@@ -159,7 +163,7 @@ t_list **expand_arg_list(t_list **list, char *temp, t_context *ctx)
 		{
 			if (!strncmp(temp + i, "$?", 2))
 			{
-				char *str = ft_itoa(get_status(ctx->last_status, SET_STATUS));
+				char *str = ft_itoa(get_status(0, 0));
 				join = ft_strjoin_free(join, str);
 				free(str);
 				i += 2;
@@ -171,9 +175,18 @@ t_list **expand_arg_list(t_list **list, char *temp, t_context *ctx)
 				if (variable)
 				{
 					char *value = get_value(variable + 1, ctx->env);
+					//printf("value : %s\n", value);
 					if (!value)
-						return NULL;
-						//value = "";
+					{
+						join = ft_strjoin_free(join, "");
+			
+						i += strlen(variable);
+						free(variable);
+						continue;
+					}
+						//value = strdup("");
+						//return list;
+						//return NULL;
 					if (!strchr(value, '\"') && strchr(value, '*'))
 						have_asterisk = 1;
 					if (quote != '\"' && (strchr(value, ' ') || strchr(value, '\t')))
@@ -184,6 +197,7 @@ t_list **expand_arg_list(t_list **list, char *temp, t_context *ctx)
 					else
 						join = ft_strjoin_free(join, value);
 
+					//printf("join : %s\n", join);
 					int len = strlen(variable);
 					free(variable);
 					i += len;

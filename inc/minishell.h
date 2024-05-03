@@ -66,7 +66,7 @@ int         ft_echo(char **args, int fd);
 
 char		*skip_chars(const char *str);
 bool		is_numeric(const char *str);
-int			ft_exit(char **exit_code, t_context *ctx);
+int			ft_exit(char **exit_code);
 
 /* ft_export */
 

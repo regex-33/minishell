@@ -29,10 +29,6 @@ void	freeLinkedList(t_list *head)
 	head = NULL;
 }
 
-int	contains_wildcard(const char *str)
-{
-	return (ft_strchr(str, '*') != NULL);
-}
 /*  check match filename    */
 // mi*shell
 int	match_wildcard(const char *pattern, const char *filename)
@@ -91,6 +87,18 @@ int	move_temp_list_to_list(t_list **list, t_list **temp)
 	return (1);
 }
 
+int	expand_wildcard_add_node(t_list **temp, const char *pattern, const char *entry_name)
+{
+	t_list	*new;
+
+	if (pattern[0] != '.' && entry_name[0] == '.')
+		return (1);
+	new = ft_lstnew(ft_strdup(entry_name));
+	if (!new)
+		return (0);
+	ft_lstadd_back_libft(temp, new);
+	return (1);
+}
 
 int	expand_wildcard(const char *pattern, t_list **matches)
 {
@@ -101,58 +109,51 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 
 	dir = opendir(".");
 	if (dir == NULL)
-	{
-		perror("Error opening directory");
 		return (0);
-	}
 	while ((entry = readdir(dir)) != NULL)
 	{
 		if (match_wildcard(pattern, entry->d_name))
 		{
-			//  don't forget to free memory 
-			if (pattern[0] != '.' && entry->d_name[0] == '.')
-				continue;
-			new = ft_lstnew(ft_strdup(entry->d_name));
-			if (!new)
-				return (perror("lstnew failed\n"), closedir(dir), 0);
-			ft_lstadd_back_libft(&temp, new);
+			if (!expand_wildcard_add_node(&temp, pattern, entry->d_name))
+				return (closedir(dir), 0);
 		}
 	}
 	if (!temp)
 	{
 		new = ft_lstnew(ft_strdup(pattern));
 		if (!new)
-			return (perror("lstnew failed\n"), closedir(dir), 0);
+			return (closedir(dir), 0);
 		ft_lstadd_back_libft(&temp, new);
 	}
-	closedir(dir);
-	return (move_temp_list_to_list(matches, &temp));
+	return (closedir(dir), move_temp_list_to_list(matches, &temp));
 }
 
 
 
 void	*expand_asterisk(char *command, t_list **list)
 {
-	char	*token;
+	char	**token;
 	t_list	*new;
+	int		i;
 
-	token = strtok(command, " \t");
-	while (token != NULL)
+	i = 0;
+	token = ft_split(command, ' ');
+	while (token[i])
 	{
-		if (contains_wildcard(token))
+		if (ft_strchr(token[i], '*'))
 		{
-			/* don't forget to free memory if is failed */
-			if(!expand_wildcard(token, list))
-				return (ft_putendl_fd("expand_wildcard failed", 2), NULL);
+			if(!expand_wildcard(token[i], list))
+				return (perror("minishell"), NULL);
 		}
 		else
 		{
-			new = ft_lstnew(ft_strdup(token));
+			new = ft_lstnew(ft_strdup(token[i]));
 			if (!new)
-				return (ft_putendl_fd("lstnew failed", 2), NULL);
+				return (perror("minishell"), NULL);
 			ft_lstadd_back_libft(list, new);
 		}
-		token = strtok(NULL, " ");
+		i++;
 	}
+	free_array(token);
 	return (list);
 }

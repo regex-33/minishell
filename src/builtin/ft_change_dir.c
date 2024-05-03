@@ -48,12 +48,9 @@ int	ft_change_dir(char **path, t_context *ctx)
 
 	if (path && path[0])
 	{
-		printf("path %s\n", *path);
 		if (chdir(path[0]) == -1)
 			return (excute_failed(path));
 		getcwd(last_path, sizeof(last_path));
-			printf("i am here\n");
-		printf("path last %s\n", last_path);
 		//free(ctx->last_pwd);
 		ctx->last_pwd = ft_strdup(last_path);
 	}
