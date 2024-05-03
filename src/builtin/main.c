@@ -60,7 +60,7 @@ int	is_builtin(char *cmd_name)
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 {
 	ctx->last_status = 1;
-	if (!is_builtin(args[0]))
+	if (!*args || !is_builtin(args[0]))
 		return (-1);
 	if (redirect(redir_list, ctx))
 		return (1);

@@ -1,5 +1,6 @@
 #include "../../inc/minishell.h"
 
+/*
 int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
 {
 	while (env[*env_count_local] != NULL)
@@ -21,11 +22,68 @@ int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
 int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local)
 {
 	char	*temp;
+	int		len;
 
+	len = 0;
 	while (env[*env_count_local] != NULL)
 	{
-		if (!ft_strncmp(env[*env_count_local], str, to_equal)
-			|| !ft_strncmp(env[*env_count_local], str, ft_strlen(str)))
+		len = ft_strchr(env[*env_count_local], '=') - env[*env_count_local];
+		if (len == to_equal && !ft_strncmp(env[*env_count_local], str,
+				to_equal))
+		{
+			//printf("str: %s\n", str);
+			temp = ft_strdup(str);
+			if (!temp)
+				return (-1);
+			env[*env_count_local] = temp;
+			return (1);
+		}
+		// if (ft_strchr(env[*env_count_local], '=') == NULL)
+		// {
+		// 	temp = ft_strjoin(env[*env_count_local], "=");
+		// 	if (!temp)
+		// 		return (-1);
+		// 	env[*env_count_local] = temp;
+		// }
+		*env_count_local += 1;
+	}
+	return (0);
+}*/
+int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
+{
+	while (env[*env_count_local] != NULL)
+	{
+		if (!ft_strncmp(env[*env_count_local], str, name_len))
+		{
+			if (!ft_strchr(env[*env_count_local], '='))
+				env[*env_count_local] = ft_strjoin(env[*env_count_local], "=");
+			env[*env_count_local] = ft_strjoin(env[*env_count_local],
+					&str[name_len + 2]);
+			return (1);
+		}
+		*env_count_local += 1;
+	}
+	return (0);
+}
+
+int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local)
+{
+	char	*temp;
+	int		len;
+
+	if (to_equal < 0)
+		to_equal = ft_strlen(str);
+	while (env[*env_count_local] != NULL)
+	{
+		len = ft_strchr(env[*env_count_local], '=') - env[*env_count_local];
+		if (len < 0)
+			len = ft_strlen(env[*env_count_local]);
+		// printf("str : %s\n", str);
+		// printf("env : %s\n", env[*env_count_local]);
+		// printf("to_equal : %d\n", to_equal);
+		// printf("len : %d\n", len);
+		if ((ft_strchr(str, '=') && len == to_equal)
+			&& !ft_strncmp(env[*env_count_local], str, to_equal))
 		{
 			temp = ft_strdup(str);
 			if (!temp)
@@ -33,6 +91,10 @@ int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local)
 			env[*env_count_local] = temp;
 			return (1);
 		}
+		else if (!ft_strncmp(env[*env_count_local], str, to_equal)
+			&& !ft_strchr(str, '=') && (ft_strchr(env[*env_count_local], '=')
+				|| !ft_strchr(env[*env_count_local], '=')))
+			return (1);
 		*env_count_local += 1;
 	}
 	return (0);
@@ -131,6 +193,7 @@ int	ft_export(char **variable, char ***env_ptr, int fd)
 	}
 	while (variable[j])
 	{
+		printf("variable: %s\n", variable[j]);
 		env_count = j;
 		if (!check_variable_name(variable[j]))
 			return (1);

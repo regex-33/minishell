@@ -184,24 +184,6 @@ int	handle_heredoc(char **filename, t_context *ctx)
 	return (0);
 }
 
-// void	restore_redir(t_list *redir_list)
-// {
-// 	t_redir	*redir;
-// 
-// 	while (redir_list)
-// 	{
-// 		redir = redir_list->content;
-// 		if (redir->bak_fd >= 0)
-// 		{
-// 			dup2(redir->bak_fd, redir->fd); // bak = 4, bak = 5
-// 			close(redir->bak_fd);
-// 			ft_printf("restoring bak: %d to %d", redir->bak_fd, redir->fd);
-// 		}
-// 		else
-// 			ft_printf("no restore\n");
-// 		redir_list = redir_list->next;
-// 	}
-// }
 
 void	restore_redir(t_list *redir_list)
 {
@@ -355,7 +337,9 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		{
 			return (perror("minishell"), exit(1), 0);
+		}
 	}
 	else
 		return (close(fd[READ]), pid);
@@ -381,8 +365,11 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 			return (exit(EXIT_FAILURE), 0);
 		if (init_command(&pexec, ctx, args))
 			exit(pexec.err);
+		print_err(pexec.cmd_name, NULL);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		{
 			return (perror("minishell"), exit(1), 0);
+		}
 	}
 	else
 	{

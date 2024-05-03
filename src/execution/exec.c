@@ -27,6 +27,7 @@ t_list	*expand_list(t_list *list, t_context *ctx)
 		value = ft_substr(token->value, 0, token->len);
 		if (!value)
 			return (ft_putstr_fd("Error: failed to copy token\n", 2), NULL);
+		printf("value: %s\n", value);
 		if (!expand_arg_list(&expanding_list, value, ctx))
 			return (freeLinkedList(expanding_list) , NULL);
 		free(value);
@@ -51,8 +52,9 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx)
         if (!args)
             return (freeLinkedList(expanding_list), NULL);
 		//printf("args\n");
-		//printArray(args);
+		printArray(args);
         return (freeLinkedList(expanding_list), args);
+        //return (args);
     }
 	return (NULL);
 }
@@ -74,10 +76,8 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	}
 	args = get_expanded_args(cmd, ctx);
 	if (!args)
-	{
-		printf("args is NULL\n");
 		return 1;
-	}
+	//printf("args\n");
 	status = exec_cmd(redir, args, ctx);
 	return (status);
 }
