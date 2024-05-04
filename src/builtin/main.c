@@ -1,37 +1,11 @@
 #include "../../inc/minishell.h"
 
-int		last_exit_status = 0;
-
-void	execute_command(char *command) {
-	pid_t	pid;
-	int		status;
-	char	*args[] = {"/bin/sh", "-c", command, NULL};
-
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("error fork");
-		exit(EXIT_FAILURE); }
-	else if (pid == 0)
-	{
-		execv("/bin/sh", args);
-		perror("execve failed");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			last_exit_status = WEXITSTATUS(status);
-	}
-}
-
-int	get_status(int last_exit_status, int flags)
+int	get_status(int new_status, int flags)
 {
 	static int	status;
 
 	if (flags == SET_STATUS)
-		status = last_exit_status;
+		status = new_status;
 	return (status);
 }
 
@@ -62,7 +36,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	int	status;
 
 	status = 1;
-	if (!is_builtin(args[0]))
+	if (!*args || !is_builtin(args[0]))
 		return (-1);
 	if (redirect(redir_list, ctx))
 		return (1);
@@ -93,16 +67,16 @@ char	*get_prompt(char *str, char *suffix)
 	if (!str)
 		return (NULL);
 	size = ft_strlen(str) + 1;
-	size += ft_strlen(COLOR_KHDER_FATH);
-	size += ft_strlen(ANSI_COLOR_RESET);
+//	size += ft_strlen(COLOR_KHDER_FATH);
+//	size += ft_strlen(ANSI_COLOR_RESET);
 	if (suffix)
 		size += ft_strlen(suffix);
 	prompt = ft_calloc(size, sizeof(char));
 	if (!prompt)
 		return (NULL);
-	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
+//	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
 	ft_strlcat(prompt, str, size);
-	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
+//	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
 	if (suffix)
 		ft_strlcat(prompt, suffix, size);
 	return (prompt);
@@ -181,22 +155,12 @@ void	handle_equal_signal(int signum, siginfo_t *info, void *ptr)
 	rl_redisplay();
 }
 
-void	handle_sigint_signal(int signum, siginfo_t *info, void *ptr)
-{
-	(void)signum;
-	(void)ptr;
-	(void)info;
-	//ctx.last_status = 1;
-	ft_printf("\n");
-	rl_on_new_line();// notify Readline that the cursor has moved to a new line.
-	//rl_replace_line("", 0); // Replace the contents of rl_line_buffer with text.
-	rl_redisplay(); // Change what's displayed on the screen to reflect the current contents of rl_line_buffer.
-}
-
 void	handle_interrupt(int sig)
 {
-	buff[MAXENTRY];
 	(void)sig;
+	ft_printf("\n");
+	rl_on_new_line();
+	rl_replace_line("", 1);
 	rl_redisplay();
 }
 
@@ -208,21 +172,13 @@ int	main(void)
 	t_list	*tokens;
 	t_context	ctx;
 	t_btree	*parse_tree;
-	struct sigaction	sa;
 	struct sigaction	saint;
-
 
 	if (init_context(&ctx))
 		return 1;
-	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = handle_equal_signal;
-	sigaction(SIGQUIT, &sa, NULL);
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
-	// sa.sa_flags = SA_SIGINFO;
-	// sa.sa_sigaction = handle_sigint_signal;
-	// sigaction(SIGINT, &sa, NULL);
 	while (1)
 	{
 		//print_prompt_with_user_details();
@@ -236,6 +192,8 @@ int	main(void)
 	//	free(pwd);
 
 		line = readline(prompt);
+		if (!line)
+			exit(0);
 		tokens = lexer(line);	
 		if (!tokens)
 		{

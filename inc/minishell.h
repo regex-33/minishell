@@ -11,6 +11,7 @@
 # include <math.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+//# include "readline.h"
 # include <stddef.h>
 # include <stddef.h>
 # include <stdio.h>
@@ -101,7 +102,7 @@ void    print_prompt_with_user_details(void);
 /* main */
 
 char	**grep_paths(char **env);
-int 	get_status(int last_exit_status, int flags);
+int 	get_status(int new_status, int flags);
 char	*ft_path(void);
 int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
 

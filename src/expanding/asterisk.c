@@ -1,34 +1,5 @@
 #include "minishell.h"
 
-void	printLinkedList(t_list *head)
-{
-	t_list	*current;
-
-	current = head;
-	ft_printf("\nLinked List: \n");
-	while (current != NULL)
-	{
-		ft_printf("%s ", (char *)(current->content));
-		current = current->next;
-	}
-}
-
-void	freeLinkedList(t_list *head)
-{
-	t_list	*current;
-	t_list	*next;
-
-	current = head;
-	while (current != NULL)
-	{
-		next = current->next;
-		free(current->content);
-		free(current);
-		current = next;
-	}
-	head = NULL;
-}
-
 /*  check match filename    */
 // mi*shell
 int	match_wildcard(const char *pattern, const char *filename)
@@ -39,7 +10,7 @@ int	match_wildcard(const char *pattern, const char *filename)
 		{
 			while (*pattern == '*')
 				pattern++;
-			/*'*' at the end matches any remaining characters*/
+			/* '*' at the end matches any remaining characters */
 			if (*pattern == '\0')
 				return (1);
 			while (*filename)
@@ -128,8 +99,6 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 	return (closedir(dir), move_temp_list_to_list(matches, &temp));
 }
 
-
-
 void	*expand_asterisk(char *command, t_list **list)
 {
 	char	**token;
@@ -143,17 +112,16 @@ void	*expand_asterisk(char *command, t_list **list)
 		if (ft_strchr(token[i], '*'))
 		{
 			if(!expand_wildcard(token[i], list))
-				return (perror("minishell"), NULL);
+				return (free(command), perror("minishell"), NULL);
 		}
 		else
 		{
 			new = ft_lstnew(ft_strdup(token[i]));
 			if (!new)
-				return (perror("minishell"), NULL);
+				return (free(command), perror("minishell"), NULL);
 			ft_lstadd_back_libft(list, new);
 		}
 		i++;
 	}
-	free_array(token);
-	return (list);
+	return (free_array(token), free(command), list);
 }

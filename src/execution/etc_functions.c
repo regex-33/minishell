@@ -22,7 +22,7 @@ char *join_strings(char **args, int index)
 void	printArray(char **array)
 {
 	int i = 0;
-
+    ft_printf("printArray\n");
 	if (!array)
 	{
 		printf("Array is empty\n");
@@ -30,9 +30,10 @@ void	printArray(char **array)
     //printf("Array is not empty\n");
 	while (array[i])
 	{
-		ft_printf("%s\n", array[i]);
+		ft_printf("str :%s$\n", array[i]);
 		i++;
 	}
+    ft_printf("-----------------\n");
 }
 
 void	free_array(char **array)
@@ -55,14 +56,19 @@ char **ft_list_to_array(t_list *list)
     int i = 0;
     while (list)
     {
-        if (!list->content || !ft_strlen(list->content))
-            array[i] = strdup("");
+        if (!list->content) 
+        {
+           // array[i] = NULL;
+            list = list->next;
+            continue;
+            //array[i] = strdup("");
+        }
         else
             array[i] = ft_strdup(list->content);
         //printf("array[%d] = %s\n", i, array[i]);
         if (!array[i])
         {
-            printf("Error: %s\n", strerror(errno));
+            printf("malloc error\n");
             perror("minishell");
             while (i > 0)
                 free(array[i--]);

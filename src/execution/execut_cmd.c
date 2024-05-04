@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+int	is_file(char *path)
+{
+	struct stat	sb;
+
+	if (stat(path, &sb))
+		return (0);
+	return ((sb.st_mode & S_IFMT) != S_IFDIR);
+}
+
 char	*ft_which(char *cmd, char **path_dirs)
 {
 	char	*tmp;
@@ -17,7 +26,7 @@ char	*ft_which(char *cmd, char **path_dirs)
 		cmd_pathname = ft_strjoin(path_dirs[i], tmp);
 		if (!cmd_pathname)
 			return (free(tmp), NULL);
-		if (!access(cmd_pathname, F_OK) && !access(cmd_pathname, X_OK))
+		if (is_file(cmd_pathname))
 			return (free(tmp), cmd_pathname);
 		free(cmd_pathname);
 	}
@@ -35,7 +44,7 @@ void	print_err(char *mid, char *suffix)
 		ft_putendl_fd(suffix, 2);
 }
 
-int	check_cmd_name(char *pathname)
+int	check_abs_cmd(char *pathname)
 {
 	struct stat	sb;
 
@@ -59,14 +68,12 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 
 	pexec->err = 0;
 	pexec->cmd_name = NULL;
-	if (*(args[0]) == 0)
-	{
-		return (0);
-	}
+	if (!*args)
+		return (1);
 	path_dirs = grep_paths(ctx->env);
 	if (ft_strchr(args[0], '/'))
 	{
-		pexec->err = check_cmd_name(args[0]);
+		pexec->err = check_abs_cmd(args[0]);
 		if (pexec->err)
 			return (pexec->err);
 		pexec->cmd_name = ft_strdup(args[0]);
@@ -78,6 +85,11 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 		{
 			pexec->err = 127;
 			print_err(args[0], " : command not found");
+		}
+		else if (access(pexec->cmd_name, X_OK))
+		{
+			pexec->err = 126;
+			print_err(pexec->cmd_name, " : Permission denied.");
 		}
 	}
 	pexec->args = args;
@@ -189,24 +201,6 @@ int	handle_heredoc(char **filename, t_context *ctx)
 	return (0);
 }
 
-// void	restore_redir(t_list *redir_list)
-// {
-// 	t_redir	*redir;
-// 
-// 	while (redir_list)
-// 	{
-// 		redir = redir_list->content;
-// 		if (redir->bak_fd >= 0)
-// 		{
-// 			dup2(redir->bak_fd, redir->fd); // bak = 4, bak = 5
-// 			close(redir->bak_fd);
-// 			ft_printf("restoring bak: %d to %d", redir->bak_fd, redir->fd);
-// 		}
-// 		else
-// 			ft_printf("no restore\n");
-// 		redir_list = redir_list->next;
-// 	}
-// }
 
 void	reset_redir(t_list *redir_list, int restore)
 {
@@ -389,7 +383,9 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		{
 			return (perror("minishell"), exit(1), 0);
+		}
 	}
 	else
 		return (close(fd[READ]), pid);
@@ -398,7 +394,6 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 
 int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 {
-	extern int	last_exit_status;
 	pid_t		pid;
 	t_prexec	pexec;
 	int			status;
@@ -417,7 +412,9 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 		if (init_command(&pexec, ctx, args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		{
 			return (perror("minishell"), exit(1), 0);
+		}
 	}
 	else
 	{

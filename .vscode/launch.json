@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/Users/yachtata/minishell/src/expanding",
-      "program": "/Users/yachtata/minishell/src/expanding/build/Debug/outDebug",
+      "cwd": "/Users/yachtata/minishell",
+      "program": "/Users/yachtata/minishell/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

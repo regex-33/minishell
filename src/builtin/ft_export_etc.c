@@ -78,7 +78,6 @@ int	check_variable_name(char *variable)
 {
 	int			to_equal;
 	char		*str;
-	extern int	last_exit_status;
 
 	to_equal = ft_strchr(variable, '=') - variable;
 	str = ft_substr(variable, 0, to_equal);

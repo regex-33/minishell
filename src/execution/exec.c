@@ -51,6 +51,7 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx)
         if (!args)
             return (freeLinkedList(expanding_list), NULL);
         return (freeLinkedList(expanding_list), args);
+        //return (args);
     }
 	return (NULL);
 }
@@ -73,13 +74,13 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	}
 	args = get_expanded_args(cmd, ctx);
 	if (!args)
-	{
-		printf("args is NULL\n");
 		return 1;
-	}
+	//printf("args\n");
 	status = exec_cmd(redir, args, ctx);
 	return (status);
 }
+
+// ls | cat | cat
 
 int	add_pipe(int pipes[2][2])
 {
