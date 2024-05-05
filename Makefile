@@ -6,7 +6,7 @@
 #    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
-#    Updated: 2024/04/27 18:45:06 by bchanaa          ###   ########.fr        #
+#    Updated: 2024/05/05 21:39:18 by yachtata         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # COLORS NOCOL=\033[0m
@@ -81,7 +81,7 @@ SIGNALS_SOURCES = signals.c
 #PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
 ALL_SOURCES = $(SIGNALS_SOURCES) $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES) $(EXPANDING_SOURCES)
-vpath %.c src/signals src/builtin/ src/parsing/ src/pipx src/execution src/expanding
+vpath %.c src/signals src/builtin/ src/parsing/ src/execution src/expanding
 vpath %.h inc
 # OBJ_FILES = $(ALL_SOURCES:%.c=%.o)
 
