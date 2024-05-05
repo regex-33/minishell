@@ -5,6 +5,7 @@ typedef struct s_context
     char    **env;
     char    **path_dirs;
     char    *last_pwd;
+	int		unset_path;
     int     last_status;
 }          t_context;
 

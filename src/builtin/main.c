@@ -49,11 +49,11 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	else if (!ft_strcmp(args[0], "echo"))
 		status = ft_echo(args, 1);
 	else if (!ft_strcmp(args[0], "env"))
-		status = ft_env(ctx->env, 1);
+		status = ft_env(ctx, 1);
 	else if (!ft_strcmp(args[0], "export"))
-		status = ft_export(args, &ctx->env, 1);
+		status = ft_export(args, &ctx->env, 1, &ctx->unset_path);
 	else if (!ft_strcmp(args[0], "unset"))
-		status = ft_unset(args, &ctx->env);
+		status = ft_unset(args, &ctx->env, &ctx->unset_path);
 	reset_redir(redir_list, 1);
 	return (status);
 }
@@ -88,16 +88,43 @@ char	**grep_paths(char **env)
 	char	*path_env;
 	char	**path_dirs;
 
+	printArray(env);
 	path_env = get_value("PATH", env);
 	if (!path_env)
 		path_env = "";
+	printf("path_env : %s\n", path_env);
 	path_dirs = ft_split(path_env, ':');
 	if (!path_dirs)
 		return (perror(COMMAND_NOT_FOUND), NULL);
 	return (path_dirs);
 }
 
-char	**ft_creat_env(void)
+char **creat_temp_env(t_context *ctx)
+{
+	char	**temp_env;
+
+	ctx->unset_path = 1;
+	temp_env = malloc(sizeof(char *) * 4 + 1);
+	if (!temp_env)
+		return (perror("minishell: malloc error\n"), NULL);
+	temp_env[4] = NULL;
+	temp_env[0] = ft_strdup(FIRST_ENV);
+	if (!temp_env[0])
+		return (perror("minishell: malloc error\n"), NULL);
+	temp_env[1] = ft_strdup(SECOND_ENV);
+	if (!temp_env[1])
+		return (perror("minishell: malloc error\n"), NULL);
+	temp_env[2] = ft_strdup(THIRD_ENV);
+	if (!temp_env[2])
+		return (perror("minishell: malloc error\n"), NULL);
+	temp_env[3] = ft_strdup(TEMP_PATH);
+	if (!temp_env[3])
+		return (perror("minishell: malloc error\n"), NULL);
+	return temp_env;
+}
+	
+	
+char	**ft_creat_env(t_context *ctx)
 {
 	char **env;
 	extern char **environ;
@@ -106,6 +133,8 @@ char	**ft_creat_env(void)
 
 	i = 0;
 	env_count = 0;
+	if (!*environ)
+		return (creat_temp_env(ctx));
 	while (environ[env_count])
 		env_count++;
 	env = malloc(sizeof(char *) * (env_count + 1));	
@@ -131,7 +160,8 @@ char	**ft_creat_env(void)
 int init_context(t_context *ctx)
 {
 	ctx->env = NULL;
-	ctx->env = ft_creat_env();
+	ctx->unset_path = 0;
+	ctx->env = ft_creat_env(ctx);
 	if (ctx->env == NULL)
 	{
 		while(ctx->env && *(ctx->env))
@@ -160,7 +190,7 @@ void	handle_interrupt(int sig)
 	(void)sig;
 	ft_printf("\n");
 	rl_on_new_line();
-	rl_replace_line("", 1);
+	//rl_replace_line("", 1);
 	rl_redisplay();
 }
 
@@ -176,6 +206,7 @@ int	main(void)
 
 	if (init_context(&ctx))
 		return 1;
+	printf("path : %d\n", ctx.unset_path);
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
