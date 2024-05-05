@@ -21,7 +21,7 @@ int	is_valid_identifier(const char *variable)
 	return (1);
 }
 
-void	ft_print_free(char **variable, int fd)
+void	ft_print_free(char **variable, int fd, int unset_path)
 {
 	int		i;
 	char	*str;
@@ -30,22 +30,31 @@ void	ft_print_free(char **variable, int fd)
 	i = 0;
 	while (variable[i] != NULL)
 	{
+		if (unset_path && !ft_strncmp(variable[i], "PATH=", 5))
+		{
+			i++;
+			continue ;
+		}
 		temp = variable[i];
 		str = ft_strchr(variable[i], '=');
 		ft_putstr_fd("declare -x ", fd);
 		while (*variable[i] && *variable[i] != '=')
 			write(fd, variable[i]++, 1);
-		ft_putstr_fd("=\"", 1);
+		if (str)
+			ft_putstr_fd("=\"", 1);
 		if (str != NULL)
 			ft_putstr_fd(str + 1, fd);
-		ft_putstr_fd("\"\n", fd);
+		if (str)
+			ft_putstr_fd("\"\n", fd);
+		else
+			ft_putstr_fd("\n", fd);
 		free(temp);
 		i++;
 	}
 	free(variable);
 }
 
-int	ft_sort_export_cmd(char **environ_exp, int fd, int i)
+int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path)
 {
 	char	**variable;
 	int		env_count;
@@ -71,20 +80,27 @@ int	ft_sort_export_cmd(char **environ_exp, int fd, int i)
 	}
 	variable[env_count] = NULL;
 	merge_sort(variable, 0, env_count - 1);
-	return (ft_print_free(variable, fd), 1);
+	return (ft_print_free(variable, fd, unset_path), 1);
 }
 
-int	check_variable_name(char *variable)
+int	check_variable_name(char *variable, int *unset_path)
 {
 	int			to_equal;
 	char		*str;
 
+	if (*unset_path && !ft_strncmp(variable, "PATH=", 5))
+		*unset_path = 0;
 	to_equal = ft_strchr(variable, '=') - variable;
 	str = ft_substr(variable, 0, to_equal);
 	if (!str)
 		return (perror("minishell"), 0);
 	if (ft_strchr(str, ' '))
-		return (ft_putstr_fd("minishell: export: ", 2), ft_putstr_fd(str, 2),
+	{
+		if (variable[strlen(str) - 1] == ' ' || variable[strlen(str) - 1] == '\t')
+			return (ft_putstr_fd("minishell: export: ", 2), ft_putstr_fd(&variable[strlen(str) - 1], 2),
+				ft_putstr_fd(": not a valid identifier\n", 2), free(str), 0);
+		return (ft_putstr_fd("minishell: export: ", 2), ft_putstr_fd(variable, 2),
 			ft_putstr_fd(": not a valid identifier\n", 2), free(str), 0);
+	}
 	return (free(str), 1);
 }

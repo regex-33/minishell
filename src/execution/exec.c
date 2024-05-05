@@ -151,13 +151,13 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 		{
-			ft_printf("subcmd status: %d\n", (WEXITSTATUS(status)));
+			// ft_printf("subcmd status: %d\n", (WEXITSTATUS(status)));
 			return WEXITSTATUS(status);
 		}
 			
 		else if (WIFSIGNALED(status))
 		{
-			ft_printf("subcmd status signaled: %d\n", (128 + WTERMSIG(status)));
+			// ft_printf("subcmd status signaled: %d\n", (128 + WTERMSIG(status)));
 			return (128 + WTERMSIG(status));
 		}
 		return (1);
@@ -183,13 +183,13 @@ int __exec(t_btree *tree, t_context *ctx)
 		while (wait(NULL) > 0);
 		if (WIFEXITED(status))
 		{
-			ft_printf("Pipe status: %d\n", (WEXITSTATUS(status)));
+			//ft_printf("Pipe status: %d\n", (WEXITSTATUS(status)));
 			return WEXITSTATUS(status);
 		}
 			
 		else if (WIFSIGNALED(status))
 		{
-			ft_printf("Pipe status signaled: %d\n", (128 + WTERMSIG(status)));
+			//ft_printf("Pipe status signaled: %d\n", (128 + WTERMSIG(status)));
 			return (128 + WTERMSIG(status));
 		}
 	}

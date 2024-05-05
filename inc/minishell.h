@@ -49,10 +49,22 @@
 #define HOSTNAME_FILE "/proc/sys/kernel/hostname"
 #define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
 
+/*  temp env    */
+
+#define FIRST_ENV "PWD=/Users/yachtata/mini"
+#define SECOND_ENV "SHLVL=1"
+#define THIRD_ENV "_=/usr/bin/env"
+#define FOURTH_ENV "OLDPWD"
+
+#define TEMP_PATH "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:."
+
+/*  status  */
+
 # define SET_STATUS 1
 
 /* change directory */
 
+// cd 
 
 char		*extract_after_dollar(const char *str, char quots);
 char		*extract_substring(const char *str);
@@ -71,7 +83,7 @@ int			ft_exit(char **exit_code);
 
 /* ft_export */
 
-int			ft_export(char **variable, char ***env, int fd);
+int			ft_export(char **variable, char ***env, int fd, int *unset_path);
 int	update_existing_variable(char **variable, char ***env_ptr, int *env_count, int add_to_value);
 int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index);
 int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local);
@@ -79,19 +91,19 @@ int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local);
 
 /* ft_export_etc    */
 
-int	check_variable_name(char *variable);
-int	ft_sort_export_cmd(char **environ_exp, int fd, int i);
-void	ft_print_free(char **variable, int fd);
+int	check_variable_name(char *variable, int *unset_path);
+int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path);
+void	ft_print_free(char **variable, int fd, int unset_path);
 int	is_valid_identifier(const char *variable);
 
 /* ft_unset */
 
-int			ft_unset(char **variable, char ***env);
+int			ft_unset(char **variable, char ***env, int *unset_path);
 
 /* ft_pwd and ft_env */
 
 int		ft_pwd(int fd, t_context *ctx);
-int ft_env(char **env, int fd);
+int ft_env(t_context *ctx, int fd);
 char		*get_value(char *name, char **env);
 
 /* ft_get_username and get_hostname */

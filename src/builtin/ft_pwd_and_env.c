@@ -24,19 +24,22 @@ int	ft_pwd(int fd, t_context *ctx)
 	return (0);
 }
 
-int	ft_env(char **env, int fd)
+int	ft_env(t_context *ctx, int fd)
 {
 	char	**env_ptr;
 
-	env_ptr = env;
+	env_ptr = ctx->env;
 	if (!env_ptr)
 		return (printf("minishell"), 1);
 	while (*env_ptr != NULL)
 	{
-		if (ft_strchr(*env_ptr, '=') != NULL)
+		if (ft_strchr(*env_ptr, '='))
 		{
-			ft_putstr_fd(*env_ptr, fd);
-			ft_putchar_fd('\n', fd);
+			if (!(ctx->unset_path && !ft_strncmp(*env_ptr, "PATH=", 5)))
+			{
+				ft_putstr_fd(*env_ptr, fd);
+				ft_putchar_fd('\n', fd);
+			}
 		}
 		env_ptr++;
 	}

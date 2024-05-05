@@ -413,6 +413,8 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 		reset_redir(redir_list, 0);
 		if (init_command(&pexec, ctx, args))
 			return (exit(pexec.err), 0);
+		
+		//printArray(ctx->env);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 		{
 			return (perror("minishell"), exit(1), 0);
