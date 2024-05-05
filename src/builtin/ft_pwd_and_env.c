@@ -10,7 +10,8 @@ int	ft_pwd(int fd, t_context *ctx)
 	else
 	{
 		if (ctx->last_pwd)
-			return (ft_putstr_fd(ctx->last_pwd, fd), ft_putchar_fd('\n', fd), 0);
+			return (ft_putstr_fd(ctx->last_pwd, fd), ft_putchar_fd('\n', fd),
+				0);
 		else
 		{
 			temp = get_value("PWD", ctx->env);

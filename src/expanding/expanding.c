@@ -1,27 +1,36 @@
 #include "minishell.h"
 
-void	handle_regular_char(char *temp, char **join, int *i)
+int	handle_regular_char(char *temp, char **join, int *i)
 {
 	char	*char_str;
 
 	char_str = ft_strndup(temp + *i, 1);
+	if (!char_str)
+		return 1;
 	*join = ft_strjoin_free(*join, char_str);
+	if (!*join)
+		return (free(char_str), 1);
 	free(char_str);
 	(*i)++;
+	return 0;
 }
 
 char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 		t_expanding *expanding)
 {
-	char	*variable;
-	char	*value;
+	char	*variable = NULL;
+	char	*value = NULL;
 
 	variable = extract_dollar(temp + *i);
 	if (variable)
 	{
 		value = get_value(variable + 1, expanding->ctx->env);
 		if (!value && expanding->quote == '\"')
+		{
 			value = ft_strdup("");
+			if (!value)
+				return (free(variable), NULL);
+		}
 		if (value && !ft_strchr(value, '\"') && ft_strchr(value, '*'))
 			expanding->have_asterisk = 1;
 		if (value && expanding->quote != '\"' && (ft_strchr(value, ' ')
@@ -30,15 +39,14 @@ char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 			if (!split_and_add_to_list(list, expanding, value))
             {
                 *i += ft_strlen(variable);
-                free(variable);
-				return (NULL);
+				return (free(variable), NULL);
             }
-			//printf("expanding->join: %s\n", expanding->join);
 		}
 		else
 			expanding->join = ft_strjoin_free(expanding->join, value);
 		*i += ft_strlen(variable);
 		free(variable);
+		free(value);
 	}
 	return (temp);
 }
@@ -56,9 +64,8 @@ int	init_expanding(t_expanding *expanding, char *temp, t_context *ctx)
 	return (1);
 }
 
-void	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
+int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 {
-
 	if (c == '"' && !expanding->in_single_quotes)
 	{
 		if (expanding->in_quotes)
@@ -67,6 +74,8 @@ void	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 		{
 			expanding->quote = '"';
 			expanding->join = ft_strjoin_free(expanding->join, "");
+			if (!expanding->join)
+				return 1;
 		}
 		expanding->in_quotes = !expanding->in_quotes;
 	}
@@ -78,16 +87,21 @@ void	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 		{
 			expanding->quote = '\'';
 			expanding->join = ft_strjoin_free(expanding->join, "");
+			if (!expanding->join)
+				return 1;
 		}
 		expanding->in_single_quotes = !expanding->in_single_quotes;
 	}
 	(*i)++;
+	return 0;
 }
+
 
 t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
 {
 	t_expanding	expanding;
 	int			i;
+	t_list		*new_node;
 
 	i = 0;
 	if (!init_expanding(&expanding, temp, ctx))
@@ -99,20 +113,24 @@ t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
 		if ((temp[i] == '"' && !expanding.in_single_quotes) || (temp[i] == '\''
 				&& !expanding.in_quotes))
 		{
-			handle_quotes_asterisk(&expanding, temp[i], &i);
+			if (handle_quotes_asterisk(&expanding, temp[i], &i))
+				return (free(expanding.join), NULL);
 			continue ;
 		}
 		if (temp[i] == '$' && is_spcial_chars(temp[i + 1])
 			&& expanding.quote != '\'')
 		{
-			handle_dollar_sign(list, &i, temp, &expanding);
+			if (!handle_dollar_sign(list, &i, temp, &expanding))
+				return (free(expanding.join), NULL);
 			continue ;
 		}
-		handle_regular_char(temp, &expanding.join, &i);
+		if (handle_regular_char(temp, &expanding.join, &i))
+			return (free(expanding.join), NULL);
 	}
 	if (expanding.have_asterisk)
 		return (expand_asterisk(expanding.join, list), list);
-    // if (!expanding.join)
-    //     	return (list);
-	return (ft_lstadd_back_libft(list, ft_lstnew(expanding.join)), list);
+	new_node = ft_lstnew(expanding.join);
+	if (!new_node)
+		return (free(expanding.join), NULL);
+	return (ft_lstadd_back_libft(list, new_node), list);
 }

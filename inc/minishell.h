@@ -11,7 +11,6 @@
 # include <math.h>
 # include <readline/history.h>
 # include <readline/readline.h>
-//# include "readline.h"
 # include <stddef.h>
 # include <stddef.h>
 # include <stdio.h>
@@ -62,43 +61,71 @@
 
 # define SET_STATUS 1
 
+
+/*      buildin utils       */
+
+int	get_status(int new_status, int flags);
+int	is_builtin(char *cmd_name);
+char	**grep_paths(char **env);
+int	parse_existing_variable(char *str);
+int	init_context(t_context *ctx);
+
+/*      environment         */
+
+int	handle_shell_level(char *str, char **env, int *i);
+char	**creat_temp_env(t_context *ctx);
+char	**ft_creat_env(t_context *ctx);
+
+
+/*      ft_cd_etc           */
+
+int	is_directory(const char *path);
+int check_permission(const char *path);
+int check_existence(const char *path);
+void	init_array(char **array, int size);
+
+
 /* change directory */
 
-// cd 
-
-char		*extract_after_dollar(const char *str, char quots);
-char		*extract_substring(const char *str);
-extern int	ft_change_dir(char **path, t_context *ctx);
+int	home_path(t_context *ctx);
+int	ft_change_dir(char **path, t_context *ctx);
+int	excute_success(t_context *ctx);
+int excute_failed(char **args);
 
 /* ft_echo */
 
 int         ft_echo(char **args, int fd);
-//void		ft_echo_print(char *temp, int start_index, char **env);
 
 /* ft_exit */
 
-char		*skip_chars(const char *str);
 bool		is_numeric(const char *str);
 int			ft_exit(char **exit_code);
 
-/* ft_export */
+/* ft_export etc */
+
+int	is_valid_identifier(const char *variable);
+void	ft_print(char *str, int fd);
+void	ft_print_free(char **variable, int fd, int unset_path);
+int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path);
+int	check_variable_name(char *variable, int *unset_path);
+
+/*   ft_export    */
+
 
 int			ft_export(char **variable, char ***env, int fd, int *unset_path);
 int	update_existing_variable(char **variable, char ***env_ptr, int *env_count, int add_to_value);
 int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index);
-int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local);
-int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local);
-
-/* ft_export_etc    */
-
-int	check_variable_name(char *variable, int *unset_path);
-int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path);
-void	ft_print_free(char **variable, int fd, int unset_path);
-int	is_valid_identifier(const char *variable);
+int	handle_equal(char **env, char *str, int to_equal, int *env_count_local);
+int	handle_plus(char **env, char *str, int name_len, int *env_count_local);
 
 /* ft_unset */
 
+int	get_env_count(char **env);
 int			ft_unset(char **variable, char ***env, int *unset_path);
+char	**allocate_new_environ(int env_count);
+int	copy_variable_to_new_environment(char *env_var, char **new_environ, int *j);
+int	copy_env_except_variable(char **env, char **new_environ, char *variable, int *j);
+
 
 /* ft_pwd and ft_env */
 
@@ -117,5 +144,11 @@ char	**grep_paths(char **env);
 int 	get_status(int new_status, int flags);
 char	*ft_path(void);
 int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);
+
+
+/*      signals     */
+
+void	handle_equal_signal(int signum, siginfo_t *info, void *ptr);
+void	handle_interrupt(int sig);
 
 #endif

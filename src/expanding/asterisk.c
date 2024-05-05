@@ -40,33 +40,38 @@ like	readdir(void). This function is part of the <dirent.h> header and is common
 int	move_temp_list_to_list(t_list **list, t_list **temp)
 {
 	t_list	*new;
+	char	*str;
+	t_list *head;
 
+	head = *temp;
 	merge_sort_linkedlist(temp);
 	while (*temp != NULL)
 	{
-		new = ft_lstnew(ft_strdup((*temp)->content));
+		str = ft_strdup((*temp)->content);
+		if (!str)
+			return (freeLinkedList(head), perror("minishell"), 0);
+		new = ft_lstnew(str);
 		if (!new)
-		{
-			perror("lstnew failed\n");
-			return (0);
-		}
+			return (freeLinkedList(head), perror("minishell"), 0);
 		ft_lstadd_back_libft(list, new);
-		free((*temp)->content);
-		free(*temp);
 		*temp = (*temp)->next;
 	}
-	return (1);
+	return (freeLinkedList(head), 1);
 }
 
 int	expand_wildcard_add_node(t_list **temp, const char *pattern, const char *entry_name)
 {
 	t_list	*new;
+	char	*str;
 
 	if (pattern[0] != '.' && entry_name[0] == '.')
 		return (1);
-	new = ft_lstnew(ft_strdup(entry_name));
+	str = ft_strdup(entry_name);
+	if (!str)
+		return (perror("minishell"), 0);
+	new = ft_lstnew(str);
 	if (!new)
-		return (0);
+		return (perror("minishell"), 0);
 	ft_lstadd_back_libft(temp, new);
 	return (1);
 }
@@ -86,14 +91,14 @@ int	expand_wildcard(const char *pattern, t_list **matches)
 		if (match_wildcard(pattern, entry->d_name))
 		{
 			if (!expand_wildcard_add_node(&temp, pattern, entry->d_name))
-				return (closedir(dir), 0);
+				return (freeLinkedList(temp), closedir(dir), 0);
 		}
 	}
 	if (!temp)
 	{
 		new = ft_lstnew(ft_strdup(pattern));
 		if (!new)
-			return (closedir(dir), 0);
+			return (freeLinkedList(temp), closedir(dir), 0);
 		ft_lstadd_back_libft(&temp, new);
 	}
 	return (closedir(dir), move_temp_list_to_list(matches, &temp));
@@ -112,13 +117,13 @@ void	*expand_asterisk(char *command, t_list **list)
 		if (ft_strchr(token[i], '*'))
 		{
 			if(!expand_wildcard(token[i], list))
-				return (free(command), perror("minishell"), NULL);
+				return (free_array(token), free(command), perror("minishell"), NULL);
 		}
 		else
 		{
 			new = ft_lstnew(ft_strdup(token[i]));
 			if (!new)
-				return (free(command), perror("minishell"), NULL);
+				return (free_array(token), free(command), perror("minishell"), NULL);
 			ft_lstadd_back_libft(list, new);
 		}
 		i++;

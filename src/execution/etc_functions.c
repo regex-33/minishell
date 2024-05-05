@@ -45,36 +45,44 @@ void	free_array(char **array)
 	free(array);
 }
 
+int	count_array(char **array)
+{
+	int	i;
+
+	i = 0;
+	if (!array || !*array)
+		return (0);
+	while (array[i])
+		i++;
+	return (i);
+}
+
 char **ft_list_to_array(t_list *list)
 {
+    char **array;
+    int i;
+
+    i = 0;
     if (!list)
         return NULL;
-    char **array = malloc(sizeof(char *) * (ft_lstsize(list) + 1));
+    array = allocate_new_environ(ft_lstsize(list) + 1);
     if (!array)
         return NULL;
-
-    int i = 0;
     while (list)
     {
         if (!list->content) 
         {
-           // array[i] = NULL;
             list = list->next;
             continue;
-            //array[i] = strdup("");
         }
         else
-            array[i] = ft_strdup(list->content);
-        //printf("array[%d] = %s\n", i, array[i]);
-        if (!array[i])
         {
-            printf("malloc error\n");
-            perror("minishell");
-            while (i > 0)
-                free(array[i--]);
-            free(array);
-            return NULL;
+            array[i] = ft_strdup(list->content);
+            if (!array[i])
+                return (perror("minishell"), free_array(array), NULL);
         }
+        if (!array[i])
+            return (perror("minishell"), free_array(array), NULL);
         list = list->next;
         i++;
     }

@@ -70,6 +70,7 @@ bool	hasTrailingSpaces(const char *str)
 int	split_and_add_to_list(t_list **list, t_expanding *expanding, char *value)
 {
 	char	**value_split;
+	t_list *new_node;
 	int		index;
 	int space;
 
@@ -77,27 +78,27 @@ int	split_and_add_to_list(t_list **list, t_expanding *expanding, char *value)
 	index = 0;
 	expanding->join = ft_strjoin_free(expanding->join, value);
 	if (expanding->join == NULL)
-		return (false);
+		return (free(value), false);
 	value_split = ft_split(expanding->join, ' ');
 	if (!value_split)
-		return (false);
+		return (free(value), false);
 	space = hasTrailingSpaces(value);
-	//free(value);
+	free(value);
 	while (value_split[index])
 	{
 		if (!space && value_split[index + 1] == NULL)
 		{
 			expanding->join = ft_strdup(value_split[index]);
 			if (expanding->join == NULL)
-				return (false);
+				return (free_array(value_split) ,false);
 			index++;
 			break ;
 		}
-		ft_lstadd_back_libft(list, ft_lstnew(strdup(value_split[index])));
-		free(value_split[index]);
+		new_node = ft_lstnew(strdup(value_split[index]));
+		if (!new_node)
+			return (free_array(value_split) ,false);
+		ft_lstadd_back_libft(list, new_node);
 		index++;
 	}
-	if (index == 1)
-		expanding->more_strings = 1;
-	return (true);
+	return (free_array(value_split), true);
 }
