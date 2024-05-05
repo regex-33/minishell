@@ -406,6 +406,8 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 		return (perror("minishell"), 0);
 	if (pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		if (redirect(redir_list, ctx))
 			return (exit(EXIT_FAILURE), 0);
 		reset_redir(redir_list, 0);
