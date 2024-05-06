@@ -71,6 +71,7 @@
 /*      buildin utils       */
 
 int	get_status(int new_status, int flags);
+int get_state(int new_state, int flags);
 int	is_builtin(char *cmd_name);
 char	**grep_paths(char **env);
 int	parse_existing_variable(char *str);
@@ -154,7 +155,7 @@ int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 
 /*      signals     */
 
-void	handle_equal_signal(int signum, siginfo_t *info, void *ptr);
 void	handle_interrupt(int sig);
+void    handle_quit(int sig);
 
 #endif
