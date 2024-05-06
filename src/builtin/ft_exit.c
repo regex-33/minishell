@@ -17,8 +17,10 @@ int	ft_exit(char **exit_code)
 {
 	unsigned char	code;
 
-	if (!exit_code[1])
-		return (ft_putendl_fd("exit", 2), exit(0), 0);
+	if (!exit_code || !exit_code[1])
+		exit(get_status(0, 0));
+	if (exit_code && count_array(exit_code) > 2)
+		return (ft_putstr_fd("minishell: exit : too many arguments\n", 2), 1);
 	if (!is_numeric(exit_code[1]))
 	{
 		/* don't forget to free the memory */

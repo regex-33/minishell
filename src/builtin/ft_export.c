@@ -1,14 +1,19 @@
 #include "../../inc/minishell.h"
 
-int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
+int	handle_plus(char **env, char *str, int name_len, int *env_count_local)
 {
 	while (env[*env_count_local] != NULL)
 	{
 		if (!ft_strncmp(env[*env_count_local], str, name_len))
 		{
 			if (!ft_strchr(env[*env_count_local], '='))
-				env[*env_count_local] = ft_strjoin(env[*env_count_local], "=");
-			env[*env_count_local] = ft_strjoin(env[*env_count_local],
+			{
+				env[*env_count_local] = ft_strjoin_free(env[*env_count_local],
+						"=");
+				if (!env[*env_count_local])
+					return (-1);
+			}
+			env[*env_count_local] = ft_strjoin_free(env[*env_count_local],
 					&str[name_len + 2]);
 			return (1);
 		}
@@ -17,10 +22,9 @@ int	handle_plus_sign(char **env, char *str, int name_len, int *env_count_local)
 	return (0);
 }
 
-int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local)
+int	handle_equal(char **env, char *str, int to_equal, int *env_count_local)
 {
-	char	*temp;
-	int		len;
+	int	len;
 
 	if (to_equal < 0)
 		to_equal = ft_strlen(str);
@@ -32,10 +36,10 @@ int	handle_equal_sign(char **env, char *str, int to_equal, int *env_count_local)
 		if ((ft_strchr(str, '=') && len == to_equal)
 			&& !ft_strncmp(env[*env_count_local], str, to_equal))
 		{
-			temp = ft_strdup(str);
-			if (!temp)
-				return (perror("minishell"), -1);
-			env[*env_count_local] = temp;
+			free(env[*env_count_local]);
+			env[*env_count_local] = ft_strdup(str);
+			if (!env[*env_count_local])
+				return (-1);
 			return (1);
 		}
 		else if (!ft_strncmp(env[*env_count_local], str, to_equal)
@@ -65,8 +69,7 @@ int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index)
 		{
 			while (i > 0)
 				free(new_environ[i--]);
-			free(new_environ);
-			return (perror("minishell"), -1);
+			return (free(new_environ), perror("minishell"), -1);
 		}
 		i++;
 	}
@@ -77,50 +80,35 @@ int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index)
 	return (1);
 }
 
-int	parse_existing_variable(char *str)
-{
-	int	add_to_value;
 
-	add_to_value = 0;
-	if (!str)
-		return (perror("minishell"), -1);
-	if (!is_valid_identifier(str))
-		return (ft_putstr_fd("minishell: export: ", 2), ft_putstr_fd(str, 2),
-			ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO), -1);
-	if (ft_strchr(str, '+') != NULL)
-		add_to_value = 1;
-	return (add_to_value);
-}
 
 int	update_existing_variable(char **variable, char ***env_ptr, int *env_count,
 		int add_to_value)
 {
 	char	**env;
 	char	*str;
-	int		env_count_local;
+	int		count;
 	int		result;
 
 	env = *env_ptr;
 	str = variable[*env_count];
-	env_count_local = 0;
+	count = 0;
 	add_to_value = parse_existing_variable(str);
 	if (add_to_value == -1)
 		return (-1);
 	if (add_to_value == 1)
-		result = handle_plus_sign(env, str, (ft_strchr(str, '+') - str),
-				&env_count_local);
+		result = handle_plus(env, str, (ft_strchr(str, '+') - str), &count);
 	else
-		result = handle_equal_sign(env, str, (ft_strchr(str, '=') - str),
-				&env_count_local);
+		result = handle_equal(env, str, (ft_strchr(str, '=') - str), &count);
 	if (result == -1)
 		return (perror("minishell"), -1);
 	else if (result == 1)
 	{
 		*env_ptr = env;
-		*env_count = env_count_local;
+		*env_count = count;
 		return (1);
 	}
-	*env_count = env_count_local;
+	*env_count = count;
 	return (0);
 }
 

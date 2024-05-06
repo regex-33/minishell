@@ -17,6 +17,7 @@ char	**allocate_new_environ(int env_count)
 	new_environ = malloc(env_count * sizeof(char *));
 	if (!new_environ)
 		return (perror("minishell"), NULL);
+	init_array(new_environ, env_count);
 	return (new_environ);
 }
 
@@ -28,7 +29,7 @@ int	copy_variable_to_new_environment(char *env_var, char **new_environ, int *j)
 	{
 		while (*j > 0)
 			free(new_environ[(*j)--]);
-		return (perror("minishell"), 1);
+		return (free(new_environ) ,perror("minishell"), 1);
 	}
 	(*j)++;
 	return (0);

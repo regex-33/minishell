@@ -18,7 +18,7 @@ int	ft_echo(char **args, int fd)
 	}
 	str = join_strings(args, index);
 	if (!str)
-		return (perror("minishell"), 1);
+		return (free(str), perror("minishell"), 1);
 	ft_putstr_fd(str, fd);
 	if (index != 2)
 		ft_putchar_fd('\n', fd);

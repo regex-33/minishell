@@ -21,6 +21,18 @@ int	is_valid_identifier(const char *variable)
 	return (1);
 }
 
+void	ft_print(char *str, int fd)
+{
+	if (str)
+		ft_putstr_fd("=\"", 1);
+	if (str != NULL)
+		ft_putstr_fd(str + 1, fd);
+	if (str)
+		ft_putstr_fd("\"\n", fd);
+	else
+		ft_putstr_fd("\n", fd);
+}
+
 void	ft_print_free(char **variable, int fd, int unset_path)
 {
 	int		i;
@@ -40,14 +52,7 @@ void	ft_print_free(char **variable, int fd, int unset_path)
 		ft_putstr_fd("declare -x ", fd);
 		while (*variable[i] && *variable[i] != '=')
 			write(fd, variable[i]++, 1);
-		if (str)
-			ft_putstr_fd("=\"", 1);
-		if (str != NULL)
-			ft_putstr_fd(str + 1, fd);
-		if (str)
-			ft_putstr_fd("\"\n", fd);
-		else
-			ft_putstr_fd("\n", fd);
+		ft_print(str, fd);
 		free(temp);
 		i++;
 	}
@@ -62,9 +67,7 @@ int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path)
 	env_count = 0;
 	if (!environ_exp || !*environ_exp)
 		return (perror("minishell"), 0);
-	while (environ_exp[env_count] != NULL)
-		env_count++;
-	variable = malloc((env_count + 1) * sizeof(char *));
+	variable = allocate_new_environ(get_env_count(environ_exp));
 	if (!variable)
 		return (perror("minishell"), 0);
 	while (environ_exp[i])
@@ -74,7 +77,7 @@ int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path)
 		{
 			while (i > 0)
 				free(variable[i--]);
-			return (perror("minishell"), 0);
+			return (free(variable), perror("minishell"), 0);
 		}
 		i++;
 	}

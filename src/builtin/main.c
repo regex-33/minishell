@@ -1,36 +1,5 @@
 #include "../../inc/minishell.h"
 
-int	get_status(int new_status, int flags)
-{
-	static int	status;
-
-	if (flags == SET_STATUS)
-		status = new_status;
-	return (status);
-}
-
-// Set: get_status(your_status, SET_STATUS);
-// Get: get_status(0, 0);
-
-int	is_builtin(char *cmd_name)
-{
-	if (!ft_strcmp(cmd_name, "cd"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "pwd"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "exit"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "echo"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "env"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "export"))
-		return (1);
-	else if (!ft_strcmp(cmd_name, "unset"))
-		return (1);
-	return (0);
-}
-
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 {
 	int	status;
@@ -58,7 +27,6 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	return (status);
 }
 
-
 char	*get_prompt(char *str, char *suffix)
 {
 	char	*prompt;
@@ -67,94 +35,19 @@ char	*get_prompt(char *str, char *suffix)
 	if (!str)
 		return (NULL);
 	size = ft_strlen(str) + 1;
-//	size += ft_strlen(COLOR_KHDER_FATH);
-//	size += ft_strlen(ANSI_COLOR_RESET);
+	//	size += ft_strlen(COLOR_KHDER_FATH);
+	//	size += ft_strlen(ANSI_COLOR_RESET);
 	if (suffix)
 		size += ft_strlen(suffix);
 	prompt = ft_calloc(size, sizeof(char));
 	if (!prompt)
 		return (NULL);
-//	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
+	//	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
 	ft_strlcat(prompt, str, size);
-//	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
+	//	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
 	if (suffix)
 		ft_strlcat(prompt, suffix, size);
 	return (prompt);
-}
-/* new things */
-
-char	**grep_paths(char **env)
-{
-	char	*path_env;
-	char	**path_dirs;
-
-	//printArray(env);
-	path_env = get_value("PATH", env);
-	if (!path_env)
-		path_env = "";
-	//printf("path_env : %s\n", path_env);
-	path_dirs = ft_split(path_env, ':');
-	if (!path_dirs)
-		return (perror(COMMAND_NOT_FOUND), NULL);
-	return (path_dirs);
-}
-
-char **creat_temp_env(t_context *ctx)
-{
-	char	**temp_env;
-
-	ctx->unset_path = 1;
-	temp_env = malloc(sizeof(char *) * 4 + 1);
-	if (!temp_env)
-		return (perror("minishell: malloc error\n"), NULL);
-	temp_env[4] = NULL;
-	temp_env[0] = ft_strdup(FIRST_ENV);
-	if (!temp_env[0])
-		return (perror("minishell: malloc error\n"), NULL);
-	temp_env[1] = ft_strdup(SECOND_ENV);
-	if (!temp_env[1])
-		return (perror("minishell: malloc error\n"), NULL);
-	temp_env[2] = ft_strdup(THIRD_ENV);
-	if (!temp_env[2])
-		return (perror("minishell: malloc error\n"), NULL);
-	temp_env[3] = ft_strdup(TEMP_PATH);
-	if (!temp_env[3])
-		return (perror("minishell: malloc error\n"), NULL);
-	return temp_env;
-}
-	
-	
-char	**ft_creat_env(t_context *ctx)
-{
-	char **env;
-	extern char **environ;
-	int	env_count;
-	int i;
-
-	i = 0;
-	env_count = 0;
-	if (!*environ)
-		return (creat_temp_env(ctx));
-	while (environ[env_count])
-		env_count++;
-	env = malloc(sizeof(char *) * (env_count + 1));	
-	if (!env)
-	{
-		printf("env malloc error\n");
-		return NULL;
-	}
-	while (environ[i])
-	{
-		env[i] = ft_strdup(environ[i]);
-		if (!env[i])
-		{
-			perror("minishell: malloc error\n");	
-			return NULL;
-		}
-		i++;
-	}
-	env[i] = NULL;
-	return env;
 }
 
 int init_context(t_context *ctx)
@@ -245,12 +138,12 @@ void	handle_quit(int sig)
 
 int	main(void)
 {
-	char	*line;
-	char	*pwd;
-	char	*prompt;
-	t_list	*tokens;
-	t_context	ctx;
-	t_btree	*parse_tree;
+	char				*line;
+	char				*pwd;
+	char				*prompt;
+	t_list				*tokens;
+	t_context			ctx;
+	t_btree				*parse_tree;
 	struct sigaction	saint;
 
 	if (init_context(&ctx))
@@ -272,15 +165,13 @@ int	main(void)
 		get_state(ON_PROMPT, SET_STATE);
 		pwd = "minishell >";
 		prompt = get_prompt(pwd, "$ ");
-
-	//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
-	//	free(pwd);
-
+		//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
+		//	free(pwd);
 		line = readline(prompt);
 		get_state(ON_EXEC, SET_STATE);
 		if (!line)
 			exit(0);
-		tokens = lexer(line);	
+		tokens = lexer(line);
 		if (!tokens)
 		{
 			free(line);

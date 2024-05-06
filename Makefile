@@ -66,10 +66,11 @@ ifdef DEBUG
 endif
 
 # SOURCES
-BUILTIN_SOURCES = main.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c #get_username_hostname.c
+BUILTIN_SOURCES = main.c builtin_utils.c environment.c ft_cd_etc.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c #get_username_hostname.c
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c heredoc.c #exec.c
-EXECUTION_SOURCES = exec.c etc_functions.c execut_cmd.c #parse_command.c
-EXPANDING_SOURCES = expanding.c expanding_utils.c mereg_sort.c single_duble_dollar.c asterisk.c
+EXECUTION_SOURCES = pipes.c redirections.c exec.c etc_functions.c execut_cmd.c #parse_command.c
+EXPANDING_SOURCES = heredoc_expanding.c expanding.c expanding_utils.c mereg_sort.c single_duble_dollar.c asterisk.c
+SIGNALS_SOURCES = signals.c
 # PIPX_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c exec.c
 
 
@@ -79,8 +80,8 @@ EXPANDING_SOURCES = expanding.c expanding_utils.c mereg_sort.c single_duble_doll
 #PARSING_SRC = $(addprefix $(SRC_PATH)/parsing/, $(PARSING_SOURCES))
 #PIPX_SRC = $(addprefix $(SRC_PATH)/pipx/, $(PIPX_SOURCES))
 
-ALL_SOURCES = $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES) $(EXPANDING_SOURCES)
-vpath %.c src/builtin/ src/parsing/ src/pipx src/execution src/expanding
+ALL_SOURCES = $(SIGNALS_SOURCES) $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES) $(EXPANDING_SOURCES)
+vpath %.c src/signals src/builtin/ src/parsing/ src/execution/ src/expanding/
 vpath %.h inc
 # OBJ_FILES = $(ALL_SOURCES:%.c=%.o)
 
@@ -88,10 +89,11 @@ OBJ_BUILTIN_FILES = $(BUILTIN_SOURCES:%.c=%.o)
 OBJ_PARSING_FILES = $(PARSING_SOURCES:%.c=%.o)
 OBJ_EXECUTION_FILES = $(EXECUTION_SOURCES:%.c=%.o)
 OBJ_EXPANDING_FILES = $(EXPANDING_SOURCES:%.c=%.o)
+OBJ_SIGNALS_FILES = $(SIGNALS_SOURCES:%.c=%.o)
 
 # OBJ_PIPX_FILES = $(PIPX_SOURCES:%.c=%.o)
 
-OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES) $(OBJ_EXECUTION_FILES) $(OBJ_EXPANDING_FILES))
+OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_SIGNALS_FILES) $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES) $(OBJ_EXECUTION_FILES) $(OBJ_EXPANDING_FILES))
 
 all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
