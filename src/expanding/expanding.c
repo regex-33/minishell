@@ -46,7 +46,6 @@ char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 			expanding->join = ft_strjoin_free(expanding->join, value);
 		*i += ft_strlen(variable);
 		free(variable);
-		free(value);
 	}
 	return (temp);
 }

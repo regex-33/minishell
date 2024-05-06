@@ -11,7 +11,7 @@ int	handle_shell_level(char *str, char **env, int *i)
 		ft_putstr_fd("minishell: warning: shell level (", 2);
 		ft_putstr_fd(str + 6, 2);
 		ft_putstr_fd(") too high, resetting to 1\n", 2);
-		level = 1;
+		level = 0;
 	}
 	shell_level = ft_itoa(level + 1);
 	*env = ft_strjoin("SHLVL=", shell_level);

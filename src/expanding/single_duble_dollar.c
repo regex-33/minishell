@@ -83,7 +83,6 @@ int	split_and_add_to_list(t_list **list, t_expanding *expanding, char *value)
 	if (!value_split)
 		return (free(value), false);
 	space = hasTrailingSpaces(value);
-	free(value);
 	while (value_split[index])
 	{
 		if (!space && value_split[index + 1] == NULL)
