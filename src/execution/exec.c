@@ -97,7 +97,6 @@ int exec_and_or(t_btree *tree, t_context *ctx)
 }
 
 
-
 int __exec(t_btree *tree, t_context *ctx)
 {
 	int pipes[2][2];
@@ -117,13 +116,13 @@ int __exec(t_btree *tree, t_context *ctx)
 		while (wait(NULL) > 0);
 		if (WIFEXITED(status))
 		{
-			ft_printf("Pipe status: %d\n", (WEXITSTATUS(status)));
+			//ft_printf("Pipe status: %d\n", (WEXITSTATUS(status)));
 			return WEXITSTATUS(status);
 		}
 			
 		else if (WIFSIGNALED(status))
 		{
-			ft_printf("Pipe status signaled: %d\n", (128 + WTERMSIG(status)));
+			//ft_printf("Pipe status signaled: %d\n", (128 + WTERMSIG(status)));
 			return (128 + WTERMSIG(status));
 		}
 	}

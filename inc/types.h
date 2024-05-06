@@ -1,5 +1,6 @@
 #ifndef TYPES_H
-#define TYPES_H
+# define TYPES_H
+
 typedef struct s_context
 {
     char    **env;

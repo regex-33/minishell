@@ -31,6 +31,8 @@
 #include <readline/readline.h>
 
 
+#include <termios.h>
+#include <term.h>
 /* COLORS */
 
 #define COLOR_RESET "\033[0m"
@@ -54,6 +56,10 @@
 #define SECOND_ENV "SHLVL=1"
 #define THIRD_ENV "_=/usr/bin/env"
 #define FOURTH_ENV "OLDPWD"
+
+#define SET_STATE 1
+#define ON_PROMPT 0
+#define ON_EXEC 1
 
 #define TEMP_PATH "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:."
 
