@@ -10,6 +10,5 @@ test.txt
 a.out
 a.out*
 lib/libft/libft.a
-*.a
-lib/*.a
+libft.a
 lib/libft/objects
