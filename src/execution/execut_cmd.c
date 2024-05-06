@@ -406,15 +406,12 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 		return (perror("minishell"), 0);
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		//signal(SIGQUIT, SIG_DFL);
 		if (redirect(redir_list, ctx))
 			return (exit(EXIT_FAILURE), 0);
 		reset_redir(redir_list, 0);
 		if (init_command(&pexec, ctx, args))
 			return (exit(pexec.err), 0);
-		
-		//printArray(ctx->env);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
 		{
 			return (perror("minishell"), exit(1), 0);

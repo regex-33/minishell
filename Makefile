@@ -6,7 +6,7 @@
 #    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
-#    Updated: 2024/04/27 18:45:06 by bchanaa          ###   ########.fr        #
+#    Updated: 2024/05/05 18:26:58 by bchanaa          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # COLORS NOCOL=\033[0m
@@ -48,10 +48,10 @@ LFT_DIR = $(LIB_PATH)/libft
 LFT = $(LFT_DIR)/$(LFT_NAME)
 
 CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10
-CFLAGS += -I ./$(LFT_DIR)/inc -Iinc -I /Users/bchanaa/readline/include
+CFLAGS += -I ./$(LFT_DIR)/inc -Iinc -Iinc/readline
 
 LDFLAGS = -L ./
-LDLIBS = -lft  -O3
+LDLIBS = -lft -ltermcap -O3
 
 # ANIMATION
 SRCS_COUNT = 0
@@ -97,7 +97,7 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
-	@$(CC) $^ -o $@ $(CFLAGS) -L/Users/bchanaa/readline/lib -lreadline $(LDFLAGS)  $(LDLIBS) -fsanitize=address
+	@$(CC) $^ -o $@ $(CFLAGS) -L./lib/readline -lreadline $(LDFLAGS)  $(LDLIBS) -fsanitize=address
 # @echo "i am here\n"
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
 

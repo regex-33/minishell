@@ -177,21 +177,70 @@ int init_context(t_context *ctx)
 	return 0;
 }
 
-void	handle_equal_signal(int signum, siginfo_t *info, void *ptr)
+int	my_putchar(int c)
 {
-	(void)signum;
-	(void)ptr;
-	(void)info;
-	rl_redisplay();
+	return (write(1, &c, 1));
 }
 
+int	get_state(int new_state, int flags)
+{
+	static int	state;
+
+	if (flags == SET_STATE)
+		state = new_state;
+	return (state);
+}
+
+void	init_terminal(void)
+{
+	struct termios	old_term;
+	struct termios	new_term;
+
+	if (!isatty(STDIN_FILENO))
+		return ;
+	tcgetattr(STDIN_FILENO, &old_term);
+	//ft_memcpy(&new_term, &old_term, sizeof(struct termios));
+	new_term = old_term;
+	new_term.c_lflag &= ~(ECHOCTL);
+	tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+}
 void	handle_interrupt(int sig)
 {
 	(void)sig;
+	// if (!isatty(STDIN_FILENO)) // 	return ;
+	// tcgetattr(STDIN_FILENO, &old_term);
+	// ft_memcpy(&new_term, &old_term, sizeof(struct termios));
+	// new_term.c_lflag &= ~(ICANON | ECHO);
+	// tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+	// write(1, "\033[6n", 4);
+	// int x, y;
+	// read_cursor_pos(&x, &y);
+	// tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+	// rl_replace_line("", 1);
+	// ft_printf("\n");
+    // rl_on_new_line();
+	// rl_redisplay();
+	//tputs(tgetstr("ce", NULL), 1, my_putchar);
+	get_status(1, SET_STATUS);
 	rl_replace_line("", 1);
-	ft_printf("\n");
-    rl_on_new_line();
-	rl_redisplay();
+	tputs(tgetstr("do", NULL), 1, my_putchar);
+	if (get_state(0, 0) == ON_PROMPT)
+	{
+		rl_on_new_line();
+		rl_redisplay();
+	}
+	//tputs(tgetstr("cr", NULL), 1, my_putchar);
+	// tputs(tgetstr("ce", NULL), 1, my_putchar);
+}
+
+void	handle_quit(int sig)
+{
+	(void)sig;
+	if (get_state(0, 0) == ON_EXEC)
+		ft_putendl_fd("Quit: 3", 1);
+	else
+		rl_redisplay();
+	//get_status(131, SET_STATUS);
 }
 
 int	main(void)
@@ -210,12 +259,17 @@ int	main(void)
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
+	signal(SIGQUIT, handle_quit);
+	get_state(ON_PROMPT, SET_STATE);
+	init_terminal();
 	while (1)
 	{
 		//print_prompt_with_user_details();
 		//line = readline("");
 		//pwd = ft_path();
 
+
+		get_state(ON_PROMPT, SET_STATE);
 		pwd = "minishell >";
 		prompt = get_prompt(pwd, "$ ");
 
@@ -223,12 +277,12 @@ int	main(void)
 	//	free(pwd);
 
 		line = readline(prompt);
+		get_state(ON_EXEC, SET_STATE);
 		if (!line)
 			exit(0);
 		tokens = lexer(line);	
 		if (!tokens)
 		{
-
 			free(line);
 			continue ;
 		}
@@ -236,67 +290,15 @@ int	main(void)
 		parse_tree = parse(tokens);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
-		{
-			ft_printf("TREE IS NULL\n");
 			continue;
-		}
-		prompt_heredoc(parse_tree);
+		if (prompt_heredoc(parse_tree) < 0)
+			continue;
 		//ft_printf("----------- EXECUTION ---------\n");
-
  		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		next_token(tokens, RESET_TOK);
-		if (!parse_tree)
-		{
-			free(line);
-			//ft_printf("TREE IS NULL\n");
-			continue;
-		}
 		clear_btree(parse_tree, NULL);	
 		ft_lstclear_libft(&tokens, free);
 		free(line);
+		init_terminal();
 	}
 	return (0);
 }
-/*
-int	main(void)
-{
-	char	*line;
-	char	**args;
-	char	*pwd;
-			char full_path[200];
-	int		i;
-
-	while (1)
-	{
-		pwd = ft_path();
-		printf(ANSI_COLOR_BLUE "%s" ANSI_COLOR_RESET "$ ", pwd);
-		free(pwd);
-		line = readline("");
-		if (line == NULL || line[0] == '\0')
-		{
-			printf("\n");
-			free(line);
-			break ;
-		}
-		if (line[0] != '\0')
-		{
-			add_history(line);
-			args = ft_split(line, ' ');
-			snprintf(full_path, sizeof(full_path), "/bin/%s", args[0]);
-			if (!select_buildin_commands(args, line))
-			{
-				execute_command(line);
-			}
-			free(line);
-			i = 0;
-			while (args[i])
-			{
-				free(args[i]);
-				i++;
-			}
-			free(args);
-		}
-	}
-	return (0);
-}
-*/
