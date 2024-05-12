@@ -24,10 +24,7 @@ void	printArray(char **array)
 	int i = 0;
     ft_printf("printArray\n");
 	if (!array)
-	{
 		printf("Array is empty\n");
-	}
-    //printf("Array is not empty\n");
 	while (array[i])
 	{
 		ft_printf("str :%s$\n", array[i]);
@@ -41,7 +38,9 @@ void	free_array(char **array)
 	if (!array)
 		return;
 	for (size_t i = 0; array[i] != NULL; i++)
+    {
 		free(array[i]);
+    }
 	free(array);
 }
 

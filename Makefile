@@ -66,7 +66,7 @@ ifdef DEBUG
 endif
 
 # SOURCES
-BUILTIN_SOURCES = main.c builtin_utils.c environment.c ft_cd_etc.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c #get_username_hostname.c
+BUILTIN_SOURCES = main.c builtin_utils.c environment.c ft_cd_etc.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c get_username_hostname.c
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c heredoc.c #exec.c
 EXECUTION_SOURCES = pipes.c redirections.c exec.c etc_functions.c execut_cmd.c #parse_command.c
 EXPANDING_SOURCES = heredoc_expanding.c expanding.c expanding_utils.c mereg_sort.c single_duble_dollar.c asterisk.c

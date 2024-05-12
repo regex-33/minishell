@@ -70,7 +70,7 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 	pexec->cmd_name = NULL;
 	if (!*args)
 		return (1);
-	path_dirs = grep_paths(ctx->env);
+	path_dirs = grep_paths(ctx->env, &ctx->hidden_path);
 	if (ft_strchr(args[0], '/'))
 	{
 		pexec->err = check_abs_cmd(args[0]);

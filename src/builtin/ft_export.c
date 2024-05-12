@@ -93,7 +93,7 @@ int	update_existing_variable(char **variable, char ***env_ptr, int *env_count,
 	env = *env_ptr;
 	str = variable[*env_count];
 	count = 0;
-	add_to_value = parse_existing_variable(str);
+	add_to_value = parse_existing_variable(str, 1);
 	if (add_to_value == -1)
 		return (-1);
 	if (add_to_value == 1)
@@ -122,7 +122,7 @@ int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
 	env_count = 1;
 	if (variable[1] == NULL)
 	{
-		if (!ft_sort_export_cmd(*env_ptr, fd, 0, *unset_path))
+		if (!ft_sort_export_cmd(*env_ptr, fd, *unset_path))
 			return (1);
 		return (0);
 	}
@@ -133,7 +133,14 @@ int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
 			return (1);
 		result = update_existing_variable(variable, env_ptr, &env_count, 0);
 		if (result == -1)
+		{
+			if (parse_existing_variable(variable[env_count], 0) == -1)
+			{
+				j++;
+				continue;
+			}
 			return (1);
+		}
 		else if (result == 0)
 			result = add_new_variable(variable, env_ptr, env_count, j);
 		if (result == -1)

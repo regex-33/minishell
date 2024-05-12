@@ -2,6 +2,7 @@
 test.c
 a.out
 .vscode
+.vscode/*
 minishell
 obj
 .DS_Store

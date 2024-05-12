@@ -50,25 +50,6 @@ char	*get_prompt(char *str, char *suffix)
 	return (prompt);
 }
 
-// int init_context(t_context *ctx)
-// {
-// 	ctx->env = NULL;
-// 	ctx->unset_path = 0;
-// 	ctx->env = ft_creat_env(ctx);
-// 	if (ctx->env == NULL)
-// 	{
-// 		while(ctx->env && *(ctx->env))
-// 		{
-// 			free(*(ctx->env));
-// 			ctx->env++;
-// 		}
-// 		return (ft_printf("env	is NULL\n"), 1);
-// 	}
-// 	ctx->last_pwd = get_value("PWD", ctx->env);
-// 	if (!ctx->last_pwd)
-// 		ctx->last_pwd = ft_strdup("");
-// 	return 0;
-// }
 
 int	get_state(int new_state, int flags)
 {
@@ -93,10 +74,12 @@ void	init_terminal(void)
 	tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
 }
 
+
+
 int	main(void)
 {
 	char				*line;
-	char				*pwd;
+	//char				*pwd;
 	char				*prompt;
 	t_list				*tokens;
 	t_context			ctx;
@@ -114,16 +97,8 @@ int	main(void)
 	init_terminal();
 	while (1)
 	{
-		//print_prompt_with_user_details();
-		//line = readline("");
-		//pwd = ft_path();
-
-
 		get_state(ON_PROMPT, SET_STATE);
-		pwd = "minishell >";
-		prompt = get_prompt(pwd, "$ ");
-		//	printf(COLOR_KHDER_FATH "%s" ANSI_COLOR_RESET "$ ", pwd);
-		//	free(pwd);
+		prompt = get_prompt_with_user_details(0);
 		line = readline(prompt);
 		get_state(ON_EXEC, SET_STATE);
 		if (!line)
@@ -145,6 +120,7 @@ int	main(void)
  		get_status(__exec(parse_tree, &ctx), SET_STATUS);
 		clear_btree(parse_tree, NULL);	
 		ft_lstclear_libft(&tokens, free);
+		free(prompt);
 		free(line);
 		init_terminal();
 	}

@@ -28,6 +28,9 @@ void	handle_interrupt(int sig)
 	if (get_state(0, 0) == ON_PROMPT)
 	{
 		rl_on_new_line();
+		rl_replace_line("", 1);
+		char *prompt = get_prompt_with_user_details(1);
+		ft_printf("%s", prompt);
 		rl_redisplay();
 	}
 	//tputs(tgetstr("cr", NULL), 1, my_putchar);
@@ -40,6 +43,9 @@ void	handle_quit(int sig)
 	if (get_state(0, 0) == ON_EXEC)
 		ft_putendl_fd("Quit: 3", 1);
 	else
+	{
+		rl_on_new_line();
 		rl_redisplay();
+	}
 	//get_status(131, SET_STATUS);
 }

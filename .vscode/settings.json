@@ -84,7 +84,9 @@
     "system_error": "c",
     "tuple": "c",
     "type_traits": "c",
-    "vector": "c"
+    "vector": "c",
+    "__tuple": "c",
+    "array": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

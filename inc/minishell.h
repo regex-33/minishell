@@ -33,6 +33,23 @@
 
 #include <termios.h>
 #include <term.h>
+
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+#define CUSTOM_COLOR_BOLD_BLUE 1000
+#define CUSTOM_COLOR_BOLD_CYAN 1001
+
+// Use ANSI escape sequences for custom colors
+#define CUSTOM_COLOR_BOLD_BLUE_ANSI   "\x1b[1;94m"
+#define CUSTOM_COLOR_BOLD_CYAN_ANSI   "\x1b[1;96m"
+
 /* COLORS */
 
 #define COLOR_RESET "\033[0m"
@@ -41,6 +58,12 @@
 #define COLOR_BOLD_WHITE "\033[1;37m"
 #define COLOR_KHDER_FATH "\033[1;32m"
 
+
+#define ANSI_COLOR_RESET "\x1b[0m"
+#define ANSI_COLOR_BOLD_RED "\x1b[1;31m"
+#define ANSI_COLOR_BOLD_BLUE "\x1b[1;34m"
+#define ANSI_COLOR_BOLD_WHITE "\x1b[1;37m"
+#define ANSI_COLOR_KHDER_FATH "\x1b[1;32m"
 
 # define ANSI_COLOR_BLUE "\x1b[34m"
 # define ANSI_COLOR_RESET "\x1b[0m"
@@ -73,8 +96,8 @@
 int	get_status(int new_status, int flags);
 int get_state(int new_state, int flags);
 int	is_builtin(char *cmd_name);
-char	**grep_paths(char **env);
-int	parse_existing_variable(char *str);
+char	**grep_paths(char **env, int *hiden_path);
+int	parse_existing_variable(char *str, int flag);
 int	init_context(t_context *ctx);
 
 /*      environment         */
@@ -111,9 +134,8 @@ int			ft_exit(char **exit_code);
 /* ft_export etc */
 
 int	is_valid_identifier(const char *variable);
-void	ft_print(char *str, int fd);
-void	ft_print_free(char **variable, int fd, int unset_path);
-int	ft_sort_export_cmd(char **environ_exp, int fd, int i, int unset_path);
+void	ft_print(char **variable, int fd, int unset_path);
+int	ft_sort_export_cmd(char **environ_exp, int fd, int unset_path);
 int	check_variable_name(char *variable, int *unset_path);
 
 /*   ft_export    */
@@ -143,11 +165,10 @@ char		*get_value(char *name, char **env);
 /* ft_get_username and get_hostname */
 
 char	*get_user_host_name(char *str);
-void    print_prompt_with_user_details(void);
 
+char *get_prompt_with_user_details(int is_prompt);
 /* main */
 
-char	**grep_paths(char **env);
 int 	get_status(int new_status, int flags);
 char	*ft_path(void);
 int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx);

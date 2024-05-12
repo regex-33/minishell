@@ -6,15 +6,20 @@ int	handle_shell_level(char *str, char **env, int *i)
 	char	*shell_level;
 
 	level = ft_atoi(str + 6);
-	if (level > 1000 || level < 0)
+	if (level > 1000)
 	{
 		ft_putstr_fd("minishell: warning: shell level (", 2);
 		ft_putstr_fd(str + 6, 2);
 		ft_putstr_fd(") too high, resetting to 1\n", 2);
 		level = 0;
 	}
+	else if (level < 0)
+		level = -1;
 	shell_level = ft_itoa(level + 1);
-	*env = ft_strjoin("SHLVL=", shell_level);
+	if (!ft_strcmp(shell_level, "1000"))
+		*env = ft_strdup("SHLVL="); 
+	else
+		*env = ft_strjoin("SHLVL=", shell_level);
 	if (!*env)
 		return (free(shell_level), 1);
 	(*i)++;

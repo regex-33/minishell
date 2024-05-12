@@ -58,7 +58,7 @@ char **get_expanded_args(t_cmd *cmd, t_context *ctx)
 
 int exec_simple(t_btree *tree, t_context *ctx)
 {
-	char **args;
+	char **args = NULL;
 	int	status;
 
     if (!tree)
@@ -76,7 +76,7 @@ int exec_simple(t_btree *tree, t_context *ctx)
 	if (!args)
 		return 1;
 	status = exec_cmd(redir, args, ctx);
-	return (status);
+	return (free_array(args), status);
 }
 
 
