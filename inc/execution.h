@@ -44,7 +44,7 @@ int	is_file(char *path);
 
 char	**expand_filename_here_doc(char *filename, t_context *ctx);
 int	read_and_expand_heredoc(int old_fd, int new_fd, t_context *ctx);
-int	handle_heredoc(char **filename, t_context *ctx);
+int	handle_heredoc(t_redir *redir, t_context *ctx);
 
 
 /*          redirections    */

@@ -46,27 +46,28 @@ int	read_and_expand_heredoc(int old_fd, int new_fd, t_context *ctx)
 	return (0);
 }
 
-int	handle_heredoc(char **filename, t_context *ctx)
+int	handle_heredoc(t_redir *redir, t_context *ctx)
 {
 	int		new_fd;
 	int		old_fd;
 	char	*new_filename;
 
-	new_filename = NULL;
+	if (isquote(redir->delimiter[0]))
+		return (0);
 	new_filename = random_filename();
 	if (!new_filename)
 		return (perror("minishell"), -1);
 	new_fd = open(new_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (new_fd < 0)
 		return (perror("minishell"), -1);
-	old_fd = open(*filename, O_RDONLY);
+	old_fd = open(redir->filename, O_RDONLY);
 	if (old_fd < 0)
 		return (perror("minishell"), -1);
 	if (read_and_expand_heredoc(old_fd, new_fd, ctx) == -1)
 		return (-1);
 	close(old_fd);
 	close(new_fd);
-	unlink(*filename);
-	*filename = new_filename;
+	unlink(redir->filename);
+	redir->filename = new_filename;
 	return (0);
 }

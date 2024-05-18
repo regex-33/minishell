@@ -83,6 +83,11 @@ int	read_heredoc(char *limiter, int fd)
 	if (!limiter)
 		return (ft_putendl_fd("minishell: invalid here document delimiter", 1), -1);
 	limiter_len = ft_strlen(limiter);
+	if (isquote(limiter[0]))
+	{
+		limiter++;
+		limiter_len -= 2;
+	}
 	heredoc_pid = fork_heredoc(limiter, limiter_len, fd);
 	if (heredoc_pid < 0)
 		return (-1);

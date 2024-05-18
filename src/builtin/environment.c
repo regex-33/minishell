@@ -6,6 +6,7 @@ int	handle_shell_level(char *str, char **env, int *i)
 	char	*shell_level;
 
 	level = ft_atoi(str + 6);
+	level++;
 	if (level > 1000)
 	{
 		ft_putstr_fd("minishell: warning: shell level (", 2);
@@ -14,8 +15,8 @@ int	handle_shell_level(char *str, char **env, int *i)
 		level = 0;
 	}
 	else if (level < 0)
-		level = -1;
-	shell_level = ft_itoa(level + 1);
+		level = 0;
+	shell_level = ft_itoa(level);
 	if (!ft_strcmp(shell_level, "1000"))
 		*env = ft_strdup("SHLVL="); 
 	else
