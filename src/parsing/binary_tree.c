@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 // parse -> PARSE_CMD(0)
+// 
 // PARSE_CMD(x) -> PAIR { OPERATOR PARSE_CMD(q) }
 // PARSE_PAIR -> SUBCMD | SIMPLE_COMMAND
 // PARSE_SUBCMD -> LPAR CMD(0) RPAR {REDIR}
-// SIMPLE_COMMAND -> [REDIR | LITERAL] {REDIR | LITERAL}
+// SIMPLE_COMMAND -> {REDIR} LITERAL { LITERAL | REDIR }
 // REDIR -> IO_REDIR LITERAL
 
 #include "minishell.h"

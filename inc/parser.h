@@ -62,13 +62,14 @@ t_btree	*parse_simplecmd(t_list *tokens);
 t_btree	*parse_pair(t_list *tokens);
 t_btree	*parse_cmd(t_list *tokens, int prec);
 t_btree	*parse(t_list *tokens);
-int	isquote(char c);
 
 void	print_token(t_token *token);
 size_t	wordlen(char *str);
 int		issep(char c);
 void	print_token_list(t_list *token_list);
 int		match_pattern(char *str, int flags, char *sentinel);
+void	E(t_list *tokens);
+void	P(t_list *tokens);
 
 // youssef add this
 char	*random_filename(void);

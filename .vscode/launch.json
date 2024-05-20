@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/goinfre/yachtata/mini/src/builtin",
-      "program": "/goinfre/yachtata/mini/src/builtin/build/Debug/outDebug",
+      "cwd": "/goinfre/yachtata/minishell/src/execution",
+      "program": "/goinfre/yachtata/minishell/src/execution/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
