@@ -18,7 +18,7 @@ int	handle_shell_level(char *str, char **env, int *i)
 		level = 0;
 	shell_level = ft_itoa(level);
 	if (!ft_strcmp(shell_level, "1000"))
-		*env = ft_strdup("SHLVL="); 
+		*env = ft_strdup("SHLVL=");
 	else
 		*env = ft_strjoin("SHLVL=", shell_level);
 	if (!*env)
@@ -74,6 +74,14 @@ char	**ft_creat_env(t_context *ctx)
 		{
 			if (handle_shell_level(environ[i], &env[i], &i))
 				return (free_array(env), perror("minishell"), NULL);
+			continue ;
+		}
+		if (!ft_strncmp(environ[i], "OLDPWD=", 7))
+		{
+			env[i] = ft_strdup("OLDPWD");
+			if (!env[i])
+				return (free_array(env), perror("minishell"), NULL);
+			i++;
 			continue ;
 		}
 		env[i] = ft_strdup(environ[i]);

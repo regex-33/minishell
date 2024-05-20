@@ -8,23 +8,23 @@ int	ft_pwd(int fd, t_context *ctx)
 
 	path = getcwd(cwd, sizeof(cwd));
 	if (path)
-		return (free(path), ft_putstr_fd(cwd, fd), ft_putchar_fd('\n', fd), 0);
+		return (ft_putstr_fd(cwd, fd), ft_putchar_fd('\n', fd), 0);
 	else
 	{
 		if (ctx->last_pwd)
-			return (free(path), ft_putstr_fd(ctx->last_pwd, fd), ft_putchar_fd('\n', fd),
+			return (ft_putstr_fd(ctx->last_pwd, fd), ft_putchar_fd('\n', fd),
 				0);
 		else
 		{
 			temp = get_value("PWD", ctx->env);
 			if (temp)
-				return (free(path), ft_putstr_fd(temp, fd), ft_putchar_fd('\n', fd), 0);
+				return (ft_putstr_fd(temp, fd), ft_putchar_fd('\n', fd), 0);
 			else
-				return (free(path), ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+				return (ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
 						fd), 1);
 		}
 	}
-	return (free(path), 0);
+	return (0);
 }
 
 int	ft_env(t_context *ctx, int fd)

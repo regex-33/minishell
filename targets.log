@@ -1,0 +1,606 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.81
+# Copyright (C) 2006  Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.
+# There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# This program built for i386-apple-darwin11.3.0
+ 
+make: *** [libft.a] Error 1
+
+
+# Make data base, printed on Mon May 20 12:04:26 2024
+
+# Variables
+
+# makefile (from `Makefile', line 57)
+SRCS_COUNT = 0
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# makefile (from `Makefile', line 45)
+LFT_DIR = $(LIB_PATH)/libft
+# environment
+VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# makefile (from `Makefile', line 54)
+LDLIBS = -lft -ltermcap -O3
+# makefile
+ 
+CURDIR := /goinfre/yachtata/mini
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","osLocale":"en","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/bin/make
+# makefile (from `Makefile', line 51)
+CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./$(LFT_DIR)/inc -Iinc -Iinc/readline
+# makefile (from `Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# makefile (from `Makefile', line 26)
+UP = \033[A
+# makefile (from `Makefile', line 90)
+OBJ_EXECUTION_FILES = $(EXECUTION_SOURCES:%.c=%.o)
+# makefile (from `Makefile', line 70)
+PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c heredoc.c 
+# environment
+P9K_SSH = 0
+# environment
+VSCODE_CWD = /
+# environment
+Apple_PubSub_Socket_Render = /private/tmp/com.apple.launchd.qYr2G7HbyJ/Render
+# makefile (from `Makefile', line 96)
+OBJ_FILES = $(addprefix $(OBJ_PATH)/, $(OBJ_SIGNALS_FILES) $(OBJ_BUILTIN_FILES) $(OBJ_PARSING_FILES) $(OBJ_EXECUTION_FILES) $(OBJ_EXPANDING_FILES))
+# environment
+PATH = /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Library/Frameworks/Mono.framework/Versions/Current/Commands
+# makefile (from `Makefile', line 23)
+BOLD = \033[1m
+# makefile (from `Makefile', line 73)
+SIGNALS_SOURCES = signals.c
+# environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# makefile (from `Makefile', line 58)
+SRCS_TOT = ${shell find ./src/ -type f -name '*.c' | wc -l}
+# makefile (from `Makefile', line 41)
+SRC_PATH = src
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# makefile (from `Makefile', line 53)
+LDFLAGS = -L ./
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# makefile (from `Makefile', line 15)
+GRN = \033[1;32m
+# makefile (from `Makefile', line 92)
+OBJ_SIGNALS_FILES = $(SIGNALS_SOURCES:%.c=%.o)
+# makefile (from `Makefile', line 72)
+EXPANDING_SOURCES = heredoc_expanding.c expanding.c expanding_utils.c mereg_sort.c single_duble_dollar.c asterisk.c
+# makefile (from `Makefile', line 88)
+OBJ_BUILTIN_FILES = $(BUILTIN_SOURCES:%.c=%.o)
+# environment
+LS_COLORS = di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.8sWcT6T8OM/Listeners
+# automatic
+%F = $(notdir $%)
+# environment
+PWD = /goinfre/yachtata/mini
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# makefile (from `Makefile', line 16)
+BLU = \033[1;34m
+# makefile (from `Makefile', line 61)
+BAR = ${shell expr 23 \* ${SRCS_COUNT} / ${SRCS_TOT}}
+# makefile (from `Makefile', line 37)
+LFT_NAME = libft.a
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /goinfre/yachtata
+# makefile (from `Makefile', line 25)
+UL = \033[4m
+# default
+MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/yachtata/Library/Application Support/Code/CachedData/e7e037083ff4455cf320e344325dacb480062c3c
+# environment
+LOGNAME = yachtata
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# makefile (from `Makefile', line 24)
+CUR = \033[3m
+# environment
+ZSH = /Users/yachtata/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+XPC_FLAGS = 0x0
+# makefile (from `Makefile', line 32)
+MAKE = make
+# default
+MAKECMDGOALS := all
+# makefile (from `Makefile', line 21)
+LGREEN = \033[38;5;155m
+# environment
+SHLVL = 1
+# makefile (from `Makefile', line 35)
+CC = gcc
+# default
+MAKE_VERSION := 3.81
+# environment
+USER = yachtata
+# makefile
+.DEFAULT_GOAL := all
+# makefile (from `Makefile', line 43)
+LIB_PATH = lib
+# makefile (from `Makefile', line 29)
+NAME = minishell
+# makefile (from `Makefile', line 89)
+OBJ_PARSING_FILES = $(PARSING_SOURCES:%.c=%.o)
+# environment
+LESS = -R
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# makefile (from `Makefile', line 69)
+BUILTIN_SOURCES = main.c builtin_utils.c environment.c ft_cd_etc.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c get_username_hostname.c
+# makefile (from `Makefile', line 59)
+SRCS_PRCT = ${shell expr 100 \* ${SRCS_COUNT} / ${SRCS_TOT}}
+# makefile (from `Makefile', line 91)
+OBJ_EXPANDING_FILES = $(EXPANDING_SOURCES:%.c=%.o)
+# default
+MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
+# default
+.VARIABLES := 
+# environment
+TMPDIR = /var/folders/zz/zyxvpxvq6csfxvn_n000c_rr0032p6/T/
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /Users/yachtata/Library/Application Support/Code/1.83-main.sock
+# environment
+MallocNanoZone = 0
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+XPC_SERVICE_NAME = com.apple.xpc.launchd.oneshot.0x10000003.Electron
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from `Makefile', line 19)
+LYELLOW = \033[38;5;222m
+# environment
+VSCODE_L10N_BUNDLE_LOCATION = 
+# automatic
++F = $(notdir $+)
+# environment
+__CF_USER_TEXT_ENCODING = 0x18AC6:0x0:0x0
+# environment
+COMMAND_MODE = unix2003
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+PAGER = less
+# environment
+LC_ALL = C
+# makefile (from `Makefile', line 14)
+YEL = \033[1;33m
+# makefile (from `Makefile', line 71)
+EXECUTION_SOURCES = pipes.c redirections.c exec.c etc_functions.c execut_cmd.c 
+# makefile (from `Makefile', line 42)
+OBJ_PATH = obj
+# environment
+ 
+SECURITYSESSIONID = 186a8
+# automatic
+^F = $(notdir $^)
+# makefile (from `Makefile', line 83)
+ALL_SOURCES = $(SIGNALS_SOURCES) $(BUILTIN_SOURCES) $(PARSING_SOURCES) $(EXECUTION_SOURCES) $(EXPANDING_SOURCES)
+# default
+SUFFIXES := 
+# makefile (from `Makefile', line 48)
+LFT = $(LFT_DIR)/$(LFT_NAME)
+# default
+.INCLUDE_DIRS = /usr/local/include
+# environment
+MAKELEVEL := 0
+# makefile (from `Makefile', line 40)
+INC_PATH = inc
+# environment
+LANG = C
+# makefile (from `Makefile', line 20)
+BEIGE = \033[38;5;223m
+# environment
+VSCODE_PID = 11065
+# variable set hash-table stats:
+# Load=105/1024=10%, Rehash=0, Collisions=10/163=6%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# src/signals (device 16777223, inode 12913061844): No files, no impossibilities so far.
+# . (device 16777223, inode 12913061646): 13 files, no impossibilities.
+# src/execution (device 16777223, inode 12913061824): No files, no impossibilities so far.
+# src/builtin (device 16777223, inode 12913061811): No files, no impossibilities so far.
+# inc (device 16777223, inode 12913061715): No files, no impossibilities so far.
+# src/expanding (device 16777223, inode 12913061830): No files, no impossibilities so far.
+# src/parsing (device 16777223, inode 12913061837): No files, no impossibilities so far.
+
+# 13 files, no impossibilities in 7 directories.
+
+# Implicit Rules
+
+obj/%.o: %.c | obj
+#  commands to execute (from `Makefile', line 119):
+	@${eval SRCS_COUNT = ${shell expr ${SRCS_COUNT} + 1}}
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo ""
+	@echo " ${BOLD}${CUR}${BEIGE}-> Compiling ${DEF}${BOLD}${LYELLOW}[MINISHELL]${DEF}"
+	@printf " ${BEIGE}   [${LGREEN}%-23.${BAR}s${BEIGE}] [%d/%d (%d%%)]${DEF}" "***********************" ${SRCS_COUNT} ${SRCS_TOT} ${SRCS_PRCT}
+	@echo "${UP}${UP}${UP}"
+	
+
+# 1 implicit rules, 0 (0.0%) terminal.
+
+# Files
+
+# Not a target:
+obj/asterisk.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/redirections.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/single_duble_dollar.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/real_parser.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/expanding.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_unset.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_export_etc.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all: minishell
+#  Phony target (prerequisite of .PHONY).
+#  Command-line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/10=0%
+
+.PHONY: all clean fclean re norm
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/execut_cmd.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/main.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 12:02:37
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+debug:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 128):
+	@echo "\n   ${BOLD}${UL}${MAGENTA}DEBUGGING MODE${DEF}"
+	@${MAKE} DEBUG=1
+	
+
+# Not a target:
+obj/parse_utils.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/lexer.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+libft.a:
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: `'
+#  Last modified 1969-12-31 23:59:56
+#  File has been updated.
+#  Failed to be updated.
+# automatic
+# @ := libft.a
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := 
+# automatic
+# | := 
+# automatic
+# < := 
+# automatic
+# ^ := 
+# automatic
+# ? := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/18=11%
+#  commands to execute (from `Makefile', line 111):
+	@$(MAKE) all -sC $(LFT_DIR)	> /dev/null 2>&1
+	@cp $(LFT) $(LFT_NAME)
+	
+
+# Not a target:
+obj/environment.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+minishell: libft.a obj/signals.o obj/main.o obj/builtin_utils.o obj/environment.o obj/ft_cd_etc.o obj/ft_change_dir.o obj/ft_unset.o obj/ft_pwd_and_env.o obj/ft_exit.o obj/ft_export.o obj/ft_export_etc.o obj/ft_echo.o obj/get_username_hostname.o obj/util_funcs.o obj/lexer.o obj/real_parser.o obj/binary_tree.o obj/parse_utils.o obj/heredoc.o obj/pipes.o obj/redirections.o obj/exec.o obj/etc_functions.o obj/execut_cmd.o obj/heredoc_expanding.o obj/expanding.o obj/expanding_utils.o obj/mereg_sort.o obj/single_duble_dollar.o obj/asterisk.o
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/10=0%
+#  commands to execute (from `Makefile', line 100):
+	@echo "\n"
+	@$(CC) $^ -o $@ $(CFLAGS) -L./lib/readline -lreadline $(LDFLAGS)  $(LDLIBS) -fsanitize=address
+	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
+	
+
+fclean: clean
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 137):
+	@$(MAKE) fclean -sC $(LFT_DIR) > /dev/null 2>&1
+	@rm -rf $(NAME)
+	
+
+# Not a target:
+obj/mereg_sort.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+ 
+#  File has not been updated.
+
+obj:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 115):
+	@mkdir -p $(OBJ_PATH) > /dev/null 2>&1
+	
+
+norm:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 143):
+	@printf "\n${GRN}##########${YEL} NORMINETTE ${GRN}##########${NOCOL}\n"
+	@printf "\n${GRN}LIBFT:${BLU}\n\n"
+	@norminette $(LFT_DIR)/srcs
+	@printf "\n${GRN}MINISHELL:${BLU}\n\n"
+	@norminette $(INC_PATH)
+	@norminette $(SRC_PATH)
+	@printf "${NOCOL}"
+	
+
+# Not a target:
+obj/ft_echo.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+parser: libft.a
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 107):
+	cc -fsanitize=address -g3 $(PARSING_SRC) -Iinc -Llib/libft -lft
+	
+
+# Not a target:
+obj/signals.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/util_funcs.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/builtin_utils.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_export.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_change_dir.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+re: fclean all
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 132):
+	@$(MAKE) clean -sC $(LFT_DIR) > /dev/null 2>&1
+	@rm -rf $(LFT_NAME)
+	@rm -rf $(OBJ_PATH)
+	
+
+# Not a target:
+obj/expanding_utils.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/get_username_hostname.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_pwd_and_env.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/exec.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_cd_etc.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/etc_functions.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/ft_exit.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/heredoc.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/heredoc_expanding.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/binary_tree.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/pipes.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=44/1024=4%, Rehash=0, Collisions=0/100=0%
+# VPATH Search Paths
+
+vpath %.c src/signals:src/builtin:src/parsing:src/execution:src/expanding
+vpath %.h inc
+
+# 2 `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 1
+# # of strcache buffers: 1
+# strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
+# strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
+
+# Finished Make data base on Mon May 20 12:04:26 2024
+
+ 

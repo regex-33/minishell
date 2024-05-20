@@ -1,0 +1,191 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/goinfre/yachtata/mini'
+make all -sC lib/libft	> /dev/null 2>&1
+ 
+cp lib/libft/libft.a libft.a
+mkdir -p obj > /dev/null 2>&1
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/signals/signals.c -o obj/signals.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.0s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 1       30 3
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/main.c -o obj/main.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.1s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 2       30 6
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/builtin_utils.c -o obj/builtin_utils.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.2s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 3       30 10
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/environment.c -o obj/environment.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.3s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 4       30 13
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_cd_etc.c -o obj/ft_cd_etc.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.3s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 5       30 16
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_change_dir.c -o obj/ft_change_dir.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.4s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 6       30 20
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_unset.c -o obj/ft_unset.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.5s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 7       30 23
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_pwd_and_env.c -o obj/ft_pwd_and_env.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.6s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 8       30 26
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_exit.c -o obj/ft_exit.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.6s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 9       30 30
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_export.c -o obj/ft_export.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.7s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 10       30 33
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_export_etc.c -o obj/ft_export_etc.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.8s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 11       30 36
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/ft_echo.c -o obj/ft_echo.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.9s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 12       30 40
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/builtin/get_username_hostname.c -o obj/get_username_hostname.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.9s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 13       30 43
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/util_funcs.c -o obj/util_funcs.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.10s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 14       30 46
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/lexer.c -o obj/lexer.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.11s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 15       30 50
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/real_parser.c -o obj/real_parser.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.12s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 16       30 53
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/binary_tree.c -o obj/binary_tree.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.13s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 17       30 56
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/parse_utils.c -o obj/parse_utils.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.13s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 18       30 60
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/parsing/heredoc.c -o obj/heredoc.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.14s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 19       30 63
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/execution/pipes.c -o obj/pipes.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.15s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 20       30 66
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/execution/redirections.c -o obj/redirections.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.16s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 21       30 70
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/execution/exec.c -o obj/exec.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.16s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 22       30 73
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/execution/etc_functions.c -o obj/etc_functions.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.17s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 23       30 76
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/execution/execut_cmd.c -o obj/execut_cmd.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.18s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 24       30 80
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/heredoc_expanding.c -o obj/heredoc_expanding.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.19s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 25       30 83
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/expanding.c -o obj/expanding.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.19s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 26       30 86
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/expanding_utils.c -o obj/expanding_utils.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.20s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 27       30 90
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/mereg_sort.c -o obj/mereg_sort.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.21s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 28       30 93
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/single_duble_dollar.c -o obj/single_duble_dollar.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.22s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 29       30 96
+echo "\033[A\033[A\033[A"
+ 
+gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -c src/expanding/asterisk.c -o obj/asterisk.o
+echo ""
+echo " \033[1m\033[3m\033[38;5;223m-> Compiling \033[1m\033[38;5;222m[MINISHELL]"
+printf " \033[38;5;223m   [\033[38;5;155m%-23.23s\033[38;5;223m] [%d/%d (%d%%)]" "***********************" 30       30 100
+echo "\033[A\033[A\033[A"
+echo "\n"
+gcc libft.a obj/signals.o obj/main.o obj/builtin_utils.o obj/environment.o obj/ft_cd_etc.o obj/ft_change_dir.o obj/ft_unset.o obj/ft_pwd_and_env.o obj/ft_exit.o obj/ft_export.o obj/ft_export_etc.o obj/ft_echo.o obj/get_username_hostname.o obj/util_funcs.o obj/lexer.o obj/real_parser.o obj/binary_tree.o obj/parse_utils.o obj/heredoc.o obj/pipes.o obj/redirections.o obj/exec.o obj/etc_functions.o obj/execut_cmd.o obj/heredoc_expanding.o obj/expanding.o obj/expanding_utils.o obj/mereg_sort.o obj/single_duble_dollar.o obj/asterisk.o -o minishell -g -Wall -Wextra -Werror -D BUFFER_SIZE=10 -I ./lib/libft/inc -Iinc -Iinc/readline -L./lib/readline -lreadline -L ./  -lft -ltermcap -O3 -fsanitize=address
+echo "\n\n\n   \033[1m\033[3m\033[38;5;222mMINISHELL COMPILED ✨\n"
+make: Leaving directory `/goinfre/yachtata/mini'
+ 

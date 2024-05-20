@@ -96,7 +96,7 @@
 int	get_status(int new_status, int flags);
 int get_state(int new_state, int flags);
 int	is_builtin(char *cmd_name);
-char	**grep_paths(char **env, int *hiden_path);
+char	**grep_paths(t_context *ctx);
 int	parse_existing_variable(char *str, int flag);
 int	init_context(t_context *ctx);
 

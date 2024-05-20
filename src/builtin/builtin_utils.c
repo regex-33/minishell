@@ -31,26 +31,25 @@ int	is_builtin(char *cmd_name)
 	return (0);
 }
 
-char	**grep_paths(char **env, int *hidden_path)
+char	**grep_paths(t_context *ctx)
 {
 	char	*path_env;
 	char	**path_dirs;
 
 	// printArray(env);
-	path_env = get_value("PATH", env);
+	path_env = get_value("PATH", ctx->env);
 	if (!path_env)
 	{
-		if (*hidden_path)
+		if (ctx->unset_path)
 		{
 			path_env = ft_strdup(TEMP_PATH + 5);
-			*hidden_path = 0;
+			if (!path_env)
+				return (perror(COMMAND_NOT_FOUND), NULL);
 		}
 		else
-		{
-			printf("i am here\n");
-			*hidden_path = 0;
 			path_env = ft_strdup(".");
-		}
+			if (!path_env)
+				return (perror(COMMAND_NOT_FOUND), NULL);
 	}
 	// printf("path_env : %s\n", path_env);
 	path_dirs = ft_split(path_env, ':');
@@ -84,13 +83,10 @@ int	parse_existing_variable(char *str, int flag)
 int	init_context(t_context *ctx)
 {
 	ctx->env = NULL;
-	ctx->unset_path = 0;
-	ctx->hidden_path = 0;
+	ctx->unset_path = 1;
 	ctx->env = ft_creat_env(ctx);
 	if (ctx->env == NULL)
 		return (1);
-	if (get_value("PATH", ctx->env) == NULL)
-		ctx->hidden_path = 1;
 	ctx->last_pwd = ft_strdup(get_value("PWD", ctx->env));
 	if (!ctx->last_pwd)
 		ctx->last_pwd = ft_strdup("");

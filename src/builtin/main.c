@@ -98,7 +98,7 @@ int	main(void)
 	while (1)
 	{
 		get_state(ON_PROMPT, SET_STATE);
-		prompt = get_prompt_with_user_details(0);
+		prompt = get_prompt("minishell", " $ ");
 		line = readline(prompt);
 		get_state(ON_EXEC, SET_STATE);
 		if (!line)

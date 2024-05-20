@@ -17,6 +17,28 @@ void	reset_redir(t_list *redir_list, int restore)
 	}
 }
 
+char *skip_quotes_alloc(char *str)
+{
+	char	*new_str;
+	size_t	len;
+	size_t	i;
+
+	len = ft_strlen(str);
+	new_str = ft_calloc(len + 1, sizeof(char));
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	while (*str)
+	{
+		if (!isquote(*str))
+			new_str[i++] = *str;
+		str++;
+	}
+	if (i < len)
+		new_str[i] = '\0';
+	return (new_str);
+}
+
 int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 {
 	int fd;
@@ -30,8 +52,10 @@ int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 		fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (redir->type == REDIR_HERE)
 	{
-		if (handle_heredoc(&redir->filename, ctx))
+		if (handle_heredoc(redir, ctx))
 			return (reset_redir(redir_list, 1), -1);
+		// redir->delimiter = skip_quotes_alloc(redir->delimiter);
+		// printf("delimiter: %s\n", redir->delimiter);
 		fd = open(redir->filename, O_RDONLY);
 		if (fd < 0)
 			return (reset_redir(redir_list, 1), -1);

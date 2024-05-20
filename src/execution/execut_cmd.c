@@ -51,6 +51,8 @@ int	check_abs_cmd(char *pathname)
 	if (stat(pathname, &sb))
 	{
 		if (errno == ENOENT)
+			return (print_err(pathname, " : No such file or directory."), 127);
+		if (errno == ENOENT)
 			return (print_err(pathname, " : command not found."), 127);
 		if (errno == EACCES)
 			return (print_err(pathname, " : Permission denied."), 126);
@@ -70,7 +72,7 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 	pexec->cmd_name = NULL;
 	if (!*args)
 		return (1);
-	path_dirs = grep_paths(ctx->env, &ctx->hidden_path);
+	path_dirs = grep_paths(ctx);
 	if (ft_strchr(args[0], '/'))
 	{
 		pexec->err = check_abs_cmd(args[0]);

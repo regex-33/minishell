@@ -22,17 +22,18 @@ int	excute_success(t_context *ctx)
 	char **args;
 	char	last_path[1024] = "";
 
-	args = malloc(sizeof(char *) * 3);
-	if (!args)
-		return (1);
-	init_array(args, 3);
+	args = allocate_new_environ(4);
 	args[0] = ft_strdup("export");
 	if (!args[0])
 		return (free_array(args) ,1);
 	args[1] = ft_strjoin("OLDPWD=", ctx->last_pwd);
 	if (!args[1])
 		return (free_array(args) ,1);
-	args[2] = NULL;
+	getcwd(last_path, sizeof(last_path));
+	args[2] = ft_strjoin("PWD=", last_path); 
+	if (!args[2])
+		return (free_array(args) ,1);
+	args[3] = NULL;
 	ft_export(args, &ctx->env, 1, &ctx->unset_path);
 	free_array(args);
 	getcwd(last_path, sizeof(last_path));
@@ -56,9 +57,7 @@ int	home_path(t_context *ctx)
 	{
 		if (chdir(home) == -1)
 			return (perror("minishell"), 1);
-		getcwd(last_path, sizeof(last_path));
-		ctx->last_pwd = ft_strdup(last_path);
-		if (!ctx->last_pwd)
+		if (excute_success(ctx))
 			return (perror("minishell"), 1);
 	}
 	else
