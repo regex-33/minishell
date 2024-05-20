@@ -179,4 +179,8 @@ int     select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 void	handle_interrupt(int sig);
 void    handle_quit(int sig);
 
+/*  */
+
+int	isquote(char c);
+
 #endif

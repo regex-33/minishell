@@ -40,6 +40,37 @@ char	*random_filename(void)
 	close(fd);
 	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
 }
+char *skip_quotes_alloc(char *temp)
+{
+	char	*new_str = NULL;
+	int i;
+	int in_single_quotes = 0;
+	int	in_quotes = 0;
+	char	*char_str = NULL;
+
+
+	i = 0;
+	while (temp[i])
+	{
+		if ((temp[i] == '"' && !in_single_quotes) || (temp[i] == '\'' && !in_quotes))
+		{
+			if (temp[i] == '"')
+				in_quotes = !in_quotes;
+			if (temp[i] == '\'')
+				in_single_quotes = !in_single_quotes;
+			i++;
+		}
+		char_str = ft_strndup(temp + i, 1);
+		if (!char_str)
+			return (free(new_str), NULL);
+		new_str = ft_strjoin(new_str, char_str);
+		if (!new_str)
+			return (free(char_str), NULL);
+		free(char_str);
+		i++;
+	}
+	return (new_str);
+}
 
 pid_t	fork_heredoc(char *limiter, size_t lim_len, int fd)
 {
@@ -80,6 +111,9 @@ int	read_heredoc(char *limiter, int fd)
 	int		status;
 	pid_t	heredoc_pid;
 
+	if (!limiter)
+		return (ft_putendl_fd("minishell: invalid here document delimiter", 1), -1);
+	limiter = skip_quotes_alloc(limiter);
 	if (!limiter)
 		return (ft_putendl_fd("minishell: invalid here document delimiter", 1), -1);
 	limiter_len = ft_strlen(limiter);
