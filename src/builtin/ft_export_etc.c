@@ -58,7 +58,6 @@ int	ft_sort_export_cmd(char **environ_exp, int fd, int unset_path)
 {
 	char	**variable;
 	int		env_count;
-	char	**array;
 
 	env_count = 0;
 	if (!environ_exp || !*environ_exp)
@@ -66,7 +65,6 @@ int	ft_sort_export_cmd(char **environ_exp, int fd, int unset_path)
 	variable = allocate_new_environ(get_env_count(environ_exp) + 1);
 	if (!variable)
 		return (perror("minishell"), 0);
-	array = variable;
 	while (environ_exp[env_count])
 	{
 		variable[env_count] = ft_strdup(environ_exp[env_count]);

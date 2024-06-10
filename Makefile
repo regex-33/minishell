@@ -51,7 +51,7 @@ CFLAGS = -g -Wall -Wextra -Werror -D BUFFER_SIZE=10
 CFLAGS += -I ./$(LFT_DIR)/inc -Iinc -Iinc/readline
 
 LDFLAGS = -L ./
-LDLIBS = -lft -ltermcap -O3
+LDLIBS = -lft -O3
 
 # ANIMATION
 SRCS_COUNT = 0
@@ -99,17 +99,15 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
-	@$(CC) $^ -o $@ $(CFLAGS) -L./lib/readline -lreadline $(LDFLAGS)  $(LDLIBS) -fsanitize=address
+	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) -fsanitize=address
 # @echo "i am here\n"
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
 
-parser: $(LFT_NAME)
-	cc -fsanitize=address -g3 $(PARSING_SRC) -Iinc -Llib/libft -lft
 
 # #is used to redirect both standard output (stdout) and standard error (stderr) to /dev/null
 $(LFT_NAME):
 	@$(MAKE) all -sC $(LFT_DIR)	> /dev/null 2>&1
-	@cp $(LFT) $(LFT_NAME)
+	@cp -p $(LFT) $(LFT_NAME)
 
 $(OBJ_PATH):
 	@mkdir -p $(OBJ_PATH) > /dev/null 2>&1

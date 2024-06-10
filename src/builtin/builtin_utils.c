@@ -47,9 +47,11 @@ char	**grep_paths(t_context *ctx)
 				return (perror(COMMAND_NOT_FOUND), NULL);
 		}
 		else
+		{
 			path_env = ft_strdup(".");
 			if (!path_env)
 				return (perror(COMMAND_NOT_FOUND), NULL);
+		}
 	}
 	// printf("path_env : %s\n", path_env);
 	path_dirs = ft_split(path_env, ':');

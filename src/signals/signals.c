@@ -24,7 +24,8 @@ void	handle_interrupt(int sig)
 	//tputs(tgetstr("ce", NULL), 1, my_putchar);
 	get_status(1, SET_STATUS);
 	rl_replace_line("", 1);
-	tputs(tgetstr("do", NULL), 1, my_putchar);
+	//tputs(tgetstr("do", NULL), 1, my_putchar);
+	ft_printf("\n");
 	if (get_state(0, 0) == ON_PROMPT)
 	{
 		rl_on_new_line();

@@ -94,7 +94,7 @@ int	main(void)
 	sigaction(SIGINT, &saint, NULL);
 	signal(SIGQUIT, handle_quit);
 	get_state(ON_PROMPT, SET_STATE);
-	init_terminal();
+	//init_terminal();
 	while (1)
 	{
 		get_state(ON_PROMPT, SET_STATE);
@@ -122,7 +122,7 @@ int	main(void)
 		ft_lstclear_libft(&tokens, free);
 		free(prompt);
 		free(line);
-		init_terminal();
+		//init_terminal();
 	}
 	return (0);
 }
