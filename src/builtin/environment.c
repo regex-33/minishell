@@ -65,7 +65,7 @@ char	**ft_creat_env(t_context *ctx)
 	i = 0;
 	if (!*environ)
 		return (creat_temp_env(ctx));
-	env = allocate_new_environ(get_env_count(environ));
+	env = allocate_new_environ(get_env_count(environ) + 1);
 	if (!env)
 		return (perror("minishell"), NULL);
 	while (environ[i])

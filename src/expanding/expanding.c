@@ -39,12 +39,13 @@ char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 			if (!split_and_add_to_list(list, expanding, value))
             {
                 *i += ft_strlen(variable);
-				return (free(variable), NULL);
+				return (free(value), free(variable), NULL);
             }
 		}
 		else
 			expanding->join = ft_strjoin_free(expanding->join, value);
 		*i += ft_strlen(variable);
+		free(value);
 		free(variable);
 	}
 	return (temp);

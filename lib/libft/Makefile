@@ -12,7 +12,7 @@
 
 NAME = libft.a
 
-CFLAGS = -g -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror -fPIC
 CC = cc
 FT_PRINTF = ft_common_utils.c ft_print_utils.c ft_printf.c ft_flags_utils.c
 

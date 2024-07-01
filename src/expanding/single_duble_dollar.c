@@ -23,7 +23,7 @@ char	*get_value(char *name, char **env)
 		while ((*env)[i] == name[i] && name[i] != '\0')
 			i++;
 		if ((*env)[i] == '=' && name[i] == '\0')
-			return (*env + i + 1);
+			return (ft_strdup(*env + i + 1));
 		env++;
 	}
 	return (NULL);

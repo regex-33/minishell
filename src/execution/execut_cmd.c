@@ -77,7 +77,7 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 	{
 		pexec->err = check_abs_cmd(args[0]);
 		if (pexec->err)
-			return (pexec->err);
+			return (free_array(path_dirs), pexec->err);
 		pexec->cmd_name = ft_strdup(args[0]);
 	}
 	else
@@ -95,7 +95,7 @@ int	init_command(t_prexec *pexec, t_context *ctx, char **args)
 		}
 	}
 	pexec->args = args;
-	return (pexec->err);
+	return (free_array(path_dirs), pexec->err);
 }
 
 char	**get_cmd_args(char **cmd_args, char **path_dirs)

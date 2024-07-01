@@ -80,7 +80,7 @@ int	ft_unset(char **variable, char ***env_ptr, int *unset_path)
 		j = 0;
 		if (!ft_strncmp(variable[index], "PATH", 4))
 			*unset_path = 0;
-		new_environ = allocate_new_environ(get_env_count(env));
+		new_environ = allocate_new_environ(get_env_count(env) + 1);
 		if (!new_environ)
 			return (1);
 		if (copy_env_except_variable(env, new_environ, variable[index], &j))

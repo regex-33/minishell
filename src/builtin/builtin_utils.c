@@ -56,8 +56,8 @@ char	**grep_paths(t_context *ctx)
 	// printf("path_env : %s\n", path_env);
 	path_dirs = ft_split(path_env, ':');
 	if (!path_dirs)
-		return (perror(COMMAND_NOT_FOUND), NULL);
-	return (path_dirs);
+		return (free(path_env), perror(COMMAND_NOT_FOUND), NULL);
+	return (free(path_env), path_dirs);
 }
 
 int	parse_existing_variable(char *str, int flag)
@@ -89,7 +89,7 @@ int	init_context(t_context *ctx)
 	ctx->env = ft_creat_env(ctx);
 	if (ctx->env == NULL)
 		return (1);
-	ctx->last_pwd = ft_strdup(get_value("PWD", ctx->env));
+	ctx->last_pwd = get_value("PWD", ctx->env);
 	if (!ctx->last_pwd)
 		ctx->last_pwd = ft_strdup("");
 	return (0);
