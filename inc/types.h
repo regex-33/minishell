@@ -1,15 +1,6 @@
 #ifndef TYPES_H
 # define TYPES_H
 
-typedef struct s_context
-{
-    char    **env;
-    char    *last_pwd;
-	int		unset_path;
-	int		hidden_path;
-    int     last_status;
-}          t_context;
-
 typedef enum e_redir_type
 {
 	REDIR_IN,
@@ -85,4 +76,14 @@ typedef struct s_btree
 	t_node_type		type;
 }			t_btree;
 
+typedef struct s_context
+{
+	t_btree	*parse_tree;
+	t_list	*tokens;
+    char    **env;
+    char    *last_pwd;
+	int		unset_path;
+	// int		hidden_path;
+    // int     last_status;
+}          t_context;
 #endif

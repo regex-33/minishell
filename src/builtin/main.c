@@ -14,7 +14,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	else if (!ft_strcmp(args[0], "pwd"))
 		status = ft_pwd(1, ctx);
 	else if (!ft_strcmp(args[0], "exit"))
-		status = ft_exit(args);
+		status = ft_exit(args, ctx);
 	else if (!ft_strcmp(args[0], "echo"))
 		status = ft_echo(args, 1);
 	else if (!ft_strcmp(args[0], "env"))
@@ -118,6 +118,8 @@ int	main(void)
 			ft_lstclear_libft(&tokens, free);
 			continue;
 		}
+		ctx.parse_tree = parse_tree;
+		ctx.tokens = tokens;
 		if (prompt_heredoc(parse_tree) < 0)
 			continue;
 		//ft_printf("----------- EXECUTION ---------\n");

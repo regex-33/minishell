@@ -84,6 +84,8 @@ int	parse_existing_variable(char *str, int flag)
 
 int	init_context(t_context *ctx)
 {
+	ctx->parse_tree = NULL;
+	ctx->tokens = NULL;
 	ctx->env = NULL;
 	ctx->unset_path = 1;
 	ctx->env = ft_creat_env(ctx);

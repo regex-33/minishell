@@ -129,7 +129,7 @@ int         ft_echo(char **args, int fd);
 /* ft_exit */
 
 bool		is_numeric(const char *str);
-int			ft_exit(char **exit_code);
+int			ft_exit(char **exit_code, t_context *ctx);
 
 /* ft_export etc */
 

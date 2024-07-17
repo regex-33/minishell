@@ -100,7 +100,7 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
-	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) #-fsanitize=address
+	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) -fsanitize=address
 # @echo "i am here\n"
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}${NOCOL}\n"
 
