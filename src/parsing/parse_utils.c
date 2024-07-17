@@ -100,7 +100,7 @@ void	free_cmd(t_cmd *cmd)
 	if (!cmd)
 		return ;
 	if (cmd->cmd_args)
-		ft_lstclear_libft(&cmd->cmd_args, free);
+		ft_lstclear_libft(&cmd->cmd_args, NULL);
 	if (cmd->redir_list)
 		ft_lstclear_libft(&cmd->redir_list, free_redir);
 	free(cmd);

@@ -22,7 +22,7 @@ void	handle_interrupt(int sig)
     // rl_on_new_line();
 	// rl_redisplay();
 	//tputs(tgetstr("ce", NULL), 1, my_putchar);
-	get_status(1, SET_STATUS);
+	get_status(130, SET_STATUS);
 	rl_replace_line("", 1);
 	//tputs(tgetstr("do", NULL), 1, my_putchar);
 	ft_printf("\n");

@@ -33,8 +33,7 @@ t_token	*gettoken(char *line, int *index)
 	t_token	*token;
 
 	i = 0;
-	token = malloc(sizeof(t_token));
-	token->len = 0;
+	token = ft_calloc(1, sizeof(t_token));
 	if (!token)
 		return (NULL);
 	if (line[i] == '(')

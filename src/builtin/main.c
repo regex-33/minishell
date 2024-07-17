@@ -100,6 +100,7 @@ int	main(void)
 		get_state(ON_PROMPT, SET_STATE);
 		prompt = get_prompt("minishell", " $ ");
 		line = readline(prompt);
+		free(prompt);
 		get_state(ON_EXEC, SET_STATE);
 		if (!line)
 			exit(0);
@@ -113,14 +114,16 @@ int	main(void)
 		parse_tree = parse(tokens);
 		next_token(tokens, RESET_TOK);
 		if (!parse_tree)
+		{
+			ft_lstclear_libft(&tokens, free);
 			continue;
+		}
 		if (prompt_heredoc(parse_tree) < 0)
 			continue;
 		//ft_printf("----------- EXECUTION ---------\n");
  		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		clear_btree(parse_tree, NULL);	
+		clear_btree(parse_tree);	
 		ft_lstclear_libft(&tokens, free);
-		free(prompt);
 		free(line);
 		//init_terminal();
 	}

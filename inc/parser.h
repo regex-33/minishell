@@ -51,7 +51,7 @@ int				getredir_fd(char *str, int len);
 void	free_cmd(t_cmd *cmd);
 t_cmd	*new_cmd(t_list *cmd_args, t_list *redir_list);
 
-void	clear_btree(t_btree *tree, void (*del)(void *));
+void	clear_btree(t_btree *tree);
 void	print_tree(t_btree *tree, int depth, t_node_type parent_type);
 t_btree	*new_node(t_node_type type, void *data, t_btree *left, t_btree *right);
 t_btree	*new_leaf(t_node_type type, void *data);
@@ -68,8 +68,6 @@ size_t	wordlen(char *str);
 int		issep(char c);
 void	print_token_list(t_list *token_list);
 int		match_pattern(char *str, int flags, char *sentinel);
-void	E(t_list *tokens);
-void	P(t_list *tokens);
 
 // youssef add this
 char	*random_filename(void);

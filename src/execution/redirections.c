@@ -58,6 +58,7 @@ int	redirect(t_list *redir_list, t_context *ctx)
 			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ",
 					STDERR_FILENO), ft_putstr_fd("ambiguous redirect\n",
 					STDERR_FILENO), free_array(files), 1);
+		free_array(files);
 		fd = open_file(redir, ctx, redir_list);
 		if (fd < 0)
 			return (1);

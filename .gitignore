@@ -13,3 +13,4 @@ a.out*
 lib/libft/libft.a
 libft.a
 lib/libft/objects
+.nfs*

@@ -180,16 +180,16 @@ t_btree	*parse_subcmd(t_list *tokens)
 		return (perror("minishell"), NULL);
 	subcmd_root->left = parse_cmd(tokens, 0);
 	if (!subcmd_root->left)
-		return (clear_btree(subcmd_root, free), NULL);
+		return (clear_btree(subcmd_root), NULL);
 	if (!expect(tok_r_par, tokens)) // EXPECT RIGHT PAREN
-		return (clear_btree(subcmd_root, free),
+		return (clear_btree(subcmd_root),
 			panic("minishell", PERR_EXP_TOK, 0), NULL);
 	// get redirs
 	token = next_token(tokens, 0);
 	while (token && token->type == tok_redir)
 	{
 		if (parse_redir(tokens, &redir_list) != 0)
-			return (clear_btree(subcmd_root, free), NULL);
+			return (clear_btree(subcmd_root), NULL);
 		token = next_token(tokens, 0);
 	}
 	subcmd_root->data = redir_list;
@@ -216,7 +216,7 @@ t_btree	*parse_pair(t_list *tokens)
 		return (pair_root);
 	}
 	else
-		return (clear_btree(pair_root, free), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
+		return (clear_btree(pair_root), panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 	return (pair_root);
 }
 
@@ -236,10 +236,10 @@ t_btree	*parse_cmd(t_list *tokens, int prec)
 		tmp = cmd_root;
 		child = parse_cmd(tokens, get_prec(token) + 1);
 		if (!child)
-			return (clear_btree(cmd_root, free), NULL);
+			return (clear_btree(cmd_root), NULL);
 		cmd_root = new_node(get_nt(token), token, tmp, child);
 		if (!cmd_root)
-			return (clear_btree(child, free), perror("minishell"), NULL);
+			return (clear_btree(child), perror("minishell"), NULL);
 		token = next_token(tokens, 0);
 	}
 	return (cmd_root);
@@ -254,7 +254,7 @@ t_btree	*parse(t_list *tokens)
 		return (NULL);
 	else if (next_token(tokens, 0))
 	{
-		clear_btree(parse_tree, free);
+		clear_btree(parse_tree);
 		return (panic("minishell", PERR_UNEXP_TOK, 0), NULL);
 	}
 	return (parse_tree);

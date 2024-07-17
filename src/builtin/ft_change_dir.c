@@ -56,13 +56,13 @@ int	home_path(t_context *ctx)
 	if (last_path[0] == '\0')
 	{
 		if (chdir(home) == -1)
-			return (perror("minishell"), 1);
+			return (perror("minishell"), free(home), 1);
 		if (excute_success(ctx))
-			return (perror("minishell"), 1);
+			return (perror("minishell"), free(home), 1);
 	}
 	else
 		chdir(home);
-	return (0);
+	return (free(home), 0);
 }
 
 int	ft_change_dir(char **path, t_context *ctx)

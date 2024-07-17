@@ -9,7 +9,8 @@
 #    Updated: 2024/05/05 18:26:58 by bchanaa          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-# COLORS NOCOL=\033[0m
+# COLORS 
+NOCOL=\033[0m
 #RED=\033[1;31m
 YEL=\033[1;33m
 GRN=\033[1;32m
@@ -99,9 +100,9 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
-	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) # -fsanitize=address
+	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) #-fsanitize=address
 # @echo "i am here\n"
-	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}\n"
+	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}${NOCOL}\n"
 
 
 # #is used to redirect both standard output (stdout) and standard error (stderr) to /dev/null

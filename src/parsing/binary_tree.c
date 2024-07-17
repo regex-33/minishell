@@ -50,23 +50,30 @@ t_btree	*new_leaf(t_node_type type, void *data)
 	return (leaf);
 }
 
-void	clear_btree(t_btree *tree, void (*del)(void *))
+void	clear_btree(t_btree *tree)
 {
 	t_btree	*left;
 	t_btree	*right;
+	t_list	*redir_list;
 
 	if (!tree)
 		return ;
-	if (del)
-		del(tree->data);
+	if (tree->type == nt_subcmd)
+	{
+		redir_list = tree->data;
+		ft_lstclear_libft(&redir_list, free_redir);
+	}
+	else if (tree->type == nt_simplecmd)
+		free_cmd(tree->data);
 	right = tree->right;
 	left = tree->left;
 	free(tree);
 	if (left)
-		clear_btree(left, del);
+		clear_btree(left);
 	if (right)
-		clear_btree(right, del);
+		clear_btree(right);
 }
+
 
 
 // typedef enum e_node_type
