@@ -35,6 +35,11 @@
 #include <term.h>
 
 
+# define BASE_HERE_FILENAME "/tmp/.minshl-"
+# define HERE_PROMPT "heredoc> "
+# define HERE_MAX_RETRY 30
+# define SUFF_LEN 30
+
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"

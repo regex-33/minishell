@@ -12,11 +12,6 @@
 
 #include "minishell.h"
 
-# define BASE_HERE_FILENAME "/tmp/.minshl-"
-# define HERE_PROMPT "heredoc> "
-# define HERE_MAX_RETRY 30
-# define SUFF_LEN 30
-
 char	*random_filename(void)
 {
 	unsigned char	filename[SUFF_LEN + 1];
@@ -40,14 +35,14 @@ char	*random_filename(void)
 	close(fd);
 	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
 }
+
 char *skip_quotes_alloc(char *temp)
 {
 	char	*new_str = NULL;
-	int i;
-	int in_single_quotes = 0;
-	int	in_quotes = 0;
+	int		i;
+	int 	in_single_quotes = 0;
+	int		in_quotes = 0;
 	char	*char_str = NULL;
-
 
 	i = 0;
 	while (temp[i])
@@ -72,7 +67,39 @@ char *skip_quotes_alloc(char *temp)
 	return (new_str);
 }
 
-pid_t	fork_heredoc(char *limiter, size_t lim_len, int fd)
+// pid_t	fork_heredoc(char *limiter, size_t lim_len, int fd)
+// {
+// 	pid_t	pid;
+// 	char	*line;
+
+// 	pid = fork();
+// 	if (pid < 0)
+// 		return (1);
+// 	if (pid == 0)
+// 	{
+// 		signal(SIGINT, SIG_DFL);
+// 		ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
+// 		line = get_next_line(STDIN_FILENO);
+// 		while (line)
+// 		{
+// 			if (lim_len == ft_strlen(line) - 1 && 
+// 				!ft_strncmp(line, limiter, lim_len))
+// 				return (free(line), get_next_line(INVALID_FD), close(fd), exit(0), 0);
+// 			ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
+// 			if (write(fd, line, ft_strlen(line)) < 0)
+// 				return (free(line), get_next_line(INVALID_FD), close(fd), exit(1), 0);
+// 			free(line);
+// 			line = get_next_line(STDIN_FILENO);
+// 		}
+// 		close(fd);
+// 		ft_putendl_fd("\n", 2);
+// 		ft_putendl_fd("minishell: warning: here document expected delimiter not found", 2);
+// 		get_next_line(INVALID_FD);
+// 		exit(0);
+// 	}
+// 	return (pid);
+// }
+pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 {
 	pid_t	pid;
 	char	*line;
@@ -83,23 +110,18 @@ pid_t	fork_heredoc(char *limiter, size_t lim_len, int fd)
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
-		ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
-		line = get_next_line(STDIN_FILENO);
+		line = readline(HERE_PROMPT);
 		while (line)
 		{
-			if (lim_len == ft_strlen(line) - 1 && \
-				!ft_strncmp(line, limiter, lim_len))
-				return (free(line), get_next_line(INVALID_FD), close(fd), exit(0), 0);
-			ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
-			if (write(fd, line, ft_strlen(line)) < 0)
-				return (free(line), get_next_line(INVALID_FD), close(fd), exit(1), 0);
+			if (lim_len == ft_strlen(line) && !ft_strncmp(line, lim, lim_len))
+				return (free(line), close(fd), exit(0), 0);
+			if (write(fd, line, ft_strlen(line)) < 0 || write(fd, "\n", 1) < 0)
+				return (free(line), close(fd), exit(0), 0);
 			free(line);
-			line = get_next_line(STDIN_FILENO);
+			line = readline(HERE_PROMPT);
 		}
 		close(fd);
-		ft_putendl_fd("\n", 2);
-		ft_putendl_fd("minishell: warning: here document expected delimiter not found", 2);
-		get_next_line(INVALID_FD);
+		ft_putendl_fd("\nminishell: warning: here document expected delimiter not found", 2);
 		exit(0);
 	}
 	return (pid);
@@ -146,7 +168,7 @@ int	new_heredoc(t_redir *redir)
 	fd = open(filename, O_RDWR | O_CREAT, 0644);
 	if (fd < 0)
 		return (free(filename), -1);
-	if (read_heredoc(redir->delimiter, fd) != 0)
+	if (read_heredoc(redir->delimiter, fd) < 0)
 		return (unlink(filename), close(fd), free(filename), -1);
 	close(fd);
 	redir->filename = filename;
