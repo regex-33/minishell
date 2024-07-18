@@ -43,7 +43,8 @@ int	open_file(char *file_name, t_redir *redir, \
 		fd = open(file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (redir->type == REDIR_HERE)
 	{
-		if (handle_heredoc(&file_name, ctx))
+		printf("1redir delemeter: %s\n", redir->delimiter);
+		if (handle_heredoc(&file_name, ctx, redir->delimiter))
 			return (reset_redir(redir_list, 1), -1);
 		fd = open(file_name, O_RDONLY);
 		if (fd < 0)
@@ -65,7 +66,7 @@ int	redirect(t_list *redir_list, t_context *ctx)
 	while (redir_list)
 	{
 		redir = redir_list->content;
-		files = expand_filename_here_doc(redir->filename, ctx);
+		files = expand_filename_here_doc(redir->filename, ctx, 0);
 		if (!files || count_array(files) > 1)
 			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);

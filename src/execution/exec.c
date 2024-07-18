@@ -27,7 +27,7 @@ t_list	*expand_list(t_list *list, t_context *ctx)
 		value = ft_substr(token->value, 0, token->len);
 		if (!value)
 			return (ft_putstr_fd("Error: failed to copy token\n", 2), NULL);
-		if (!expand_arg_list(&expanding_list, value, ctx))
+		if (!expand_arg_list(&expanding_list, value, ctx, 0))
 			return (free(value), free_linked_list(expanding_list), NULL);
 		free(value);
 		list = list->next;

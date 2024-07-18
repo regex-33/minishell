@@ -12,11 +12,13 @@
 
 #include "minishell.h"
 
-int	init_expanding(t_expanding *expanding, char *temp, t_context *ctx)
+int	init_expanding(t_expanding *expanding, char *temp, t_context *ctx,
+		int do_expand)
 {
 	if (!temp)
 		return (0);
 	expanding->in_quotes = 0;
+	expanding->do_expand = do_expand;
 	expanding->in_single_quotes = 0;
 	expanding->have_asterisk = 0;
 	expanding->quote = '\0';

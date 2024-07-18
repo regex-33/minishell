@@ -12,6 +12,7 @@ typedef struct s_expanding
 	char		quote;
 	char		*join;
 	t_context	*ctx;
+	int			do_expand;
 }				t_expanding;
 
 char			*get_cmd_path(char **cmd_args, char **path_dirs);
@@ -51,17 +52,15 @@ void			merge_sort_linkedlist(t_list **head);
 
 /*  expanding */
 
-t_list			**expand_arg_list(t_list **list, char *temp, t_context *ctx);
+t_list			**expand_arg_list(t_list **list, char *temp, t_context *ctx, int do_expand);
 int				handle_regular_char(char *temp, char **join, int *i);
 char			*handle_dollar_sign(t_list **list, int *i, char *temp,
 					t_expanding *expanding);
 int				init_expanding(t_expanding *expanding, char *temp,
-					t_context *ctx);
+					t_context *ctx, int do_expand);
 int				handle_quotes_asterisk(t_expanding *expanding, char c, int *i);
 
 /*  init and helps functions */
-int				init_expanding(t_expanding *expanding, char *temp,
-					t_context *ctx);
 int				handle_regular_char(char *temp, char **join, int *i);
 char			*extract_and_get_value(char *temp, int *i,
 					t_expanding *expanding);

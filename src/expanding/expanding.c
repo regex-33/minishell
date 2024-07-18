@@ -146,7 +146,6 @@ t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
 		return (free(expanding.join), NULL);
 	return (ft_lstadd_back_libft(list, new_node), list);
 }*/
-
 int	process_asterisk_and_quotes(t_expanding *expanding, char *temp, int *i)
 {
 	if (temp[*i] == '*' && expanding->in_quotes == 0
@@ -166,7 +165,7 @@ int	process_dollar_sign(t_list **list, char *temp, int *i,
 		t_expanding *expanding)
 {
 	if (temp[*i] == '$' && is_spcial_chars(temp[*i + 1])
-		&& expanding->quote != '\'')
+		&& (expanding->quote != '\'' || !expanding->do_expand))
 	{
 		if (!handle_dollar_sign(list, i, temp, expanding))
 			return (0);
@@ -187,19 +186,21 @@ t_list	**final_expansion(t_expanding *expanding, t_list **list)
 	return (ft_lstadd_back_libft(list, new_node), list);
 }
 
-t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
+t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx,
+		int do_expand)
 {
 	t_expanding	expanding;
 	int			i;
 	int			flag;
 
 	i = 0;
-	flag = 2;
-	if (!init_expanding(&expanding, temp, ctx))
+	if (!init_expanding(&expanding, temp, ctx, do_expand))
 		return (NULL);
 	while (temp[i])
 	{
-		flag = process_asterisk_and_quotes(&expanding, temp, &i);
+		flag = 2;
+		if (!expanding.do_expand)
+			flag = process_asterisk_and_quotes(&expanding, temp, &i);
 		if (flag == -1)
 			continue ;
 		else if (!flag)

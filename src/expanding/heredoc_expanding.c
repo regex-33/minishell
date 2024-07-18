@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-char	**expand_filename_here_doc(char *filename, t_context *ctx)
+char	**expand_filename_here_doc(char *filename, t_context *ctx, int flag)
 {
 	char	**files;
 	t_list	*expanding_list;
@@ -21,7 +21,7 @@ char	**expand_filename_here_doc(char *filename, t_context *ctx)
 	files = NULL;
 	temp = NULL;
 	expanding_list = NULL;
-	if (!expand_arg_list(&expanding_list, filename, ctx))
+	if (!expand_arg_list(&expanding_list, filename, ctx, flag))
 		return (NULL);
 	if (expanding_list)
 	{
@@ -45,7 +45,7 @@ int	read_and_expand_heredoc(int old_fd, int new_fd, t_context *ctx)
 	line = get_next_line(old_fd);
 	while (line)
 	{
-		args = expand_filename_here_doc(line, ctx);
+		args = expand_filename_here_doc(line, ctx, 1);
 		if (!args)
 			return (perror("minishell"), -1);
 		expanded_line = join_strings(args, 0);
@@ -60,7 +60,22 @@ int	read_and_expand_heredoc(int old_fd, int new_fd, t_context *ctx)
 	return (0);
 }
 
-int	handle_heredoc(char **filename, t_context *ctx)
+int	read_and_without_expand_heredoc(int old_fd, int new_fd)
+{
+	char	*line;
+
+	line = NULL;
+	line = get_next_line(old_fd);
+	while (line)
+	{
+		ft_putstr_fd(line, new_fd);
+		free(line);
+		line = get_next_line(old_fd);
+	}
+	return (0);
+}
+
+int	handle_heredoc(char **filename, t_context *ctx, char *delimiter)
 {
 	int		new_fd;
 	int		old_fd;
@@ -76,7 +91,9 @@ int	handle_heredoc(char **filename, t_context *ctx)
 	old_fd = open(*filename, O_RDONLY);
 	if (old_fd < 0)
 		return (perror("minishell"), -1);
-	if (read_and_expand_heredoc(old_fd, new_fd, ctx) == -1)
+	if (ft_strchr(delimiter, '\'') || ft_strchr(delimiter, '\"'))
+		read_and_without_expand_heredoc(old_fd, new_fd);
+	else if (read_and_expand_heredoc(old_fd, new_fd, ctx) == -1)
 		return (-1);
 	close(old_fd);
 	close(new_fd);
