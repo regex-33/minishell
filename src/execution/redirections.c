@@ -29,7 +29,7 @@ void	reset_redir(t_list *redir_list, int restore)
 	}
 }
 
-int	open_file(char *file_name, t_redir *redir, 
+int	open_file(char *file_name, t_redir *redir, \
 				t_context *ctx, t_list *redir_list)
 {
 	int	fd;
@@ -66,9 +66,6 @@ int	redirect(t_list *redir_list, t_context *ctx)
 	{
 		redir = redir_list->content;
 		files = expand_filename_here_doc(redir->filename, ctx);
-		// if (!files)
-		// 	return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
-		// 		ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);
 		if (!files || count_array(files) > 1)
 			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);

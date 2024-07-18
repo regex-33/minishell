@@ -12,19 +12,6 @@
 
 #include "minishell.h"
 
-int	add_pipe(int pipes[2][2])
-{
-	int	tmp[2];
-
-	if (pipe(tmp) == -1)
-		return (-1);
-	pipes[IN_PIPE][READ] = pipes[OUT_PIPE][READ];
-	pipes[IN_PIPE][WRITE] = pipes[OUT_PIPE][WRITE];
-	pipes[OUT_PIPE][READ] = tmp[READ];
-	pipes[OUT_PIPE][WRITE] = tmp[WRITE];
-	return (0);
-}
-
 int	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_root)
 {
 	if (!tree)
@@ -72,70 +59,62 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 	}
 }
 
+pid_t	run_command(t_btree *tree, t_context *ctx)
+{
+	int			status;
+	t_prexec	pexec;
+	t_cmd		*cmd;
+
+	cmd = tree->data;
+	if (!cmd->cmd_args)
+		return (exit(0), 0);
+	pexec.args = get_expanded_args(cmd, ctx);
+	if (!pexec.args)
+		return (perror("minishell"), exit(1), 0);
+	status = select_buildin_commands(pexec.args, cmd->redir_list, ctx);
+	if (status != -1)
+		return (exit(status), 0);
+	if (redirect(cmd->redir_list, ctx))
+		return (exit(1), 0);
+	reset_redir(cmd->redir_list, 0);
+	if (init_command(&pexec, ctx, pexec.args))
+		return (exit(pexec.err), 0);
+	if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		return (perror("minishell"), exit(1), 0);
+	return (0);
+}
+
 pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 {
 	pid_t		pid;
-	t_cmd		*cmd;
-	t_list		*redir_list;
-	t_prexec	pexec;
-	int			status;
 
 	pid = fork();
 	if (pid < 0)
 		return (perror("minishell"), exit(1), -1);
-	if (pid == 0)
-	{
-		close(pipes[OUT_PIPE][READ]);
-		if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
-			return (close(pipes[OUT_PIPE][WRITE]), exit(1), 0);
-		dup2(pipes[OUT_PIPE][WRITE], STDOUT_FILENO);
-		close(pipes[OUT_PIPE][WRITE]);
-		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
-			close(pipes[IN_PIPE][READ]);
-		if (tree->type == nt_subcmd)
-			redir_list = tree->data;
-		else
-			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (tree->type == nt_subcmd)
-		{
-			if (redirect(redir_list, ctx))
-				return (exit(1), 0);
-			reset_redir(redir_list, 0);
-			exit(__exec(tree->left, ctx));
-		}
-		cmd = tree->data;
-		if (!cmd->cmd_args)
-			return (exit(0), 0);
-		pexec.args = get_expanded_args(cmd, ctx);
-		if (!pexec.args)
-			return (perror("minishell"), exit(1), 0);
-		status = select_buildin_commands(pexec.args, cmd->redir_list, ctx);
-		if (status != -1)
-			return (exit(status), 0);
-		if (redirect(redir_list, ctx))
-			return (exit(1), 0);
-		reset_redir(redir_list, 0);
-		if (init_command(&pexec, ctx, pexec.args))
-			return (exit(pexec.err), 0);
-		if (execve(pexec.cmd_name, pexec.args, ctx->env))
-			return (perror("minishell"), exit(1), 0);
-	}
-	else
-	{
-		if (pipes[IN_PIPE][READ] != STDIN_FILENO)
-			close(pipes[IN_PIPE][READ]);
+	if (pid != 0 && pipes[IN_PIPE][READ] != STDIN_FILENO)
+		close(pipes[IN_PIPE][READ]);
+	else if (pid != 0)
 		return (close(pipes[OUT_PIPE][WRITE]), pid);
+	close(pipes[OUT_PIPE][READ]);
+	if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
+		return (close(pipes[OUT_PIPE][WRITE]), exit(1), 0);
+	dup2(pipes[OUT_PIPE][WRITE], STDOUT_FILENO);
+	close(pipes[OUT_PIPE][WRITE]);
+	if (pipes[IN_PIPE][READ] != STDIN_FILENO)
+		close(pipes[IN_PIPE][READ]);
+	if (tree->type == nt_subcmd)
+	{
+		if (redirect(tree->data, ctx))
+			return (exit(1), 0);
+		reset_redir(tree->data, 0);
+		exit(__exec(tree->left, ctx));
 	}
-	return (-1);
+	return (run_command(tree, ctx));
 }
 
 pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 {
 	pid_t		pid;
-	t_cmd		*cmd;
-	t_list		*redir_list;
-	t_prexec	pexec;
-	int			status;
 
 	pid = fork();
 	if (pid < 0)
@@ -146,33 +125,13 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 			return (close(fd[READ]), exit(1), 0);
 		close(fd[READ]);
 		if (tree->type == nt_subcmd)
-			redir_list = tree->data;
-		else
-			redir_list = ((t_cmd *)tree->data)->redir_list;
-		if (tree->type == nt_subcmd)
 		{
-			if (redirect(redir_list, ctx))
+			if (redirect(tree->data, ctx))
 				return (exit(1), 0);
+			reset_redir(tree->data, 0);
 			exit(__exec(tree->left, ctx));
 		}
-		cmd = tree->data;
-		if (!cmd->cmd_args)
-			return (exit(0), 0);
-		pexec.args = get_expanded_args(cmd, ctx);
-		if (!pexec.args)
-			return (perror("minishell"), exit(1), 0);
-		status = select_buildin_commands(pexec.args, cmd->redir_list, ctx);
-		if (status != -1)
-			return (exit(status), 0);
-		if (redirect(redir_list, ctx))
-			return (exit(1), 0);
-		reset_redir(redir_list, 0);
-		if (init_command(&pexec, ctx, pexec.args))
-			return (exit(pexec.err), 0);
-		if (execve(pexec.cmd_name, pexec.args, ctx->env))
-			return (perror("minishell"), exit(1), 0);
+		return (run_command(tree, ctx));
 	}
-	else
-		return (close(fd[READ]), pid);
-	return (-1);
+	return (close(fd[READ]), pid);
 }
