@@ -70,8 +70,8 @@ char	*extract_and_get_value(char *temp, int *i, t_expanding *expanding)
 	else
 		value = NULL;
 	if (variable && value)
-		return (value);
-	return (NULL);
+		return (free(variable), value);
+	return (free(variable), NULL);
 }
 
 int	handle_special_cases(t_list **list, t_expanding *expanding, char *value)

@@ -60,8 +60,8 @@ int	move_temp_list_to_list(t_list **list, t_list **temp)
 	char	*str;
 	t_list	*head;
 
-	head = *temp;
 	merge_sort_linkedlist(temp);
+	head = *temp;
 	while (*temp != NULL)
 	{
 		str = ft_strdup((*temp)->content);

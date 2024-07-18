@@ -109,3 +109,16 @@ void	merge_sort(char **arr, int left, int right)
 		merge(arr, left, mid, right);
 	}
 }
+
+void	print_linked_list(t_list *head)
+{
+	t_list	*current;
+
+	current = head;
+	ft_printf("\nLinked List: \n");
+	while (current != NULL)
+	{
+		ft_printf("str: %s\n", (char *)(current->content));
+		current = current->next;
+	}
+}

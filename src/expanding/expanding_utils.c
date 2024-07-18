@@ -12,19 +12,6 @@
 
 #include "minishell.h"
 
-void	print_linked_list(t_list *head)
-{
-	t_list	*current;
-
-	current = head;
-	ft_printf("\nLinked List: \n");
-	while (current != NULL)
-	{
-		ft_printf("str: %s\n", (char *)(current->content));
-		current = current->next;
-	}
-}
-
 void	free_linked_list(t_list *head)
 {
 	t_list	*current;
@@ -38,7 +25,6 @@ void	free_linked_list(t_list *head)
 		free(current);
 		current = next;
 	}
-	head = NULL;
 }
 
 bool	has_trailing_spaces(const char *str)
@@ -55,4 +41,49 @@ bool	has_trailing_spaces(const char *str)
 	while (i >= 0 && (str[i] == ' ' || str[i] == '\t'))
 		i--;
 	return (i < len - 1);
+}
+
+int	handle_double_quotes(t_expanding *expanding)
+{
+	if (expanding->in_quotes)
+		expanding->quote = '\0';
+	else
+	{
+		expanding->quote = '"';
+		expanding->join = ft_strjoin_free(expanding->join, "");
+		if (!expanding->join)
+			return (1);
+	}
+	expanding->in_quotes = !expanding->in_quotes;
+	return (0);
+}
+
+int	handle_single_quotes(t_expanding *expanding)
+{
+	if (expanding->in_single_quotes)
+		expanding->quote = '\0';
+	else
+	{
+		expanding->quote = '\'';
+		expanding->join = ft_strjoin_free(expanding->join, "");
+		if (!expanding->join)
+			return (1);
+	}
+	expanding->in_single_quotes = !expanding->in_single_quotes;
+	return (0);
+}
+
+int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
+{
+	int	result;
+
+	result = 0;
+	if (c == '"' && !expanding->in_single_quotes)
+		result = handle_double_quotes(expanding);
+	else if (c == '\'' && !expanding->in_quotes)
+		result = handle_single_quotes(expanding);
+	if (result)
+		return (1);
+	(*i)++;
+	return (0);
 }
