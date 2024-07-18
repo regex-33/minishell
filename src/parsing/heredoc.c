@@ -12,11 +12,6 @@
 
 #include "minishell.h"
 
-# define SUFF_LEN 32
-# define BASE_HERE_FILENAME "/tmp/minsh-"
-# define HERE_PROMPT "heredoc> "
-# define HERE_MAX_RETRY 5
-
 char	*random_filename(void)
 {
 	unsigned char	filename[SUFF_LEN + 1];

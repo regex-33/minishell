@@ -39,6 +39,11 @@
 # define ANSI_COLOR_CYAN "\x1b[36m"
 # define ANSI_COLOR_RESET "\x1b[0m"
 
+# define SUFF_LEN 32
+# define BASE_HERE_FILENAME "/tmp/minsh-"
+# define HERE_PROMPT "heredoc> "
+# define HERE_MAX_RETRY 5
+
 # define CUSTOM_COLOR_BOLD_BLUE 1000
 # define CUSTOM_COLOR_BOLD_CYAN 1001
 
