@@ -114,11 +114,11 @@ int	read_heredoc(char *limiter, int fd)
 	limiter_len = ft_strlen(limiter);
 	heredoc_pid = fork_heredoc(limiter, limiter_len, fd);
 	if (heredoc_pid < 0)
-		return (-1);
+		return (free(limiter), -1);
 	waitpid(heredoc_pid, &status, 0);
 	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (1);
+		return (free(limiter), WEXITSTATUS(status));
+	return (free(limiter), 1);
 }
 
 int	new_heredoc(t_redir *redir)
