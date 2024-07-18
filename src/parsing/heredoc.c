@@ -54,6 +54,7 @@ char	*skip_quotes_alloc(char *temp)
 			if (temp[i] == '\'')
 				in_single_quotes = !in_single_quotes;
 			i++;
+			continue;
 		}
 		char_str = ft_strndup(temp + i, 1);
 		if (!char_str)

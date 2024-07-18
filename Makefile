@@ -69,7 +69,7 @@ endif
 # SOURCES
 BUILTIN_SOURCES = main.c builtin_utils.c environment.c ft_cd_etc.c ft_change_dir.c ft_unset.c ft_pwd_and_env.c ft_exit.c ft_export.c ft_export_etc.c ft_echo.c 
 PARSING_SOURCES = util_funcs.c lexer.c real_parser.c binary_tree.c parse_utils.c parse_utils2.c redir_utils.c heredoc.c #exec.c
-EXECUTION_SOURCES = utils.c pipes.c redirections.c exec.c etc_functions.c execut_cmd.c init_command.c #parse_command.c
+EXECUTION_SOURCES = utils.c pipes.c pipes_utils.c redirections.c exec.c etc_functions.c execut_cmd.c init_command.c #parse_command.c
 EXPANDING_SOURCES = heredoc_expanding.c expanding.c expanding_utils.c linked_list_mereg.c array_mereg.c single_duble_dollar.c asterisk.c init_helps.c
 SIGNALS_SOURCES = signals.c
 
