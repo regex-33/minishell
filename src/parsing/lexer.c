@@ -12,7 +12,8 @@
 
 #include "minishell.h"
 
-int	get_token_length(char *line, t_token *token) {
+int	get_token_length(char *line, t_token *token)
+{
 	if (token->type == tok_redir)
 	{
 		token->len = match_pattern(line, O_DIGITS, "<>") + 1;
@@ -20,7 +21,8 @@ int	get_token_length(char *line, t_token *token) {
 			token->len++;
 	}
 	else if (token->type == tok_op_or || token->type == tok_op_and)
-		return (2); else if (token->type == tok_literal)
+		return (2);
+	else if (token->type == tok_literal)
 		token->len = wordlen(line);
 	else
 		return (1);
@@ -71,10 +73,21 @@ t_token	*gettoken(char *line, int *index)
 	return (token);
 }
 
+int	validate_token(t_token *token, char current_char)
+{
+	if (!token)
+		return (perror("minishell"), 0);
+	if (token->type == tok_undefined || token->len < 1)
+	{
+		free(token);
+		return (panic("minishell", PERR_NEAR, current_char), 0);
+	}
+	return (1);
+}
+
 t_list	*lexer(char *line)
 {
 	t_token	*token;
-	t_list	*node;
 	t_list	*tokens;
 	int		i;
 
@@ -90,15 +103,11 @@ t_list	*lexer(char *line)
 			continue ;
 		}
 		token = gettoken(line + i, &i);
-		if (!token)
-			return (perror("minishell"), ft_lstclear_libft(&tokens, free), NULL); // malloc error
-		if (token->type == tok_undefined || token->len < 1)
-			return (free(token), panic("minishell", PERR_NEAR, line[i]), \
-				ft_lstclear_libft(&tokens, free), NULL);
-		node = ft_lstnew(token);
-		if (!node)
-			return (perror("minishell"), free(token), ft_lstclear_libft(&tokens, free), NULL); // malloc error
-		ft_lstadd_back_libft(&tokens, node);
+		if (!validate_token(token, line[i]))
+			return (ft_lstclear_libft(&tokens, free), NULL);
+		if (!append_token(&tokens, token))
+			return (perror("minishell"), free(token), \
+					ft_lstclear_libft(&tokens, free), NULL);
 	}
 	return (tokens);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipes.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/18 09:19:30 by bchanaa           #+#    #+#             */
+/*   Updated: 2024/07/18 09:19:31 by bchanaa          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	add_pipe(int pipes[2][2])
@@ -13,7 +25,7 @@ int	add_pipe(int pipes[2][2])
 	return (0);
 }
 
-int exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_root)
+int	exec_pipe(t_btree *tree, t_context *ctx, int pipes[2][2], int is_root)
 {
 	if (!tree)
 		return (0);
@@ -37,12 +49,13 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 {
 	t_list	*redir_list;
 	pid_t	pid;
+	int		status;
 
 	redir_list = tree->data;
 	pid = fork();
 	if (pid < 0)
 		return (perror("minishell"), 1);
-	if (pid == 0) // CHILD
+	if (pid == 0)
 	{
 		if (redirect(redir_list, ctx))
 			return (exit(1), 0);
@@ -50,23 +63,14 @@ int	exec_sub(t_btree *tree, t_context *ctx)
 	}
 	else
 	{
-		int status;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
-		{
-			ft_printf("subcmd status: %d\n", (WEXITSTATUS(status)));
-			return WEXITSTATUS(status);
-		}
-			
+			return (WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
-		{
-			ft_printf("subcmd status signaled: %d\n", (128 + WTERMSIG(status)));
 			return (128 + WTERMSIG(status));
-		}
 		return (1);
 	}
 }
-
 
 pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 {
@@ -166,9 +170,7 @@ pid_t	exec_last_piped_cmd(t_btree *tree, t_context *ctx, int fd[2])
 		if (init_command(&pexec, ctx, pexec.args))
 			return (exit(pexec.err), 0);
 		if (execve(pexec.cmd_name, pexec.args, ctx->env))
-		{
 			return (perror("minishell"), exit(1), 0);
-		}
 	}
 	else
 		return (close(fd[READ]), pid);

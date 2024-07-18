@@ -94,6 +94,7 @@ int	main(void)
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
+	//signal(SIGINT, handle_interrupt);
 	signal(SIGQUIT, handle_quit);
 	get_state(ON_PROMPT, SET_STATE);
 	while (1)

@@ -37,6 +37,14 @@
 // }				t_parsed_command;
 
 t_list			*lexer(char *line);
+int				append_token(t_list **lst, t_token *token);
+int	panic(char *prog_name, int err, char c);
+t_token	*next_token(t_list *token_list, int flags);
+int	expect(t_token_type type, t_list *token_list);
+int	is_operator(t_token *token);
+int	get_prec(t_token *token);
+t_node_type	get_nt(t_token *token);
+int	parse_redir(t_list *tokens, t_list **redir_list);
 
 int	__exec(t_btree *tree, t_context *ctx); // i changed the prototype
 int				panic(char *prog_name, int err, char c);

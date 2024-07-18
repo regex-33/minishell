@@ -12,75 +12,57 @@
 
 #include "minishell.h"
 
-int	getredir_fd(char *str, int len)
+t_node_type	get_nt(t_token *token)
 {
-	int		fd;
-	char	tmp;
-
-	if (str[0] == '<' || str[0] == '>')
-		return (str[0] == '>');
-	tmp = str[len];
-	if (len - 1 > 10 || 
-		(len - 1 == 10 && ft_strncmp(str, "2147483647", 10) > 0))
-		return (-1);
-	str[len] = 0;
-	fd = ft_atoi(str);
-	str[len] = tmp;
-	return (fd);
+	if (!token)
+		return (nt_undefined);
+	if (token->type == tok_redir)
+		return (nt_io_redir);
+	if (token->type == tok_pipe)
+		return (nt_pipe);
+	if (token->type == tok_literal)
+		return (nt_simplecmd);
+	if (token->type == tok_op_or)
+		return (nt_or_if);
+	if (token->type == tok_op_and)
+		return (nt_and_if);
+	return (nt_undefined);
 }
 
-t_redir_type	getredir_type(char *str, int len)
-{
-	int				i;
-	t_redir_type	type;
-
-	i = 0;
-	while (ft_isdigit(str[i]))
-		i++;
-	if (!str[i])
-		return (REDIR_APPEND);
-	if (str[i] == '>')
-		type = REDIR_OUT;
-	else
-		type = REDIR_IN;
-	if (len - i > 1)
-		type += str[i] == str[i + 1];
-	return (type);
-}
-
-t_redir	*new_redir(t_token *redir_token, t_token *file_token)
+int	parse_redir(t_list *tokens, t_list **redir_list)
 {
 	t_redir	*redir;
-	char	*str;
+	t_token	*token;
+	t_token	*file_token;
+	t_list	*node;
 
-	redir = malloc(sizeof(t_redir));
-	if (!redir || !redir_token || !file_token)
-		return (free(redir), NULL);
-	redir->filename = NULL;
-	redir->delimiter = NULL;
-	redir->bak_fd = -1;
-	redir->fd = getredir_fd(redir_token->value, redir_token->len);
-	redir->type = getredir_type(redir_token->value, redir_token->len);
-	str = ft_substr(file_token->value, 0, file_token->len);
-	if (!str)
-		return (free(redir), NULL);
-	if (redir->type == REDIR_HERE)
-		redir->delimiter = str;
-	else
-		redir->filename = str;
-	return (redir);
-}
-
-void	free_redir(void  *p_redir)
-{
-	t_redir	*redir;
-
-	redir = (t_redir *)p_redir;
+	token = next_token(tokens, 0);
+	file_token = next_token(tokens, CONSUME_TOK);
+	if (!file_token || file_token->type != tok_literal)
+		return (ft_lstclear_libft(redir_list, free_redir), \
+				panic("minishell", PERR_EXP_TOK, 0), 1);
+	redir = new_redir(token, file_token);
 	if (!redir)
-		return ;
-	free(redir->filename);
-	free(redir->delimiter);
-	free(redir);
+		return (ft_lstclear_libft(redir_list, free_redir), \
+				perror("minishell"), 1);
+	node = ft_lstnew(redir);
+	if (!node)
+		return (ft_lstclear_libft(redir_list, free_redir), \
+				perror("minishell"), 1);
+	ft_lstadd_back_libft(redir_list, node);
+	next_token(tokens, CONSUME_TOK);
+	return (0);
+}
+
+int	append_token(t_list **lst, t_token *token)
+{
+	t_list	*node;
+
+	node = ft_lstnew(token);
+	if (!node)
+		return (0);
+	ft_lstadd_back_libft(lst, node);
+	return (1);
 }
 
 t_cmd	*new_cmd(t_list *cmd_args, t_list *redir_list)
@@ -105,11 +87,3 @@ void	free_cmd(t_cmd *cmd)
 		ft_lstclear_libft(&cmd->redir_list, free_redir);
 	free(cmd);
 }
-
-// int	set_redir_attrs(t_redir *redir, t_token *token)
-// {
-// 	redir->fd = getredir_fd(token->value, token->len);
-// 	redir->type = getredir_type(token->value, token->len);
-// 	if (redir->type == REDIR_HERE)
-// 
-// }
