@@ -36,7 +36,7 @@ char	*random_filename(void)
 	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
 }
 
-char *skip_quotes_alloc(char *temp)
+char	*skip_quotes_alloc(char *temp)
 {
 	char	*new_str = NULL;
 	int		i;
@@ -67,38 +67,6 @@ char *skip_quotes_alloc(char *temp)
 	return (new_str);
 }
 
-// pid_t	fork_heredoc(char *limiter, size_t lim_len, int fd)
-// {
-// 	pid_t	pid;
-// 	char	*line;
-
-// 	pid = fork();
-// 	if (pid < 0)
-// 		return (1);
-// 	if (pid == 0)
-// 	{
-// 		signal(SIGINT, SIG_DFL);
-// 		ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
-// 		line = get_next_line(STDIN_FILENO);
-// 		while (line)
-// 		{
-// 			if (lim_len == ft_strlen(line) - 1 && 
-// 				!ft_strncmp(line, limiter, lim_len))
-// 				return (free(line), get_next_line(INVALID_FD), close(fd), exit(0), 0);
-// 			ft_putstr_fd(HERE_PROMPT, STDOUT_FILENO);
-// 			if (write(fd, line, ft_strlen(line)) < 0)
-// 				return (free(line), get_next_line(INVALID_FD), close(fd), exit(1), 0);
-// 			free(line);
-// 			line = get_next_line(STDIN_FILENO);
-// 		}
-// 		close(fd);
-// 		ft_putendl_fd("\n", 2);
-// 		ft_putendl_fd("minishell: warning: here document expected delimiter not found", 2);
-// 		get_next_line(INVALID_FD);
-// 		exit(0);
-// 	}
-// 	return (pid);
-// }
 pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 {
 	pid_t	pid;
@@ -121,7 +89,8 @@ pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 			line = readline(HERE_PROMPT);
 		}
 		close(fd);
-		ft_putendl_fd("\nminishell: warning: here document expected delimiter not found", 2);
+		ft_putendl_fd("\nminishell: warning: here document \
+						expected delimiter not found", 2);
 		exit(0);
 	}
 	return (pid);
@@ -134,10 +103,12 @@ int	read_heredoc(char *limiter, int fd)
 	pid_t	heredoc_pid;
 
 	if (!limiter)
-		return (ft_putendl_fd("minishell: invalid here document delimiter", 1), -1);
+		return (ft_putendl_fd("minishell: invalid here document delimiter", 1) \
+				, -1);
 	limiter = skip_quotes_alloc(limiter);
 	if (!limiter)
-		return (ft_putendl_fd("minishell: invalid here document delimiter", 1), -1);
+		return (ft_putendl_fd("minishell: invalid here document delimiter", 1) \
+				, -1);
 	limiter_len = ft_strlen(limiter);
 	heredoc_pid = fork_heredoc(limiter, limiter_len, fd);
 	if (heredoc_pid < 0)
@@ -193,7 +164,7 @@ int	prompt_heredoc(t_btree *tree)
 			redir_list = tree->data;
 		else
 			redir_list = ((t_cmd *)tree->data)->redir_list;
-		while(redir_list)
+		while (redir_list)
 		{
 			redir = redir_list->content;
 			if (redir->type == REDIR_HERE && new_heredoc(redir) < 0)
@@ -203,15 +174,3 @@ int	prompt_heredoc(t_btree *tree)
 	}
 	return (0);
 }
-
-// int main(int ac, char **av)
-// {
-// 	t_redir	redir;
-// 	char	*filename;
-// 
-// 	redir.delimiter = av[1];
-// 	filename = heredoc(&redir);
-// 	if (!filename)
-// 		ft_printf("ERROR HEREDOC\n");
-// 	return (0);
-// }

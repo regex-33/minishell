@@ -47,7 +47,7 @@ int		handle_heredoc(char **filename, t_context *ctx);
 /*          redirections    */
 
 void	reset_redir(t_list *redir_list, int restore);
-int		open_file(t_redir *redir, t_context *ctx, t_list *redir_list);
+int		open_file(char *file_name, t_redir *redir, t_context *ctx, t_list *redir_list);
 int		redirect(t_list *redir_list, t_context *ctx);
 
 /*  init command */

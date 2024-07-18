@@ -29,29 +29,30 @@ void	reset_redir(t_list *redir_list, int restore)
 	}
 }
 
-int	open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
+int	open_file(char *file_name, t_redir *redir, 
+				t_context *ctx, t_list *redir_list)
 {
 	int	fd;
 
 	fd = 1;
 	if (redir->type == REDIR_IN)
-		fd = open(redir->filename, O_RDONLY);
+		fd = open(file_name, O_RDONLY);
 	else if (redir->type == REDIR_OUT)
-		fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (redir->type == REDIR_APPEND)
-		fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		fd = open(file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (redir->type == REDIR_HERE)
 	{
-		if (handle_heredoc(&redir->filename, ctx))
+		if (handle_heredoc(&file_name, ctx))
 			return (reset_redir(redir_list, 1), -1);
-		fd = open(redir->filename, O_RDONLY);
+		fd = open(file_name, O_RDONLY);
 		if (fd < 0)
 			return (reset_redir(redir_list, 1), -1);
-		unlink(redir->filename);
+		unlink(file_name);
 	}
 	if (fd < 0)
 		return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
-			perror(redir->filename), -1);
+			perror(file_name), -1);
 	return (fd);
 }
 
@@ -65,15 +66,16 @@ int	redirect(t_list *redir_list, t_context *ctx)
 	{
 		redir = redir_list->content;
 		files = expand_filename_here_doc(redir->filename, ctx);
-		if (!files)
-			return (reset_redir(redir_list, 1), perror("minishell"), 1);
-		if (count_array(files) > 1)
+		// if (!files)
+		// 	return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
+		// 		ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);
+		if (!files || count_array(files) > 1)
 			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
 				ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);
-		free_array(files);
-		fd = open_file(redir, ctx, redir_list);
+		fd = open_file(files[0], redir, ctx, redir_list);
 		if (fd < 0)
 			return (1);
+		free_array(files);
 		redir->bak_fd = dup(redir->fd);
 		if (redir->bak_fd < 0)
 			return (reset_redir(redir_list, 1), print_fd_err(redir->fd), 1);
