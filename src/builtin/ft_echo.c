@@ -1,6 +1,16 @@
-#include "../../inc/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:33:22 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:33:23 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-/* don't forget to free the memory if join is failed */
+#include "../../inc/minishell.h"
 
 int	check_arguments(char c, int *no_newline, int *index, int i)
 {
@@ -9,15 +19,15 @@ int	check_arguments(char c, int *no_newline, int *index, int i)
 	else if (c != 'n')
 	{
 		*index = i;
-		return 0;
+		return (0);
 	}
-	return 1;
+	return (1);
 }
 
 void	check_args(char **args, int *dash, int *no_newline, int *index)
 {
-	int		i;
-	int		j;
+	int	i;
+	int	j;
 
 	i = 1;
 	j = 1;
@@ -45,12 +55,15 @@ void	check_args(char **args, int *dash, int *no_newline, int *index)
 
 int	ft_echo(char **args, int fd)
 {
-	char	*str = NULL;
-	int		dash = 0;
+	char	*str;
+	int		dash;
 	int		index;
-	int		no_newline = 0;
+	int		no_newline;
 
- 	if (!args[1])
+	str = NULL;
+	dash = 0;
+	no_newline = 0;
+	if (!args[1])
 		return (ft_putchar_fd('\n', fd), 0);
 	check_args(args, &dash, &no_newline, &index);
 	if (dash && no_newline)
@@ -60,7 +73,7 @@ int	ft_echo(char **args, int fd)
 	if (!str)
 	{
 		if (!args[index])
-			return 0;
+			return (0);
 		return (free(str), perror("minishell"), 1);
 	}
 	ft_putstr_fd(str, fd);

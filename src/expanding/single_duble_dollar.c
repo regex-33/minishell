@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   single_duble_dollar.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:47:05 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:47:07 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	is_valid_chars(char c)
@@ -51,52 +63,30 @@ char	*extract_dollar(const char *str)
 	return (substring);
 }
 
-bool	hasTrailingSpaces(const char *str)
-{
-	int	len;
-	int	i;
-
-	if (!str)
-		return (false);
-	len = strlen(str);
-	if (len == 0)
-		return (false);
-	i = len - 1;
-	while (i >= 0 && (str[i] == ' ' || str[i] == '\t'))
-		i--;
-	return (i < len - 1);
-}
-
 int	split_and_add_to_list(t_list **list, t_expanding *expanding, char *value)
 {
 	char	**value_split;
-	t_list *new_node;
 	int		index;
-	int space;
+	int		space;
 
-	value_split = NULL;
 	index = 0;
 	expanding->join = ft_strjoin_free(expanding->join, value);
-	if (expanding->join == NULL)
-		return (free(value), false);
 	value_split = ft_split(expanding->join, ' ');
-	if (!value_split)
+	if (!expanding->join || !value_split)
 		return (free(value), false);
-	space = hasTrailingSpaces(value);
+	space = has_trailing_spaces(value);
 	while (value_split[index])
 	{
 		if (!space && value_split[index + 1] == NULL)
 		{
 			expanding->join = ft_strdup(value_split[index]);
 			if (expanding->join == NULL)
-				return (free_array(value_split) ,false);
+				return (free_array(value_split), false);
 			index++;
 			break ;
 		}
-		new_node = ft_lstnew(strdup(value_split[index]));
-		if (!new_node)
-			return (free_array(value_split) ,false);
-		ft_lstadd_back_libft(list, new_node);
+		if (!add_to_list(list, value_split[index]))
+			return (free_array(value_split), false);
 		index++;
 	}
 	return (free_array(value_split), true);

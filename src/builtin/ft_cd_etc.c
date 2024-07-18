@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_cd_etc.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:30:10 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:30:12 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	is_directory(const char *path)
@@ -8,7 +20,7 @@ int	is_directory(const char *path)
 	return (S_ISDIR(path_stat.st_mode));
 }
 
-int check_permission(const char *path)
+int	check_permission(const char *path)
 {
 	struct stat	path_stat;
 
@@ -16,7 +28,7 @@ int check_permission(const char *path)
 	return (path_stat.st_mode & S_IXUSR);
 }
 
-int check_existence(const char *path)
+int	check_existence(const char *path)
 {
 	struct stat	path_stat;
 

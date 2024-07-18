@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:30:26 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:30:27 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/minishell.h"
 
 int	handle_plus(char **env, char *str, int name_len, int *env_count_local)
@@ -80,52 +92,18 @@ int	add_new_variable(char **variable, char ***env_ptr, int env_count, int index)
 	return (1);
 }
 
-
-
-int	update_existing_variable(char **variable, char ***env_ptr, int *env_count,
-		int add_to_value)
-{
-	char	**env;
-	char	*str;
-	int		count;
-	int		result;
-
-	env = *env_ptr;
-	str = variable[*env_count];
-	count = 0;
-	add_to_value = parse_existing_variable(str, 1);
-	if (add_to_value == -1)
-		return (-1);
-	if (add_to_value == 1)
-		result = handle_plus(env, str, (ft_strchr(str, '+') - str), &count);
-	else
-		result = handle_equal(env, str, (ft_strchr(str, '=') - str), &count);
-	if (result == -1)
-		return (perror("minishell"), -1);
-	else if (result == 1)
-	{
-		*env_ptr = env;
-		*env_count = count;
-		return (1);
-	}
-	*env_count = count;
-	return (0);
-}
-
+/*
 int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
 {
 	int	j;
 	int	result;
 	int	env_count;
+	int	result;
 
 	j = 1;
 	env_count = 1;
 	if (variable[1] == NULL)
-	{
-		if (!ft_sort_export_cmd(*env_ptr, fd, *unset_path))
-			return (1);
-		return (0);
-	}
+		return (ft_handle_no_variables(env_ptr, fd, *unset_path));
 	while (variable[j])
 	{
 		env_count = j;
@@ -137,7 +115,7 @@ int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
 			if (parse_existing_variable(variable[env_count], 0) == -1)
 			{
 				j++;
-				continue;
+				continue ;
 			}
 			return (1);
 		}
@@ -147,6 +125,53 @@ int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
 			return (1);
 		env_count++;
 		j++;
+	}
+	return (0);
+}*/
+
+int	process_variable(char **variable, char ***env_ptr, int *unset_path,
+		t_norm *norm)
+{
+	int	result;
+
+	if (!check_variable_name(variable[norm->j], unset_path))
+		return (1);
+	result = update_existing_variable(variable, env_ptr, &norm->env_count, 0);
+	if (result == -1)
+	{
+		if (parse_existing_variable(variable[norm->env_count], 0) == -1)
+			return (-2);
+		return (1);
+	}
+	else if (result == 0)
+		result = add_new_variable(variable, env_ptr, norm->env_count, norm->j);
+	if (result == -1)
+		return (1);
+	norm->env_count++;
+	return (0);
+}
+
+int	ft_export(char **variable, char ***env_ptr, int fd, int *unset_path)
+{
+	t_norm	norm;
+	int		result;
+
+	norm.j = 1;
+	norm.env_count = 1;
+	if (variable[1] == NULL)
+		return (ft_handle_no_variables(env_ptr, fd, *unset_path));
+	while (variable[norm.j])
+	{
+		norm.env_count = norm.j;
+		result = process_variable(variable, env_ptr, unset_path, &norm);
+		if (result == 1)
+			return (1);
+		else if (result == -2)
+		{
+			norm.j++;
+			continue ;
+		}
+		norm.j++;
 	}
 	return (0);
 }

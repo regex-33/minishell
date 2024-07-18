@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export_etc.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:30:32 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:30:36 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -54,6 +65,7 @@ void	ft_print(char **variable, int fd, int unset_path)
 		i++;
 	}
 }
+
 int	ft_sort_export_cmd(char **environ_exp, int fd, int unset_path)
 {
 	char	**variable;
@@ -94,8 +106,8 @@ int	check_variable_name(char *variable, int *unset_path)
 		return (perror("minishell"), 0);
 	if (ft_strchr(str, ' '))
 	{
-		if (variable[strlen(str) - 1] == ' ' || variable[strlen(str)
-			- 1] == '\t')
+		if (variable[strlen(str) - 1] == ' ' || \
+			variable[strlen(str) - 1] == '\t')
 			return (ft_putstr_fd("minishell: export: ", 2),
 				ft_putstr_fd(&variable[strlen(str) - 1], 2),
 				ft_putstr_fd(": not a valid identifier\n", 2), free(str), 0);

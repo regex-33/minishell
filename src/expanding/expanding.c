@@ -1,26 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expanding.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:46:38 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:46:39 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int	handle_regular_char(char *temp, char **join, int *i)
-{
-	char	*char_str;
-
-	char_str = ft_strndup(temp + *i, 1);
-	if (!char_str)
-		return 1;
-	*join = ft_strjoin_free(*join, char_str);
-	if (!*join)
-		return (free(char_str), 1);
-	free(char_str);
-	(*i)++;
-	return 0;
-}
-
+/*
 char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 		t_expanding *expanding)
 {
-	char	*variable = NULL;
-	char	*value = NULL;
+	char	*variable;
+	char	*value;
 
+	variable = NULL;
+	value = NULL;
 	variable = extract_dollar(temp + *i);
 	if (variable)
 	{
@@ -37,10 +37,10 @@ char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 				|| ft_strchr(value, '\t')))
 		{
 			if (!split_and_add_to_list(list, expanding, value))
-            {
-                *i += ft_strlen(variable);
+			{
+				*i += ft_strlen(variable);
 				return (free(value), free(variable), NULL);
-            }
+			}
 		}
 		else
 			expanding->join = ft_strjoin_free(expanding->join, value);
@@ -50,20 +50,33 @@ char	*handle_dollar_sign(t_list **list, int *i, char *temp,
 	}
 	return (temp);
 }
+*/
 
-int	init_expanding(t_expanding *expanding, char *temp, t_context *ctx)
+char	*handle_dollar_sign(t_list **list, int *i, char *temp,
+		t_expanding *expanding)
 {
-	if (!temp)
-		return (0);
-	expanding->in_quotes = 0;
-	expanding->in_single_quotes = 0;
-	expanding->have_asterisk = 0;
-	expanding->quote = '\0';
-	expanding->join = NULL;
-	expanding->ctx = ctx;
-	return (1);
+	char	*variable;
+	char	*value;
+
+	variable = extract_dollar(temp + *i);
+	if (variable)
+	{
+		value = extract_and_get_value(temp, i, expanding);
+		if (!value)
+			return (free(variable), NULL);
+		if (!handle_special_cases(list, expanding, value))
+		{
+			*i += ft_strlen(variable);
+			return (free(value), free(variable), NULL);
+		}
+		*i += ft_strlen(variable);
+		free(value);
+		free(variable);
+	}
+	return (temp);
 }
 
+/*
 int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 {
 	if (c == '"' && !expanding->in_single_quotes)
@@ -75,7 +88,7 @@ int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 			expanding->quote = '"';
 			expanding->join = ft_strjoin_free(expanding->join, "");
 			if (!expanding->join)
-				return 1;
+				return (1);
 		}
 		expanding->in_quotes = !expanding->in_quotes;
 	}
@@ -88,14 +101,57 @@ int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
 			expanding->quote = '\'';
 			expanding->join = ft_strjoin_free(expanding->join, "");
 			if (!expanding->join)
-				return 1;
+				return (1);
 		}
 		expanding->in_single_quotes = !expanding->in_single_quotes;
 	}
 	(*i)++;
-	return 0;
+	return (0);
+}*/
+int	handle_double_quotes(t_expanding *expanding)
+{
+	if (expanding->in_quotes)
+		expanding->quote = '\0';
+	else
+	{
+		expanding->quote = '"';
+		expanding->join = ft_strjoin_free(expanding->join, "");
+		if (!expanding->join)
+			return (1);
+	}
+	expanding->in_quotes = !expanding->in_quotes;
+	return (0);
 }
 
+int	handle_single_quotes(t_expanding *expanding)
+{
+	if (expanding->in_single_quotes)
+		expanding->quote = '\0';
+	else
+	{
+		expanding->quote = '\'';
+		expanding->join = ft_strjoin_free(expanding->join, "");
+		if (!expanding->join)
+			return (1);
+	}
+	expanding->in_single_quotes = !expanding->in_single_quotes;
+	return (0);
+}
+
+int	handle_quotes_asterisk(t_expanding *expanding, char c, int *i)
+{
+	int	result;
+
+	result = 0;
+	if (c == '"' && !expanding->in_single_quotes)
+		result = handle_double_quotes(expanding);
+	else if (c == '\'' && !expanding->in_quotes)
+		result = handle_single_quotes(expanding);
+	if (result)
+		return (1);
+	(*i)++;
+	return (0);
+}
 
 t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
 {
@@ -108,7 +164,8 @@ t_list	**expand_arg_list(t_list **list, char *temp, t_context *ctx)
 		return (NULL);
 	while (temp[i])
 	{
-		if (temp[i] == '*' && expanding.in_quotes == 0 && expanding.in_single_quotes == 0)
+		if (temp[i] == '*' && expanding.in_quotes == 0
+			&& expanding.in_single_quotes == 0)
 			expanding.have_asterisk = 1;
 		if ((temp[i] == '"' && !expanding.in_single_quotes) || (temp[i] == '\''
 				&& !expanding.in_quotes))

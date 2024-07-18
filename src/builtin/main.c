@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:29:51 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:29:52 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/minishell.h"
 
 int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
@@ -10,7 +22,7 @@ int	select_buildin_commands(char **args, t_list *redir_list, t_context *ctx)
 	if (redirect(redir_list, ctx))
 		return (1);
 	if (!ft_strcmp(args[0], "cd"))
-		status = ft_change_dir(++args, ctx); // return status code
+		status = ft_change_dir(++args, ctx);
 	else if (!ft_strcmp(args[0], "pwd"))
 		status = ft_pwd(1, ctx);
 	else if (!ft_strcmp(args[0], "exit"))
@@ -35,21 +47,16 @@ char	*get_prompt(char *str, char *suffix)
 	if (!str)
 		return (NULL);
 	size = ft_strlen(str) + 1;
-	//	size += ft_strlen(COLOR_KHDER_FATH);
-	//	size += ft_strlen(ANSI_COLOR_RESET);
 	if (suffix)
 		size += ft_strlen(suffix);
 	prompt = ft_calloc(size, sizeof(char));
 	if (!prompt)
 		return (NULL);
-	//	ft_strlcat(prompt, COLOR_KHDER_FATH, size);
 	ft_strlcat(prompt, str, size);
-	//	ft_strlcat(prompt, ANSI_COLOR_RESET, size);
 	if (suffix)
 		ft_strlcat(prompt, suffix, size);
 	return (prompt);
 }
-
 
 int	get_state(int new_state, int flags)
 {
@@ -68,18 +75,14 @@ void	init_terminal(void)
 	if (!isatty(STDIN_FILENO))
 		return ;
 	tcgetattr(STDIN_FILENO, &old_term);
-	//ft_memcpy(&new_term, &old_term, sizeof(struct termios));
 	new_term = old_term;
 	new_term.c_lflag &= ~(ECHOCTL);
 	tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
 }
 
-
-
 int	main(void)
 {
 	char				*line;
-	//char				*pwd;
 	char				*prompt;
 	t_list				*tokens;
 	t_context			ctx;
@@ -87,14 +90,12 @@ int	main(void)
 	struct sigaction	saint;
 
 	if (init_context(&ctx))
-		return 1;
-	//printf("path : %d\n", ctx.unset_path);
+		return (1);
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
 	signal(SIGQUIT, handle_quit);
 	get_state(ON_PROMPT, SET_STATE);
-	//init_terminal();
 	while (1)
 	{
 		get_state(ON_PROMPT, SET_STATE);
@@ -116,18 +117,16 @@ int	main(void)
 		if (!parse_tree)
 		{
 			ft_lstclear_libft(&tokens, free);
-			continue;
+			continue ;
 		}
 		ctx.parse_tree = parse_tree;
 		ctx.tokens = tokens;
 		if (prompt_heredoc(parse_tree) < 0)
-			continue;
-		//ft_printf("----------- EXECUTION ---------\n");
- 		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		clear_btree(parse_tree);	
+			continue ;
+		get_status(__exec(parse_tree, &ctx), SET_STATUS);
+		clear_btree(parse_tree);
 		ft_lstclear_libft(&tokens, free);
 		free(line);
-		//init_terminal();
 	}
 	return (0);
 }

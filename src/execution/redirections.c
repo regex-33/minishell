@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 14:04:27 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 14:04:27 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	reset_redir(t_list *redir_list, int restore)
@@ -17,9 +29,9 @@ void	reset_redir(t_list *redir_list, int restore)
 	}
 }
 
-int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
+int	open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 {
-	int fd;
+	int	fd;
 
 	fd = 1;
 	if (redir->type == REDIR_IN)
@@ -38,7 +50,8 @@ int open_file(t_redir *redir, t_context *ctx, t_list *redir_list)
 		unlink(redir->filename);
 	}
 	if (fd < 0)
-		return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2), perror(redir->filename), -1);
+		return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
+			perror(redir->filename), -1);
 	return (fd);
 }
 
@@ -55,9 +68,8 @@ int	redirect(t_list *redir_list, t_context *ctx)
 		if (!files)
 			return (reset_redir(redir_list, 1), perror("minishell"), 1);
 		if (count_array(files) > 1)
-			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ",
-					STDERR_FILENO), ft_putstr_fd("ambiguous redirect\n",
-					STDERR_FILENO), free_array(files), 1);
+			return (reset_redir(redir_list, 1), ft_putstr_fd("minishell: ", 2),
+				ft_putstr_fd("ambiguous redirect\n", 2), free_array(files), 1);
 		free_array(files);
 		fd = open_file(redir, ctx, redir_list);
 		if (fd < 0)

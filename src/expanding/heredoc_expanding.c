@@ -1,20 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_expanding.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:46:52 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:46:53 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	**expand_filename_here_doc(char *filename, t_context *ctx)
 {
 	char	**files;
 	t_list	*expanding_list;
+	char	**temp;
 
 	files = NULL;
+	temp = NULL;
 	expanding_list = NULL;
 	if (!expand_arg_list(&expanding_list, filename, ctx))
 		return (NULL);
 	if (expanding_list)
 	{
-		files = ft_list_to_array(expanding_list);
+		files = ft_list_to_array(expanding_list, temp, 0);
 		if (!files)
-			return (freeLinkedList(expanding_list), NULL);
-		return (freeLinkedList(expanding_list), files);
+			return (free_linked_list(expanding_list), NULL);
+		return (free_linked_list(expanding_list), files);
 	}
 	return (NULL);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:28:35 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:28:37 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	get_status(int new_status, int flags)
@@ -8,9 +20,6 @@ int	get_status(int new_status, int flags)
 		status = new_status;
 	return (status);
 }
-
-// Set: get_status(your_status, SET_STATUS);
-// Get: get_status(0, 0);
 
 int	is_builtin(char *cmd_name)
 {
@@ -36,7 +45,6 @@ char	**grep_paths(t_context *ctx)
 	char	*path_env;
 	char	**path_dirs;
 
-	// printArray(env);
 	path_env = get_value("PATH", ctx->env);
 	if (!path_env)
 	{
@@ -53,7 +61,6 @@ char	**grep_paths(t_context *ctx)
 				return (perror(COMMAND_NOT_FOUND), NULL);
 		}
 	}
-	// printf("path_env : %s\n", path_env);
 	path_dirs = ft_split(path_env, ':');
 	if (!path_dirs)
 		return (free(path_env), perror(COMMAND_NOT_FOUND), NULL);
@@ -94,14 +101,5 @@ int	init_context(t_context *ctx)
 	ctx->last_pwd = get_value("PWD", ctx->env);
 	if (!ctx->last_pwd)
 		ctx->last_pwd = ft_strdup("");
-	return (0);
-}
-
-int	free_context(t_context *ctx)
-{
-	if (ctx->env)
-		free_array(ctx->env);
-	if (ctx->last_pwd)
-		free(ctx->last_pwd);
 	return (0);
 }

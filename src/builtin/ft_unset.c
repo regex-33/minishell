@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 13:30:48 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 13:30:49 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 int	get_env_count(char **env)
@@ -21,7 +33,6 @@ char	**allocate_new_environ(int env_count)
 	return (new_environ);
 }
 
-
 int	copy_variable_to_new_environment(char *env_var, char **new_environ, int *j)
 {
 	new_environ[*j] = strdup(env_var);
@@ -29,7 +40,7 @@ int	copy_variable_to_new_environment(char *env_var, char **new_environ, int *j)
 	{
 		while (*j > 0)
 			free(new_environ[(*j)--]);
-		return (free(new_environ) ,perror("minishell"), 1);
+		return (free(new_environ), perror("minishell"), 1);
 	}
 	(*j)++;
 	return (0);
@@ -64,6 +75,7 @@ int	copy_env_except_variable(char **env, char **new_environ, char *variable,
 	new_environ[*j] = NULL;
 	return (0);
 }
+
 int	ft_unset(char **variable, char ***env_ptr, int *unset_path)
 {
 	char	**new_environ;

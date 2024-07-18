@@ -1,13 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execut_cmd.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/17 14:04:38 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/17 14:04:39 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-int	is_file(char *path)
-{
-	struct stat	sb;
-
-	if (stat(path, &sb))
-		return (0);
-	return ((sb.st_mode & S_IFMT) != S_IFDIR);
-}
 
 char	*ft_which(char *cmd, char **path_dirs)
 {
@@ -33,71 +36,6 @@ char	*ft_which(char *cmd, char **path_dirs)
 	return (free(tmp), NULL);
 }
 
-void	print_err(char *mid, char *suffix)
-{
-	ft_putstr_fd("minishell: ", 2);
-	if (mid && !suffix)
-		ft_putendl_fd(mid, 2);
-	if (mid && suffix)
-		ft_putstr_fd(mid, 2);
-	if (suffix)
-		ft_putendl_fd(suffix, 2);
-}
-
-int	check_abs_cmd(char *pathname)
-{
-	struct stat	sb;
-
-	if (stat(pathname, &sb))
-	{
-		if (errno == ENOENT)
-			return (print_err(pathname, " : No such file or directory."), 127);
-		if (errno == ENOENT)
-			return (print_err(pathname, " : command not found."), 127);
-		if (errno == EACCES)
-			return (print_err(pathname, " : Permission denied."), 126);
-	}
-	if ((sb.st_mode & S_IFMT) == S_IFDIR)
-		return (print_err(pathname, " : is a directory."), 126);
-	if (access(pathname, X_OK))
-		return (print_err(pathname, " : Permission denied."), 126);
-	return (0);
-}
-
-int	init_command(t_prexec *pexec, t_context *ctx, char **args)
-{
-	char	**path_dirs;
-
-	pexec->err = 0;
-	pexec->cmd_name = NULL;
-	if (!*args)
-		return (1);
-	path_dirs = grep_paths(ctx);
-	if (ft_strchr(args[0], '/'))
-	{
-		pexec->err = check_abs_cmd(args[0]);
-		if (pexec->err)
-			return (free_array(path_dirs), pexec->err);
-		pexec->cmd_name = ft_strdup(args[0]);
-	}
-	else
-	{
-		pexec->cmd_name = ft_which(args[0], path_dirs);
-		if (!pexec->cmd_name)
-		{
-			pexec->err = 127;
-			print_err(args[0], " : command not found");
-		}
-		else if (access(pexec->cmd_name, X_OK))
-		{
-			pexec->err = 126;
-			print_err(pexec->cmd_name, " : Permission denied.");
-		}
-	}
-	pexec->args = args;
-	return (free_array(path_dirs), pexec->err);
-}
-
 char	**get_cmd_args(char **cmd_args, char **path_dirs)
 {
 	char	*cmd_pathname;
@@ -120,22 +58,23 @@ char	**get_cmd_args(char **cmd_args, char **path_dirs)
 	return (cmd_args);
 }
 
-
-void	print_fd_err(int fd)
+int	handle_child_process(t_list *redir_list, t_context *ctx, char **args)
 {
-	ft_putstr_fd("minishell: ", 2);
-	if (fd < 0)
-		ft_putstr_fd("file descriptor out of range", 2);
-	else
-		ft_putnbr_fd(fd, 2);
-	ft_putstr_fd(": ", 2);
-	perror(NULL);
+	t_prexec	pexec;
+
+	if (redirect(redir_list, ctx))
+		return (exit(EXIT_FAILURE), 0);
+	reset_redir(redir_list, 0);
+	if (init_command(&pexec, ctx, args))
+		return (exit(pexec.err), 0);
+	if (execve(pexec.cmd_name, pexec.args, ctx->env))
+		return (perror("minishell"), exit(1), 0);
+	return (0);
 }
 
 int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 {
 	pid_t		pid;
-	t_prexec	pexec;
 	int			status;
 
 	status = select_buildin_commands(args, redir_list, ctx);
@@ -145,18 +84,7 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 	if (pid < 0)
 		return (perror("minishell"), 0);
 	if (pid == 0)
-	{
-		//signal(SIGQUIT, SIG_DFL);
-		if (redirect(redir_list, ctx))
-			return (exit(EXIT_FAILURE), 0);
-		reset_redir(redir_list, 0);
-		if (init_command(&pexec, ctx, args))
-			return (exit(pexec.err), 0);
-		if (execve(pexec.cmd_name, pexec.args, ctx->env))
-		{
-			return (perror("minishell"), exit(1), 0);
-		}
-	}
+		handle_child_process(redir_list, ctx, args);
 	else
 	{
 		waitpid(pid, &status, 0);
@@ -168,6 +96,3 @@ int	exec_cmd(t_list *redir_list, char **args, t_context *ctx)
 	}
 	return (1);
 }
-
-// echo * segv when no file on dir/h
-// export
