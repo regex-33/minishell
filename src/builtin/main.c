@@ -122,9 +122,14 @@ int	main(void)
 		ctx.parse_tree = parse_tree;
 		ctx.tokens = tokens;
 		if (prompt_heredoc(parse_tree) < 0)
-			continue ;
-		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		clear_btree(parse_tree);
+		{
+			clear_btree(parse_tree);	
+			ft_lstclear_libft(&tokens, free);
+			continue;
+		}
+		//ft_printf("----------- EXECUTION ---------\n");
+ 		get_status(__exec(parse_tree, &ctx), SET_STATUS);
+		clear_btree(parse_tree);	
 		ft_lstclear_libft(&tokens, free);
 		free(line);
 	}

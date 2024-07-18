@@ -144,11 +144,8 @@ t_btree	*parse_simplecmd(t_list *tokens)
 	token = next_token(tokens, 0);	
 	while (token && (token->type == tok_redir || token->type == tok_literal))
 	{
-		if (token->type == tok_redir)
-		{
-			if (parse_redir(tokens, &cmd->redir_list) != 0)
-				return (free_cmd(cmd), NULL);
-		}
+		if (token->type == tok_redir && parse_redir(tokens, &cmd->redir_list) != 0)
+			return (free_cmd(cmd), NULL);
 		else if (token->type == tok_literal)
 		{
 			next_token(tokens, CONSUME_TOK);
@@ -159,8 +156,6 @@ t_btree	*parse_simplecmd(t_list *tokens)
 		}
 		token = next_token(tokens, 0);
 	}
-//	if (!cmd->cmd_args && !cmd->redir_list)
-//		return (free_cmd(cmd), panic("minishell", PERR_EXP_TOK, 0), NULL);
 	simplecmd_root = new_leaf(nt_simplecmd, cmd);
 	if (!simplecmd_root)
 		return(perror("minishell"), free_cmd(cmd), NULL);
