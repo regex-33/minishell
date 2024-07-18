@@ -36,29 +36,30 @@ char	*random_filename(void)
 	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
 }
 
-char	*skip_quotes_alloc(char *temp)
+char	*skip_quotes_alloc(char *temp, int in_quotes, int in_single_quotes,
+		int i)
 {
-	char	*new_str = NULL;
-	int		i;
-	int 	in_single_quotes = 0;
-	int		in_quotes = 0;
-	char	*char_str = NULL;
+	char	*new_str;
+	char	*char_str;
 
-	i = 0;
+	new_str = NULL;
+	char_str = NULL;
 	while (temp[i])
 	{
-		if ((temp[i] == '"' && !in_single_quotes) || (temp[i] == '\'' && !in_quotes))
+		if ((temp[i] == '"' && !in_single_quotes) || (temp[i] == '\''
+				&& !in_quotes))
 		{
 			if (temp[i] == '"')
 				in_quotes = !in_quotes;
 			if (temp[i] == '\'')
 				in_single_quotes = !in_single_quotes;
 			i++;
+			continue ;
 		}
 		char_str = ft_strndup(temp + i, 1);
 		if (!char_str)
 			return (free(new_str), NULL);
-		new_str = ft_strjoin(new_str, char_str);
+		new_str = ft_strjoin_free(new_str, char_str);
 		if (!new_str)
 			return (free(char_str), NULL);
 		free(char_str);
@@ -90,7 +91,8 @@ pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 		}
 		close(fd);
 		ft_putendl_fd("\nminishell: warning: here document \
-						expected delimiter not found", 2);
+						expected delimiter not found",
+						2);
 		exit(0);
 	}
 	return (pid);
@@ -103,12 +105,12 @@ int	read_heredoc(char *limiter, int fd)
 	pid_t	heredoc_pid;
 
 	if (!limiter)
-		return (ft_putendl_fd("minishell: invalid here document delimiter", 1) \
-				, -1);
-	limiter = skip_quotes_alloc(limiter);
+		return (ft_putendl_fd("minishell: invalid here document delimiter", 1),
+			-1);
+	limiter = skip_quotes_alloc(limiter, 0, 0, 0);
 	if (!limiter)
-		return (ft_putendl_fd("minishell: invalid here document delimiter", 1) \
-				, -1);
+		return (ft_putendl_fd("minishell: invalid here document delimiter", 1),
+			-1);
 	limiter_len = ft_strlen(limiter);
 	heredoc_pid = fork_heredoc(limiter, limiter_len, fd);
 	if (heredoc_pid < 0)
