@@ -82,3 +82,30 @@ void	free_redir(void *p_redir)
 	free(redir->delimiter);
 	free(redir);
 }
+
+char	*skip_quotes_alloc(char *temp)
+{
+	char	*new_str;
+	int		in_quotes;
+	int		in_single_quotes;
+	int		i;
+
+	new_str = NULL;
+	in_quotes = 0;
+	in_single_quotes = 0;
+	i = 0;
+	while (temp[i])
+	{
+		if ((temp[i] == '"' && !in_single_quotes) || (temp[i] == '\''
+				&& !in_quotes))
+		{
+			toggle_quotes(temp[i], &in_quotes, &in_single_quotes);
+			i++;
+			continue ;
+		}
+		if (!process_char(temp, &new_str, i))
+			return (free(new_str), NULL);
+		i++;
+	}
+	return (new_str);
+}

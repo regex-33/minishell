@@ -12,30 +12,7 @@
 
 #include "minishell.h"
 
-char	*random_filename(void)
-{
-	unsigned char	filename[SUFF_LEN + 1];
-	int				fd;
-	int				i;
-	int				r_len;
-
-	fd = open("/dev/random", O_RDONLY);
-	if (fd < 0)
-		return (NULL);
-	r_len = read(fd, filename, SUFF_LEN);
-	if (r_len <= 0)
-		return (NULL);
-	i = 0;
-	filename[r_len] = 0;
-	while (i < r_len)
-	{
-		filename[i] = (filename[i] % 25) + 65;
-		i++;
-	}
-	close(fd);
-	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
-}
-
+/*
 char	*skip_quotes_alloc(char *temp, int in_quotes, int in_single_quotes,
 		int i)
 {
@@ -67,6 +44,31 @@ char	*skip_quotes_alloc(char *temp, int in_quotes, int in_single_quotes,
 	}
 	return (new_str);
 }
+*/
+
+char	*random_filename(void)
+{
+	unsigned char	filename[SUFF_LEN + 1];
+	int				fd;
+	int				i;
+	int				r_len;
+
+	fd = open("/dev/random", O_RDONLY);
+	if (fd < 0)
+		return (NULL);
+	r_len = read(fd, filename, SUFF_LEN);
+	if (r_len <= 0)
+		return (NULL);
+	i = 0;
+	filename[r_len] = 0;
+	while (i < r_len)
+	{
+		filename[i] = (filename[i] % 25) + 65;
+		i++;
+	}
+	close(fd);
+	return (ft_strjoin(BASE_HERE_FILENAME, (char *)filename));
+}
 
 pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 {
@@ -91,8 +93,7 @@ pid_t	fork_heredoc(char *lim, size_t lim_len, int fd)
 		}
 		close(fd);
 		ft_putendl_fd("\nminishell: warning: here document \
-						expected delimiter not found",
-						2);
+						expected delimiter not found", 2);
 		exit(0);
 	}
 	return (pid);
@@ -107,7 +108,7 @@ int	read_heredoc(char *limiter, int fd)
 	if (!limiter)
 		return (ft_putendl_fd("minishell: invalid here document delimiter", 1),
 			-1);
-	limiter = skip_quotes_alloc(limiter, 0, 0, 0);
+	limiter = skip_quotes_alloc(limiter);
 	if (!limiter)
 		return (ft_putendl_fd("minishell: invalid here document delimiter", 1),
 			-1);

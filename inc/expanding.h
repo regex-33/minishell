@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expanding.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/19 09:06:16 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/19 09:06:17 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef EXPANDING_H
 # define EXPANDING_H
 
@@ -52,7 +64,8 @@ void			merge_sort_linkedlist(t_list **head);
 
 /*  expanding */
 
-t_list			**expand_arg_list(t_list **list, char *temp, t_context *ctx, int do_expand);
+t_list			**expand_arg_list(t_list **list, char *temp, t_context *ctx,
+					int do_expand);
 int				handle_regular_char(char *temp, char **join, int *i);
 char			*handle_dollar_sign(t_list **list, int *i, char *temp,
 					t_expanding *expanding);

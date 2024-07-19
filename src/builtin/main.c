@@ -94,7 +94,6 @@ int	main(void)
 	saint.sa_handler = handle_interrupt;
 	sigemptyset(&saint.sa_mask);
 	sigaction(SIGINT, &saint, NULL);
-	//signal(SIGINT, handle_interrupt);
 	signal(SIGQUIT, handle_quit);
 	get_state(ON_PROMPT, SET_STATE);
 	while (1)
@@ -124,13 +123,12 @@ int	main(void)
 		ctx.tokens = tokens;
 		if (prompt_heredoc(parse_tree) < 0)
 		{
-			clear_btree(parse_tree);	
+			clear_btree(parse_tree);
 			ft_lstclear_libft(&tokens, free);
-			continue;
+			continue ;
 		}
-		//ft_printf("----------- EXECUTION ---------\n");
- 		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		clear_btree(parse_tree);	
+		get_status(__exec(parse_tree, &ctx), SET_STATUS);
+		clear_btree(parse_tree);
 		ft_lstclear_libft(&tokens, free);
 		free(line);
 	}

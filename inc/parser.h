@@ -26,8 +26,7 @@
 # define PERR_NEAR 4
 # define PERR_EXP_TOK 5
 
-
-#include "types.h"
+# include "types.h"
 
 // typedef struct	s_parsed_command
 // {
@@ -38,15 +37,15 @@
 
 t_list			*lexer(char *line);
 int				append_token(t_list **lst, t_token *token);
-int	panic(char *prog_name, int err, char c);
-t_token	*next_token(t_list *token_list, int flags);
-int	expect(t_token_type type, t_list *token_list);
-int	is_operator(t_token *token);
-int	get_prec(t_token *token);
-t_node_type	get_nt(t_token *token);
-int	parse_redir(t_list *tokens, t_list **redir_list);
+int				panic(char *prog_name, int err, char c);
+t_token			*next_token(t_list *token_list, int flags);
+int				expect(t_token_type type, t_list *token_list);
+int				is_operator(t_token *token);
+int				get_prec(t_token *token);
+t_node_type		get_nt(t_token *token);
+int				parse_redir(t_list *tokens, t_list **redir_list);
 
-int	__exec(t_btree *tree, t_context *ctx); // i changed the prototype
+int				__exec(t_btree *tree, t_context *ctx);
 int				panic(char *prog_name, int err, char c);
 
 int				prompt_heredoc(t_btree *tree);
@@ -79,5 +78,8 @@ int				match_pattern(char *str, int flags, char *sentinel);
 
 // youssef add this
 char			*random_filename(void);
+int				process_char(char *temp, char **new_str, int i);
+void			toggle_quotes(char c, int *in_quotes, int *in_single_quotes);
+char			*skip_quotes_alloc(char *temp);
 
 #endif

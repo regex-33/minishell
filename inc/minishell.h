@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/19 09:06:00 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/19 09:06:01 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -14,7 +26,6 @@
 # include <fcntl.h>
 # include <math.h>
 # include <readline/history.h>
-# include <readline/readline.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
@@ -72,7 +83,9 @@
 # define MAX_HOSTNAME_LENGTH 256
 # define HOSTNAME_FILE "/proc/sys/kernel/hostname"
 # define COMMAND_NOT_FOUND "COMMAND NOT FOUND"
-# define PWD_ERROR "minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n"
+# define PWD_ERROR "minishell: pwd: error retrieving current \
+	directory: getcwd: cannot access parent \
+	directories: No such file or directory\n"
 
 /*  temp env    */
 

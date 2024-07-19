@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yachtata <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/19 09:04:59 by yachtata          #+#    #+#             */
+/*   Updated: 2024/07/19 09:05:00 by yachtata         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef EXECUTION_H
 # define EXECUTION_H
 
@@ -47,7 +59,8 @@ int		handle_heredoc(char **filename, t_context *ctx, char *delimiter);
 /*          redirections    */
 
 void	reset_redir(t_list *redir_list, int restore);
-int		open_file(char *file_name, t_redir *redir, t_context *ctx, t_list *redir_list);
+int		open_file(char *file_name, t_redir *redir, t_context *ctx,
+			t_list *redir_list);
 int		redirect(t_list *redir_list, t_context *ctx);
 
 /*  init command */

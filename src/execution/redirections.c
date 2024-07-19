@@ -43,7 +43,6 @@ int	open_file(char *file_name, t_redir *redir, \
 		fd = open(file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (redir->type == REDIR_HERE)
 	{
-		printf("1redir delemeter: %s\n", redir->delimiter);
 		if (handle_heredoc(&file_name, ctx, redir->delimiter))
 			return (reset_redir(redir_list, 1), -1);
 		fd = open(file_name, O_RDONLY);

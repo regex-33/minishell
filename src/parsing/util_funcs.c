@@ -66,3 +66,27 @@ size_t	wordlen(char *str)
 		return (0);
 	return (i);
 }
+
+void	toggle_quotes(char c, int *in_quotes, int *in_single_quotes)
+{
+	if (c == '"')
+		*in_quotes = !(*in_quotes);
+	else if (c == '\'')
+		*in_single_quotes = !(*in_single_quotes);
+}
+
+int	process_char(char *temp, char **new_str, int i)
+{
+	char	*char_str;
+	char	*temp_str;
+
+	char_str = ft_strndup(temp + i, 1);
+	if (!char_str)
+		return (0);
+	temp_str = ft_strjoin_free(*new_str, char_str);
+	if (!temp_str)
+		return (free(char_str), 0);
+	*new_str = temp_str;
+	free(char_str);
+	return (1);
+}
