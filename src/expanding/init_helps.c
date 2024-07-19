@@ -24,6 +24,7 @@ int	init_expanding(t_expanding *expanding, char *temp, t_context *ctx,
 	expanding->quote = '\0';
 	expanding->join = NULL;
 	expanding->ctx = ctx;
+	expanding->do_split = key_contains_dollar(temp);
 	return (1);
 }
 
@@ -80,8 +81,8 @@ int	handle_special_cases(t_list **list, t_expanding *expanding, char *value)
 {
 	if (value && !ft_strchr(value, '\"') && ft_strchr(value, '*'))
 		expanding->have_asterisk = 1;
-	if (value && expanding->quote != '\"' && (ft_strchr(value, ' ')
-			|| ft_strchr(value, '\t')))
+	if (value && expanding->quote != '\"' && expanding->do_split
+		&& (ft_strchr(value, ' ') || ft_strchr(value, '\t')))
 	{
 		if (!split_and_add_to_list(list, expanding, value))
 			return (0);

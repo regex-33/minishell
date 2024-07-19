@@ -25,6 +25,7 @@ typedef struct s_expanding
 	char		*join;
 	t_context	*ctx;
 	int			do_expand;
+	int			do_split;
 }				t_expanding;
 
 char			*get_cmd_path(char **cmd_args, char **path_dirs);

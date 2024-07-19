@@ -83,7 +83,7 @@ int	ft_env(t_context *ctx, int fd)
 
 	env_ptr = ctx->env;
 	if (!env_ptr)
-		return (printf("minishell"), 1);
+		return (perror("minishell"), 1);
 	while (*env_ptr != NULL)
 	{
 		if (ft_strchr(*env_ptr, '='))

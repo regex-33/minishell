@@ -122,3 +122,21 @@ void	print_linked_list(t_list *head)
 		current = current->next;
 	}
 }
+
+bool	key_contains_dollar(const char *str)
+{
+	const char	*equal_pos;
+	const char	*p;
+
+	equal_pos = ft_strchr(str, '=');
+	p = str;
+	if (!equal_pos)
+		return (false);
+	while (p < equal_pos)
+	{
+		if (*p == '$')
+			return (true);
+		p++;
+	}
+	return (false);
+}

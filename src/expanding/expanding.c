@@ -165,7 +165,14 @@ int	process_dollar_sign(t_list **list, char *temp, int *i,
 		t_expanding *expanding)
 {
 	if (temp[*i] == '$' && is_spcial_chars(temp[*i + 1])
-		&& (expanding->quote != '\'' || !expanding->do_expand))
+		&& expanding->quote != '\'')
+	{
+		if (!handle_dollar_sign(list, i, temp, expanding))
+			return (0);
+		return (-1);
+	}
+	else if (temp[*i] == '$' && is_spcial_chars(temp[*i + 1])
+		&& expanding->do_expand)
 	{
 		if (!handle_dollar_sign(list, i, temp, expanding))
 			return (0);

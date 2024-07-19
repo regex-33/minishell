@@ -12,6 +12,25 @@
 
 #include "minishell.h"
 
+char	*get_value(char *name, char **env)
+{
+	int	i;
+
+	i = 0;
+	if (ft_strcmp(name, "?") == 0)
+		return (ft_itoa(get_status(0, 0)));
+	while (env && *env)
+	{
+		i = 0;
+		while ((*env)[i] == name[i] && name[i] != '\0')
+			i++;
+		if ((*env)[i] == '=' && name[i] == '\0')
+			return (ft_strdup(*env + i + 1));
+		env++;
+	}
+	return (NULL);
+}
+
 char	**expand_filename_here_doc(char *filename, t_context *ctx, int flag)
 {
 	char	**files;

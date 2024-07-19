@@ -196,5 +196,6 @@ void	handle_quit(int sig);
 /*  */
 
 int		isquote(char c);
+bool	key_contains_dollar(const char *str);
 
 #endif

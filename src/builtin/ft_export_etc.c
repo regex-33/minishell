@@ -26,6 +26,8 @@ int	is_valid_identifier(const char *variable)
 		{
 			if (variable[i] == '+' && variable[i + 1] != '=')
 				return (0);
+			else
+				return (-1);
 		}
 		i++;
 	}
@@ -100,14 +102,18 @@ int	check_variable_name(char *variable, int *unset_path)
 
 	if (*unset_path && !ft_strncmp(variable, "PATH=", 5))
 		*unset_path = 0;
+	if (is_valid_identifier(variable) == -1)
+		return (ft_putstr_fd("minishell: export: ", 2), ft_putstr_fd(variable,
+				2), ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO),
+			0);
 	to_equal = ft_strchr(variable, '=') - variable;
 	str = ft_substr(variable, 0, to_equal);
 	if (!str)
 		return (perror("minishell"), 0);
 	if (ft_strchr(str, ' '))
 	{
-		if (variable[strlen(str) - 1] == ' ' || \
-			variable[strlen(str) - 1] == '\t')
+		if (variable[strlen(str) - 1] == ' ' \
+			|| variable[strlen(str) - 1] == '\t')
 			return (ft_putstr_fd("minishell: export: ", 2),
 				ft_putstr_fd(&variable[strlen(str) - 1], 2),
 				ft_putstr_fd(": not a valid identifier\n", 2), free(str), 0);
