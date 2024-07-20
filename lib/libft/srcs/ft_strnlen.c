@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strnlen.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/20 09:33:52 by bchanaa           #+#    #+#             */
+/*   Updated: 2024/07/20 09:33:54 by bchanaa          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-int ft_strnlen(const char *s, size_t maxlen)
+int	ft_strnlen(const char *s, size_t maxlen)
 {
-    size_t i;
+	size_t	i;
 
-    i = 0;
-    while (s[i] && i < maxlen)
-        i++;
-    return (i);
+	i = 0;
+	while (s[i] && i < maxlen)
+		i++;
+	return (i);
 }

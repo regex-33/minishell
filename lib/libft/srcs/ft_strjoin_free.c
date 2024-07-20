@@ -1,5 +1,16 @@
-#include "libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strjoin_free.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/20 09:38:56 by bchanaa           #+#    #+#             */
+/*   Updated: 2024/07/20 09:38:57 by bchanaa          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "libft.h"
 
 static char	*ft_strjoin_free_part2(char *s1, const char *s2, char **dest)
 {
@@ -21,7 +32,7 @@ static char	*ft_strjoin_free_part2(char *s1, const char *s2, char **dest)
 		if (!*dest)
 			return (NULL);
 		ft_strcpy(*dest, s1);
-        free(s1);
+		free(s1);
 	}
 	return (*dest);
 }
@@ -43,7 +54,7 @@ char	*ft_strjoin_free(char *s1, const char *s2)
 			return (0);
 		ft_strcpy(dest, s1);
 		ft_strcat(dest, s2);
-        free(s1);
+		free(s1);
 	}
 	else
 	{

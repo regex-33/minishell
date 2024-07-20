@@ -6,7 +6,7 @@
 #    By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/21 12:11:54 by bchanaa           #+#    #+#              #
-#    Updated: 2024/05/05 18:26:58 by bchanaa          ###   ########.fr        #
+#    Updated: 2024/07/20 09:42:00 by bchanaa          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 # COLORS 
@@ -92,7 +92,7 @@ all: $(NAME)
 $(NAME): $(LFT_NAME) $(OBJ_FILES)
 	@echo "\n"
 # @echo "i am here\n"
-	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) -fsanitize=address
+	@$(CC) $^ -o $@ $(CFLAGS) -lreadline -lncurses $(LDFLAGS)  $(LDLIBS) #-fsanitize=address
 # @echo "i am here\n"
 	@echo "\n\n\n   ${BOLD}${CUR}${LYELLOW}MINISHELL COMPILED ✨${DEF}${NOCOL}\n"
 

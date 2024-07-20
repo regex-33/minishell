@@ -93,7 +93,7 @@ int	main(void)
 {
 	t_context	ctx;
 	char		*tmp;
-	char 		*line;
+	char		*line;
 
 	tmp = NULL;
 	line = NULL;
