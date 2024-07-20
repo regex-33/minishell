@@ -67,70 +67,52 @@ int	get_state(int new_state, int flags)
 	return (state);
 }
 
-void	init_terminal(void)
+int	minishell(t_context *ctx, char *line)
 {
-	struct termios	old_term;
-	struct termios	new_term;
-
-	if (!isatty(STDIN_FILENO))
-		return ;
-	tcgetattr(STDIN_FILENO, &old_term);
-	new_term = old_term;
-	new_term.c_lflag &= ~(ECHOCTL);
-	tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+	get_state(ON_EXEC, SET_STATE);
+	if (!line)
+		exit(get_status(0, 0));
+	ctx->tokens = lexer(line);
+	if (!ctx->tokens)
+		return (free(line), 0);
+	add_history(line);
+	ctx->parse_tree = parse(ctx->tokens);
+	next_token(ctx->tokens, RESET_TOK);
+	if (!ctx->parse_tree)
+		return (get_status(2, SET_STATUS), \
+				ft_lstclear_libft(&ctx->tokens, free), 0);
+	if (prompt_heredoc(ctx->parse_tree) < 0)
+		return (clear_btree(ctx->parse_tree), \
+				ft_lstclear_libft(&ctx->tokens, free), 0);
+	get_status(__exec(ctx->parse_tree, ctx), SET_STATUS);
+	ft_lstclear_libft(&ctx->tokens, free);
+	return (clear_btree(ctx->parse_tree), free(line), get_status(0, 0));
 }
 
 int	main(void)
 {
-	char				*line;
-	char				*prompt;
-	t_list				*tokens;
-	t_context			ctx;
-	t_btree				*parse_tree;
-	struct sigaction	saint;
+	t_context	ctx;
+	char		*tmp;
+	char 		*line;
 
+	tmp = NULL;
+	line = NULL;
+	signal(SIGINT, handle_interrupt);
+	signal(SIGQUIT, handle_quit);
 	if (init_context(&ctx))
 		return (1);
-	saint.sa_handler = handle_interrupt;
-	sigemptyset(&saint.sa_mask);
-	sigaction(SIGINT, &saint, NULL);
-	signal(SIGQUIT, handle_quit);
-	get_state(ON_PROMPT, SET_STATE);
 	while (1)
 	{
 		get_state(ON_PROMPT, SET_STATE);
-		prompt = get_prompt("minishell", " $ ");
-		line = readline(prompt);
-		free(prompt);
-		get_state(ON_EXEC, SET_STATE);
-		if (!line)
-			exit(0);
-		tokens = lexer(line);
-		if (!tokens)
+		if (!isatty(STDIN_FILENO))
 		{
-			free(line);
-			continue ;
+			tmp = get_next_line(STDIN_FILENO);
+			line = ft_strtrim(tmp, "\n");
+			free(tmp);
 		}
-		add_history(line);
-		parse_tree = parse(tokens);
-		next_token(tokens, RESET_TOK);
-		if (!parse_tree)
-		{
-			ft_lstclear_libft(&tokens, free);
-			continue ;
-		}
-		ctx.parse_tree = parse_tree;
-		ctx.tokens = tokens;
-		if (prompt_heredoc(parse_tree) < 0)
-		{
-			clear_btree(parse_tree);
-			ft_lstclear_libft(&tokens, free);
-			continue ;
-		}
-		get_status(__exec(parse_tree, &ctx), SET_STATUS);
-		clear_btree(parse_tree);
-		ft_lstclear_libft(&tokens, free);
-		free(line);
+		else
+			line = readline("minishell $ ");
+		minishell(&ctx, line);
 	}
-	return (0);
+	return (get_status(0, 0));
 }

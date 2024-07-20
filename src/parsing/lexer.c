@@ -104,9 +104,11 @@ t_list	*lexer(char *line)
 		}
 		token = gettoken(line + i, &i);
 		if (!validate_token(token, line[i]))
-			return (ft_lstclear_libft(&tokens, free), NULL);
+			return (ft_lstclear_libft(&tokens, free), \
+					get_status(2, SET_STATUS), NULL);
 		if (!append_token(&tokens, token))
 			return (perror("minishell"), free(token), \
+					get_status(2, SET_STATUS), \
 					ft_lstclear_libft(&tokens, free), NULL);
 	}
 	return (tokens);
