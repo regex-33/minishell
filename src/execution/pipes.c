@@ -6,7 +6,7 @@
 /*   By: bchanaa <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 09:19:30 by bchanaa           #+#    #+#             */
-/*   Updated: 2024/07/18 09:19:31 by bchanaa          ###   ########.fr       */
+/*   Updated: 2024/07/21 14:47:34 by yachtata         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ pid_t	exec_piped_cmd(t_btree *tree, t_context *ctx, int pipes[2][2])
 		return (perror("minishell"), exit(1), -1);
 	if (pid != 0 && pipes[IN_PIPE][READ] != STDIN_FILENO)
 		close(pipes[IN_PIPE][READ]);
-	else if (pid != 0)
+	if (pid != 0)
 		return (close(pipes[OUT_PIPE][WRITE]), pid);
 	close(pipes[OUT_PIPE][READ]);
 	if (dup2(pipes[IN_PIPE][READ], STDIN_FILENO) < 0)
